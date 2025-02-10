@@ -1,5 +1,5 @@
 // main colors
-$primary-blue: rgb(41, 112, 120);
+$primary-blue: rgb(0, 143, 157);
 $secondary-blue: rgb(123, 193, 191);
 $secondary-green: rgb(207, 224, 175);
 $secondary-pink: rgb(236, 138, 178);
@@ -19,7 +19,7 @@ $basic-white: rgb(245, 245, 245);
 // pop-up and signal colors
 $danger-color: rgb(211, 47, 47);
 $warning-color: rgb(251, 192, 45);
-$success-color: rgb(56, 142, 60); 
+$success-color: rgb(18, 212, 0); 
 
 :root {
   --primary-blue: #{$primary-blue};

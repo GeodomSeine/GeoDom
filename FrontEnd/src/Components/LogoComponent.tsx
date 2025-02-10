@@ -1,5 +1,6 @@
 import React, { FC } from "react";
 import HomeLogo from "../assets/logo.svg?react";
+import "../styles/main.scss";
 import { GeoJsonResponse, Scenario } from "../services/api";
 
 interface LogoComponentProps {
@@ -10,14 +11,14 @@ interface LogoComponentProps {
     customColor?: string;
     className?:string |null;
     onClick?: () => void;
-    program: string;
-    selectedVariables: string[];
-    selectedScenarios: Scenario[];
-    idHydStart: number | null;
-    idHydEnd: number | null;
-    download: boolean;
-    selectedPk : GeoJsonResponse | undefined;
-    selectedStralher : string | null;
+    program?: string;
+    selectedVariables?: string[];
+    selectedScenarios?: Scenario[];
+    idHydStart?: number | null;
+    idHydEnd?: number | null;
+	download?: boolean;
+    selectedPk?: GeoJsonResponse;
+    selectedStralher?: string | null;
 }
 
 const LogoComponent: FC<LogoComponentProps> = ({
@@ -33,57 +34,64 @@ const LogoComponent: FC<LogoComponentProps> = ({
     selectedScenarios,
     idHydStart,
     idHydEnd,
-    download,
+	download,
     selectedPk,
     selectedStralher
 }) => {
-    
+
     const containerStyle: React.CSSProperties = {
         width: containerSize,
         height: containerSize,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        color: customColor,
     };
     const svgStyle: React.CSSProperties = {
         width: size,
         height: size,
     };
-    
-    if (link && download) { // export de la session
-        onClick = () => {
+
+    if (link) {  
+        const createDownloadLink = () => {
+            if (!download) return link;
+        
             const data = {
-                name : program,
-                complete : selectedStralher !== null, // ordre stralher à rajouter
-                selected_order : selectedStralher, // ordre stralher  à rajouter
-                pk_start : idHydStart,
-                pk_end : idHydEnd,
-                selected_pk : selectedPk,
-                variables : selectedVariables,
-                scenarios : selectedScenarios
-                
+                name: program,
+                complete: selectedStralher !== null,
+                selected_order: selectedStralher,
+                pk_start: idHydStart,
+                pk_end: idHydEnd,
+                selected_pk: selectedPk,
+                variables: selectedVariables,
+                scenarios: selectedScenarios,
             };
-            const jsonString = JSON.stringify(data, null,'\t');
-            const blob = new Blob([jsonString], {type : 'applicatioin/json'});
-            console.log(blob);
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a'); // link
-            a.href = url;
-            a.download = link;
-            a.click();
-            URL.revokeObjectURL(url);
-        }
+        
+            const jsonString = JSON.stringify(data, null, '\t');
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            return URL.createObjectURL(blob); // Crée et retourne l'URL pour le blob
+        };
+        
+        const downloadLink = createDownloadLink();
+        
         return (
-            <Icon style={svgStyle} onClick={onClick}/>
+            <a
+                className={`${className}`}
+                href={downloadLink}
+                target={download ? undefined : "_blank"}
+                rel={download ? undefined : "noopener noreferrer"}
+                style={containerStyle}
+                download={download ? link : undefined}
+            >
+                <Icon style={svgStyle}/>
+            </a>
+        );        
+    } else {
+        return (
+            <div className={`${className}`}  style={containerStyle} onClick={onClick}>
+                <Icon style={svgStyle} color={customColor}/>
+            </div>
         );
     }
-    
-    return (
-        <div className={`${className}`}  style={containerStyle} onClick={onClick}>
-            <Icon style={svgStyle}/>
-        </div>
-    );
 };
 
 export default LogoComponent;

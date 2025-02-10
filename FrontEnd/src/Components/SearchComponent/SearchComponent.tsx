@@ -20,11 +20,11 @@ export default function SearchComponent({}: Props) {
         type="text"
       />
       <LogoComponent
-        containerSize={"35px"}
+        containerSize={"30px"}
         size={"20px"}
         customColor={"var(--shade-lighter-grey)"}
         Icon={Research}
-        onClick={handleIconClick} program={''} selectedVariables={[]} selectedScenarios={[]} idHydStart={null} idHydEnd={null} download={false} selectedPk={undefined} selectedStralher={null}      />
+        onClick={handleIconClick}/>
     </div>
   )
 }

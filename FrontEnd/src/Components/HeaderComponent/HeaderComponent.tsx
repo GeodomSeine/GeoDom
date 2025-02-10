@@ -31,7 +31,7 @@ const HeaderComponent : React.FC<HeaderComponentProps> = ({
     return (
         <div className="header_component">
             {/*need to change and adjust the logo*/}
-            <LogoComponent size={"50px"} link="/" onClick={clicked} program={''} selectedVariables={[]} selectedScenarios={[]} idHydStart={null} idHydEnd={null} download={false} selectedPk={selectedPk} selectedStralher={null}/>
+            <LogoComponent size={"50px"} link="/" onClick={clicked}/>
             <div className='action_header'>
                 <SearchComponent></SearchComponent>
                 {/* here when the LogoComponent gets a link, it wrap the logo around an a href instead of a div (prout is temporary no worries)}*/}

@@ -3,9 +3,9 @@
 .leaflet-pane{
     .leaflet-popup{
         .leaflet-popup-content-wrapper{
-            @include shadow;
-            border-radius: 5px;
-            width: 220px;
+            @include card;
+            width: 227px;
+            background-color: rgba($basic-black, 0.96);
             .leaflet-popup-content{
                 font-family: 'Roboto-Regular';
                 margin: 5px;
@@ -15,10 +15,11 @@
                     flex-direction: column;
                     gap: 5px;
                     width: fit-content;
+                    color: $basic-white;
                     div{
                         width: max-content;
                     }
-                    .button-container{
+                    .control_container{
                         display: flex;
                         gap: 5px;
                         font-size: 0.7rem;
@@ -26,8 +27,16 @@
                 }
             }
         }
+        .leaflet-popup-tip-container{
+            .leaflet-popup-tip{
+                background-color: $basic-black;
+            }
+        }
         .leaflet-popup-close-button{
-            color: $basic-black;
+            color: $basic-white;
+        }
+        .leaflet-popup-close-button:hover{
+            color: rgba($basic-white, 0.6);
         }
     }
 }

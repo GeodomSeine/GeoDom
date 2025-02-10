@@ -1,4 +1,3 @@
-// Mixin pour centrer
 @mixin center {
     display: flex;
     justify-content: center;
@@ -6,7 +5,7 @@
 }
 
 @mixin shadow {
-    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+    box-shadow: rgba(9, 30, 66, 0.25) 0px 1px 1px, rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;
 }
 
 @mixin innershadow {
@@ -15,7 +14,15 @@
 
 @mixin card {
     @include shadow;
-    border-radius: 10px;
+    border-radius: 5px;
+}
+
+@mixin transition{
+    transition: all 200ms ease-in-out;
+}
+
+@mixin headerSpace{
+    padding: 75px 10px 10px 10px;
 }
 
 // Mixin pour texte 
@@ -25,5 +32,6 @@
     text-overflow: ellipsis;
 }
 
+
+
 // add more
-  

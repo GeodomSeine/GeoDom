@@ -2,31 +2,31 @@ import React, { FC } from "react";
 import "./ButtonComponent.scss";
 
 interface ButtonComponentProps {
-	link?: string | null;
-	txt?: string | null;
-	customColor?: string;
-	className?:string |null;
+	link?: string;
+	txt?: string;
+	className?:string;
 	onClick?: () => void;
+	onDark?: boolean |null;
 }
 
 const ButtonComponent: FC<ButtonComponentProps> = ({
 	link = null,
 	txt = "clicky",
-	customColor = "var(--primary-blue)",
 	className= "button_container",
+	onDark = false,
 	onClick,
 }) => {
     //need to put into a seperate scss file
 	const containerStyle: React.CSSProperties = {
-		
-        backgroundColor: customColor,
         cursor: "pointer",
 	};
+
+	const appliedClassName = `${className}${onDark ? " button_on_dark" : ""}`;
 
 	if (link) {
 		return (
 			<a
-				className={`${className}`}
+				className={appliedClassName}
 				href={link}
 				target="_blank"
 				rel="noopener noreferrer"
@@ -38,7 +38,7 @@ const ButtonComponent: FC<ButtonComponentProps> = ({
 		);
 	} else {
 		return (
-			<div className={`${className}`}  style={containerStyle} onClick={onClick}>
+			<div className={appliedClassName}  style={containerStyle} onClick={onClick}>
 				{txt}
 			</div>
 		);

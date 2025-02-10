@@ -4,6 +4,7 @@
     .space_container{
         .space_body{
             height: fit-content;
+            gap: 5px;
             .chart_container{
                 display: flex;
                 flex-flow: row wrap;
@@ -14,9 +15,8 @@
                     max-width: 50%;
                     min-width: 40%;
                     flex-shrink: none;
-                    border: solid 2px rgb(231, 231, 231);
-                    padding: 5px;
-                    border-radius: 5px;
+                    @include card;
+                    padding: 8px;
                     div{
                         display: flex;
                         align-items: center;
@@ -42,3 +42,6 @@
         }
     }
 }
+
+
+
