@@ -7,6 +7,7 @@ import './VisualisationPage.scss';
 import { Scenario, AmontAvalResponse, DataRequest, DataResponse, getData, getFullData, DataRequestFull, GeoJsonResponse, getPkGeom } from "../services/api";
 import { useNavigate } from "react-router";
 import CircularProgress from "@mui/material/CircularProgress";
+import Esapce3Component from "./Espace3Component/Espace3Component";
 
 
 const VisualisationPage: React.FC = () => {
@@ -183,6 +184,7 @@ const VisualisationPage: React.FC = () => {
             mode={mode}
           />
         )}
+        <Esapce3Component program={program.name}/>
       </div>
     </div>
   );
