@@ -24,4 +24,4 @@ dist-ssr
 *.sw?
 
 # FrontEnd directories and files
-static/
+Backend/static/*
