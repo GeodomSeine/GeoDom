@@ -8,12 +8,16 @@ from models.models import Pk
 from core.logger import logger
 
 router = APIRouter(prefix="/dataspace3", tags=["Données pour l'espace 3"])
+
 variable_color_classes = {
     "flow": ["#c6dbef", "#4292c6", "#2171b5", "#08519c", "#08306b"],
     "dic": ["#ffd6aa", "#cca381", "#956d56", "#703818", "#280000"],
     "no3": ["#d0f0c0", "#a2d149", "#5aaf3b", "#2a7b25", "#00441b"],
+    "nh4": ["#d0f0c0", "#a2d149", "#5aaf3b", "#2a7b25", "#00441b"],
     "ta": ["#fdd49e", "#fdae61", "#f46d43", "#d73027", "#a50026"],
     "doc": ["#d0e1f9", "#73b3e7", "#1d91c0", "#065f99", "#023858"],
+    "phy": ["#d0e1f9", "#73b3e7", "#1d91c0", "#065f99", "#023858"],
+    "oxy": ["#d0e1f9", "#73b3e7", "#1d91c0", "#065f99", "#023858"],
     "ph": ["#e7e1ef", "#c994c7", "#dd1c77", "#980043", "#67001f"]
 }
 
