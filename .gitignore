@@ -33,3 +33,7 @@ Backend/.env
 # Coverage files and folders
 Backend/*coverage*
 front/*coverage*
+
+
+# Static files
+Backend/static/*
