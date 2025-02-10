@@ -9,4 +9,5 @@ pytest
 coverage
 apscheduler
 watchdog
-dotenv
+python-dotenv
+greenlet
