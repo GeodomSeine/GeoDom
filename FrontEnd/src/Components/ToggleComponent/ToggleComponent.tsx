@@ -22,7 +22,7 @@ const ToggleContainer: React.FC<ToggleContainerProps> = ({
           className={isVisible ? "is_visible" : "set_is_visible"}
           size={"35px"}
           Icon={Arrow}
-          onClick={() => setIsVisible((prev) => !prev)} program={""} selectedVariables={[]} selectedScenarios={[]} idHydStart={null} idHydEnd={null} download={false} selectedPk={undefined} selectedStralher={null}        />
+          onClick={() => setIsVisible((prev) => !prev)}/>
       </div>
       <div className="space_body" style={{ display: isVisible ? "flex" : "none" }}>
         {children}

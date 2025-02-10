@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useMemo } from "react";
-import Espace1Component from "./Espace1Component/Espace1Component";
-import { useProgram } from "../contexts/ProgramContext";
-import HeaderComponent from "./HeaderComponent/HeaderComponent";
-import Espace2Component from "./Espace2Component/Espace2Component";
+import Espace1Component from "../Espace1Component/Espace1Component";
+import { useProgram } from "../../contexts/ProgramContext";
+import HeaderComponent from "../HeaderComponent/HeaderComponent";
+import Espace2Component from "../Espace2Component/Espace2Component";
 import './VisualisationPage.scss';
-import { Scenario, AmontAvalResponse, DataRequest, DataResponse, getData, getFullData, DataRequestFull, GeoJsonResponse, getPkGeom } from "../services/api";
+import { Scenario, AmontAvalResponse, DataRequest, DataResponse, getData, getFullData, DataRequestFull, GeoJsonResponse, getPkGeom } from "../../services/api";
 import { useNavigate } from "react-router";
 import CircularProgress from "@mui/material/CircularProgress";
 
@@ -143,12 +143,6 @@ const VisualisationPage: React.FC = () => {
 
   return (
     <div className='home_component'>
-      {loadingData && 
-        <div className="loader-container">
-          {/* Corentin, stp ici, aide moi à mettre la variable $secondary-blue, j'arrive pas mdr*/}
-          <CircularProgress style={{ color: "rgb(123, 193, 191)" }} /> 
-        </div>
-      }
       
       <HeaderComponent program={program.name} selectedVariables={selectedVariables} selectedScenarios={selectedScenarios} idHydStart={idHydStart} idHydEnd={idHydEnd} selectedPk={selectedPk} selectedStralher={selectedKey}/>
       {/* Section Paramètrage Général */}

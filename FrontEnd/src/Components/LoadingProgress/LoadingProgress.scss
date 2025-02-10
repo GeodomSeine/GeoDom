@@ -5,10 +5,12 @@
     border-radius: 5px;
     overflow: hidden;
     text-align: center;
+    @include innershadow;
     .loading_bar_state {
       background-color: $primary-blue;
       transition: width 0.3s ease-in-out;
       color: $basic-white;
+      
     }
   }
   
