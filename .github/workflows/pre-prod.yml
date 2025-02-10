@@ -11,7 +11,7 @@ on:
       - FrontEnd/sonar-project.properties
       - Backend/*.py
       - Backend/sonar-project.properties
-      - '.github/workflows/deploy.yml'
+      - '.github/workflows/pre-prod.yml'
 
 jobs:
    frontend-tests:
