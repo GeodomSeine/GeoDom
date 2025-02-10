@@ -195,6 +195,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
   
     const onSelectAmont = () => {
       setIdHydStart(properties.id_hyd);
+      setIdHydEnd(exutoire_id);
       layer.closePopup();
     };
   

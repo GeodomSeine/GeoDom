@@ -8,7 +8,7 @@
     box-shadow: rgba(9, 30, 66, 0.25) 0px 1px 1px, rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;
 }
 
-@mixin innershadow {
+@mixin innerShadow {
     box-shadow: inset rgba(60, 64, 67, 0.3) 0px 1px 2px 0px;
 }
 
@@ -25,8 +25,7 @@
     padding: 75px 10px 10px 10px;
 }
 
-// Mixin pour texte 
-@mixin text-truncate {
+@mixin textTruncate {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;

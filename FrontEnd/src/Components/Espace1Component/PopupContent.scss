@@ -17,6 +17,7 @@
                     width: fit-content;
                     color: $basic-white;
                     div{
+                        @include textTruncate; // to fix
                         width: max-content;
                     }
                     .control_container{
