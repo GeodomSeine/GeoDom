@@ -1,0 +1,23 @@
+@use "../../styles/main.scss" as *;
+
+.control_component {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: max-content;
+  flex: 1;
+}
+.control_component > div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+@media (max-width: 960px) {
+    .control_component{
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+      }
+}
+

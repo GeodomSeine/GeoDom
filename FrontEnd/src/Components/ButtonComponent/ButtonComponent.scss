@@ -1,0 +1,21 @@
+@use "../../styles/main.scss" as *;
+
+.button_container{
+    display: flex;
+	align-items: center;
+    width: fit-content;
+    height: fit-content;
+	justify-content: center;
+	color: $basic-white;
+	padding:5px;
+    border-radius:5px;
+}
+.button_container:hover{
+    opacity: 0.8;
+}
+.button_disable{
+    opacity: 0.4;
+}
+.button_disable:hover{
+    opacity: 0.4;
+}

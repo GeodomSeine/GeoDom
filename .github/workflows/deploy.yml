@@ -1,0 +1,166 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - front/src/**/*.scss
+      - front/src/**/*.ts*
+      - front/tests/**
+      - front/sonar-project.properties
+      - Backend/*.py
+      - Backend/sonar-project.properties
+      - '.github/workflows/deploy.yml'
+
+jobs:
+   frontend-tests:
+     name : Frontend Tests
+     runs-on: ubuntu-latest
+     defaults:
+       run:
+         working-directory: front
+     steps:
+       - uses: actions/checkout@v4.2.2
+       - name : Install node 
+         uses : actions/setup-node@v4.1.0
+         with :
+           node-version: 'lts/*'
+ 
+       - name : Install dependencies
+         run : npm install
+       
+       - name : Run frontend tests with Vitest
+         run : npm run test
+
+
+   backend-tests:
+     name : Backend Tests
+     runs-on: ubuntu-latest
+     defaults:
+       run:
+         working-directory: Backend 
+     steps :
+       - uses: actions/checkout@v4.2.2
+       - name : Setup Python
+         uses: actions/setup-python@v5
+         with:
+          python-version : '3.10'
+       - name: Install dependencies 
+         run : pip install -r requirements.txt
+       - name : Run parser to have SQLite database
+         run : python resources/parser.py 
+       - name : Test with pytest
+         run : pytest tests/ 
+       - name: Load tests with Locust
+         working-directory : Backend/tests/
+         run : locust --headless --users 15 --spawn-rate 3 --run-time 10 -H https://lastproject.piren-seine.fr
+   
+   analyze-frontend:
+     needs : frontend-tests
+     name : Sonarqube Frontend
+     runs-on : ubuntu-latest
+     steps :
+       - uses: actions/checkout@v4.2.2
+       - name : Install dependencies
+         working-directory: front 
+         run : npm install 
+       - name : Run vitest for coverage
+         working-directory: front 
+         run : npm run coverage
+       - name: Analyze FrontEnd with SonarQube
+         uses : sonarsource/sonarqube-scan-action@v4.1.0
+         env:
+           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONTEND }}
+           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+         with:
+           projectBaseDir: front
+      
+          
+   analyze-backend:
+     needs: backend-tests
+     name : Sonarqube Backend
+     runs-on: ubuntu-latest
+     steps:
+       - uses: actions/checkout@v4.2.2
+       - name : Setup Python
+         uses: actions/setup-python@v5
+         with:
+          python-version : '3.10'
+       - name: Install requirements
+         working-directory: Backend
+         run : pip install -r requirements.txt
+       - name : Run parser to have SQLite database
+         working-directory: Backend
+         run : python resources/parser.py 
+       - name: Run Tox for coverage
+         working-directory: Backend
+         run: tox -e py
+       - name: Analyze Backend with SonarQube
+         uses : sonarsource/sonarqube-scan-action@v4.1.0
+         env:
+           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}
+           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+         with:
+           projectBaseDir: Backend 
+
+   deploy:
+    name : Deploy Production
+    needs : 
+     - analyze-backend
+     - analyze-frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4.2.2
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'lts/*'
+
+      # Build des artefacts
+      - name: Build front-end
+        run: |
+          cd front
+          npm install
+          npm run build
+          tar -czf front-end.tar.gz dist/
+          mv front-end.tar.gz ../  # Déplace l'artefact à la racine
+  
+      - name: Package back-end
+        run: |
+          cd Backend
+          tar -czf back-end.tar.gz *
+          mv back-end.tar.gz ../  # Déplace l'artefact à la racine
+
+      - name: Debug SSH Key
+        run: |
+          echo "${{ secrets.VPS_KEY }}" > debug_key
+          chmod 600 debug_key
+          ssh -i debug_key -o StrictHostKeyChecking=no piren_usr@lastproject.piren-seine.fr "echo 'SSH Connection Successful'"
+
+
+      # Transférer les artefacts sur le VPS
+      - name: Transfer build files to VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_KEY }}
+          source: "./*.tar.gz"
+          target: "~/prototype/"
+          port: 22
+          debug: true
+
+      # Exécuter le script de déploiement sur le VPS
+      - name: Deploy on VPS
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_KEY }}
+          port: 22
+          debug: true
+          script: |
+            cd ~/prototype/
+            bash deploy.sh

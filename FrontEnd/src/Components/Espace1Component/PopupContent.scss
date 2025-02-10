@@ -1,0 +1,33 @@
+@use "../../styles/main.scss" as *;
+
+.leaflet-pane{
+    .leaflet-popup{
+        .leaflet-popup-content-wrapper{
+            @include shadow;
+            border-radius: 5px;
+            width: 220px;
+            .leaflet-popup-content{
+                font-family: 'Roboto-Regular';
+                margin: 5px;
+                width: fit-content;
+                .leaflet-elements-container{
+                    display: flex;
+                    flex-direction: column;
+                    gap: 5px;
+                    width: fit-content;
+                    div{
+                        width: max-content;
+                    }
+                    .button-container{
+                        display: flex;
+                        gap: 5px;
+                        font-size: 0.7rem;
+                    }
+                }
+            }
+        }
+        .leaflet-popup-close-button{
+            color: $basic-black;
+        }
+    }
+}

@@ -1,0 +1,54 @@
+@use "../../styles/main.scss" as *;
+
+.card_component {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    height: 35vh;
+    cursor: pointer;
+    @include shadow;
+    border-radius: 5px;
+    color: $basic-black;
+    // calc to adjust based of the gap and padding.
+    width: calc(50vw - 17.5px);
+    .card_text{
+        padding: 10px;
+        width: 20vw;
+        flex-grow: 1;
+    }   
+    .card_img{
+        border-radius: 0 5px 5px 0;
+        height: 100%;
+        width: 300px; 
+        flex-grow: 1;
+    }
+}
+
+@media (max-width: 1060px) {
+    .card_component {
+        height: 35vh;
+        width: calc(100vw - 17.5px);
+        .card_img{
+            height: 100%;
+            width: 40%; 
+        }
+        .card_text{
+            padding: 10px;
+            width: 40%;
+        }
+    }
+}
+
+@media (max-width: 460px) {
+    .card_component {
+        height: 20vh;
+        .card_text{
+            padding: 10px;
+            width: 40%;
+            font-size: 0.7rem;
+            p{
+                display: none;
+            }
+        }
+    }
+}

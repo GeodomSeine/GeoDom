@@ -1,0 +1,26 @@
+@use "../../styles/main.scss" as *;
+
+.search_container{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: $basic-grey;
+    @include innershadow;
+    border-radius: 5px;
+    input{
+        height: 35px;
+        background-color: unset;
+        border: none;
+        outline: none;   
+        border-radius: 5px 0 0 5px;
+        padding-left: 10px;
+        font-size: 1rem;
+        font-family: "Roboto-Regular";
+    }
+    input::placeholder{
+        color: $shade-lighter-grey;
+    }
+    .logo_container{
+        cursor: text;
+    }
+}

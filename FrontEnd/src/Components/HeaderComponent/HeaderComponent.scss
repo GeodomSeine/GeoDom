@@ -1,0 +1,19 @@
+@use "../../styles/main.scss" as *;
+.header_component{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 15px 0 15px;
+    @include shadow;
+    position: fixed;
+    width: 100%;
+    height: 85px;
+    background-color: white;
+    z-index: 10000;
+    .action_header{
+        display: flex;
+        width: fit-content;
+        align-items: center;
+        gap: 15px;
+    }
+}

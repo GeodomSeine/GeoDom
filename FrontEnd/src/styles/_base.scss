@@ -1,0 +1,31 @@
+// Réinitialisation CSS de base
+@font-face {
+  font-family: 'Roboto-Regular';
+  src: url(../fonts/Roboto-Regular.woff2) format('woff2'),
+  url(../fonts/Roboto-Regular.woff) format('woff');
+}
+
+@font-face {
+  font-family: 'Roboto-Medium';
+  src: url(../fonts/Roboto-Medium.woff2) format('woff2'),
+  url(../fonts/Roboto-Medium.woff) format('woff');
+}
+
+@font-face {
+  font-family: 'Roboto-Bold';
+  src: url(../fonts/Roboto-Bold.woff2) format('woff2'),
+  url(../fonts/Roboto-Bold.woff) format('woff');
+}
+
+* {
+    margin: 0;
+    padding: 0; 
+    box-sizing: border-box;
+    
+  }
+  
+  // Typographie de base
+  body {
+    font-family: 'Roboto-Regular';
+  }
+  

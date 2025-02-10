@@ -1,0 +1,28 @@
+@use "../../styles/main.scss" as *;
+
+.space_container{
+    @include shadow;
+    border-radius: 5px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    .space_header{
+        display: flex; 
+        flex-direction: row;
+        justify-content: space-between;
+        .set_is_visible{
+            transition: transform 0.3s ease;
+            transform: rotate(90deg);
+        }
+        .is_visible{
+            transition: transform 0.3s ease;
+        }      
+        .is_visible,.set_is_visible{
+            cursor: pointer;
+        }  
+    }
+    .space_body{
+        height: 77vh;
+    }
+}

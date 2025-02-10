@@ -1,0 +1,12 @@
+from .programs import router as programs_router
+from .pk import router as pk_router
+from .hydro import router as hydro_router
+from .bassin import router as basin_router
+from .scenarios import router as scenarios_router
+from .data import router as data_router
+from .sld import router as sld_router
+from .stationsnap import router as stationsnap_router
+from .amont_aval import router as amont_aval_router
+from .pk_geom import router as pk_geom_router
+from .fulldata import router as fulldata_router
+from .data_donuts import router as data_donuts_router

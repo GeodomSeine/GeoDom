@@ -1,0 +1,12 @@
+fastapi[standard]
+sqlalchemy
+geoalchemy2
+asyncpg
+psycopg2-binary
+locust
+tox
+pytest
+coverage
+apscheduler
+watchdog
+dotenv

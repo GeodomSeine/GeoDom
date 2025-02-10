@@ -1,0 +1,43 @@
+// main colors
+$primary-blue: rgb(41, 112, 120);
+$secondary-blue: rgb(123, 193, 191);
+$secondary-green: rgb(207, 224, 175);
+$secondary-pink: rgb(236, 138, 178);
+$secondary-light-pink: rgb(205, 135, 166);
+
+// color for differences between graphs
+$shade-darker-grey: rgb(0, 0, 0);
+$shade-dark-grey: rgb(31, 31, 31);
+$shade-light-grey: rgb(64, 64, 64);
+$shade-lighter-grey: rgb(102, 102, 102);
+
+// color for text, logo
+$basic-black: rgb(46, 46, 46);
+$basic-grey: rgb(231, 231, 231);
+$basic-white: rgb(245, 245, 245);
+
+// pop-up and signal colors
+$danger-color: rgb(211, 47, 47);
+$warning-color: rgb(251, 192, 45);
+$success-color: rgb(56, 142, 60); 
+
+:root {
+  --primary-blue: #{$primary-blue};
+  --secondary-blue: #{$secondary-blue};
+  --secondary-green: #{$secondary-green};
+  --secondary-pink: #{$secondary-pink};
+  --secondary-light-pink: #{$secondary-light-pink};
+
+  --shade-darker-grey: #{$shade-darker-grey};
+  --shade-dark-grey: #{$shade-dark-grey};
+  --shade-light-grey: #{$shade-light-grey};
+  --shade-lighter-grey: #{$shade-lighter-grey};
+
+  --basic-black: #{$basic-black};
+  --basic-grey: #{$basic-grey};
+  --basic-white: #{$basic-white};
+
+  --danger-color: #{$danger-color};
+  --warning-color: #{$warning-color};
+  --success-color: #{$success-color};
+}

@@ -1,0 +1,165 @@
+from sqlalchemy import Integer, String, Numeric, BigInteger, Boolean, Date
+from sqlalchemy.orm import Mapped, mapped_column, declarative_base
+from geoalchemy2 import Geometry
+from geoalchemy2.shape import to_shape
+
+Base = declarative_base()
+
+
+class SenequeAesnHydro:
+    _class_cache = {}
+
+    @staticmethod
+    def create(program: str):
+        """
+        Crée une classe SenequeAesnHydro dynamique pour un programme donné.
+
+        Args:
+            program (str): Nom du programme (schéma).
+
+        Returns:
+            type: Classe dynamique.
+        """
+        if program in SenequeAesnHydro._class_cache:
+            return SenequeAesnHydro._class_cache[program]
+
+        class DynamicSenequeAesnHydro(Base):
+            __tablename__ = "seneque_aesn_hydro"
+            __table_args__ = {"schema": program}
+
+            id_hyd: Mapped[int] = mapped_column(Integer, primary_key=True)
+            seaoutlet_id: Mapped[int] = mapped_column(Integer)
+            libriv: Mapped[str] = mapped_column(String(127))
+            fnode: Mapped[float] = mapped_column(Numeric)
+            tnode: Mapped[float] = mapped_column(Numeric)
+            strahler: Mapped[float] = mapped_column(Numeric)
+            verdin: Mapped[float] = mapped_column(Numeric)
+            verdinmax: Mapped[int] = mapped_column(BigInteger)
+            level: Mapped[float] = mapped_column(Numeric)
+            length_m: Mapped[float] = mapped_column(Numeric)
+            lengthb_km: Mapped[float] = mapped_column(Numeric)
+            lengthd_km: Mapped[float] = mapped_column(Numeric)
+            slope_p: Mapped[float] = mapped_column(Numeric)
+            width_m: Mapped[float] = mapped_column(Numeric)
+            depth_m: Mapped[float] = mapped_column(Numeric)
+            sbv_km2: Mapped[float] = mapped_column(Numeric)
+            geom: Mapped[Geometry] = mapped_column(Geometry("MULTILINESTRING", srid=3035))
+
+        SenequeAesnHydro._class_cache[program] = DynamicSenequeAesnHydro
+        return DynamicSenequeAesnHydro
+
+
+class SenequeAesnBasin:
+    _class_cache = {}
+
+    @staticmethod
+    def create(program: str):
+        """
+        Crée une classe SenequeAesnBasin dynamique pour un programme donné.
+
+        Args:
+            program (str): Nom du programme (schéma).
+
+        Returns:
+            type: Classe dynamique.
+        """
+        if program in SenequeAesnBasin._class_cache:
+            return SenequeAesnBasin._class_cache[program]
+
+        class DynamicSenequeAesnBasin(Base):
+            __tablename__ = "seneque_aesn_hydro_basin"
+            __table_args__ = {"schema": program}
+
+            id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+            area_km2: Mapped[float] = mapped_column(Numeric)
+            geom: Mapped[Geometry] = mapped_column(Geometry("POLYGON"))
+
+        SenequeAesnBasin._class_cache[program] = DynamicSenequeAesnBasin
+        return DynamicSenequeAesnBasin
+
+
+class Pk:
+    _class_cache = {}
+
+    @staticmethod
+    def create(program: str):
+        """
+        Crée une classe Pk dynamique pour un programme donné.
+
+        Args:
+            program (str): Nom du programme (schéma).
+
+        Returns:
+            type: Classe dynamique.
+        """
+        if program in Pk._class_cache:
+            return Pk._class_cache[program]
+
+        class DynamicPk(Base):
+            __tablename__ = "pk_map"
+            __table_args__ = {"schema": program}
+
+            code_bas: Mapped[str] = mapped_column(String, nullable=True)
+            id_obj: Mapped[int] = mapped_column(Integer, primary_key=True)
+            strahler: Mapped[int] = mapped_column(Integer, primary_key=True)
+            pk: Mapped[int] = mapped_column(Integer, primary_key=True)
+            obj_ord_pk: Mapped[str] = mapped_column(String, nullable=True)
+            catchment_id: Mapped[int] = mapped_column(Integer, primary_key=True)
+            the_geom: Mapped[Geometry] = mapped_column(Geometry("LINESTRING", srid=3035), nullable=True)
+
+        Pk._class_cache[program] = DynamicPk
+        return DynamicPk
+
+
+class Scenario(Base):
+    __tablename__ = "scenario"
+    __table_args__ = {"schema": "zone_aesn_seneque_aesn_me_edl2025_qgis"}
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    codescn: Mapped[str] = mapped_column(String)
+    description: Mapped[str] = mapped_column(String)
+    obs_year: Mapped[int] = mapped_column(Integer)
+
+
+class StationSnap(Base):
+    __tablename__ = "station_snap"
+    __table_args__ = {"schema": "aesn_network"}
+
+    station_id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    code: Mapped[str] = mapped_column(String(30), nullable=True)
+    cntry_iso: Mapped[str] = mapped_column(String(2), nullable=True)
+    upstream_km2: Mapped[float] = mapped_column(Numeric(11, 4), nullable=True)
+    geom3035: Mapped[Geometry] = mapped_column(Geometry("POINT", srid=3035), nullable=True)
+
+
+class PkStation:
+    _class_cache = {}
+
+    @staticmethod
+    def create(program: str):
+        """
+        Crée une classe PkStation dynamique pour un programme donné.
+
+        Args:
+            program (str): Nom du programme (schéma).
+
+        Returns:
+            type: Classe dynamique.
+        """
+        if program in PkStation._class_cache:
+            return PkStation._class_cache[program]
+
+        class DynamicPkStation(Base):
+            __tablename__ = "pk_station"
+            __table_args__ = {"schema": program}
+
+            id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+            station_id: Mapped[int] = mapped_column(Integer, nullable=True)
+            code_stat: Mapped[str] = mapped_column(String(30), nullable=True)
+            id_objects: Mapped[int] = mapped_column(Integer, nullable=True)
+            strahler: Mapped[int] = mapped_column(Integer, nullable=True)
+            pk: Mapped[int] = mapped_column(Integer, nullable=True)
+            snap_dist_m: Mapped[float] = mapped_column(Numeric(11, 4), nullable=True)
+
+        PkStation._class_cache[program] = DynamicPkStation
+        return DynamicPkStation

@@ -1,0 +1,19 @@
+services:
+  backend:
+    build: ./Backend
+    container_name: backend_container
+    ports:
+      - "2020:2020" 
+    volumes:
+      - ./Backend:/code
+
+  frontend:
+    build: ./front
+    container_name: frontend_container
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./front:/code
+      - /code/node_modules
+    depends_on:
+      - backend
