@@ -58,17 +58,19 @@ class DatavizFolderHandler(FileSystemEventHandler):
         except Exception as e:
             logger.error(f"Erreur lors de la planification de l'analyse immédiate: {e}")
 
-def setup_watcher(scheduler: AsyncIOScheduler, watch_path: str = "resources/dataviz"):
+def setup_watcher(scheduler: AsyncIOScheduler, data_dir: str = os.path.join("resources", "dataviz")):
     """Configure le watcher et le scheduler"""
 
     """Le watcher pour surveiller les modifications dans le dossier dataviz."""
-    path_to_watch = os.path.join(os.path.dirname(os.path.abspath(__file__)), watch_path)
+    path_to_watch = data_dir
+    # os.path.join(os.path.dirname(os.path.abspath(__file__)),"resources", data_dir)
     
     #if not os.path.exists(path_to_watch):
     #    os.makedirs(path_to_watch)
     try:
         # Configuration du watcher
         event_handler = DatavizFolderHandler(scheduler)
+        event_handler.schedule_immediate_parse()
         observer = Observer()
         observer.schedule(event_handler, path=path_to_watch, recursive=True)
         observer.start()

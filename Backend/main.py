@@ -8,8 +8,15 @@ from fastapi.staticfiles import StaticFiles
 from core.config import settings
 from routes import programs, pk, hydro, bassin, scenarios, data, sld, stationsnap, amont_aval, pk_geom, fulldata, data_donuts
 from core.logger import logger
+from scheduler.scheduler import lifespan
 
-app = FastAPI(root_path="/api")
+
+app = FastAPI(
+    root_path="/api",
+    lifespan=lifespan,
+)
+lifespan(app)
+
 
 # Middlewares
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"], expose_headers=["Content-Type"])

@@ -3,7 +3,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 import logging
-from watcher import setup_watcher
+from scheduler.watcher import setup_watcher
 
 logging.basicConfig(
     level=logging.INFO,

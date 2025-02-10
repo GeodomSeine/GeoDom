@@ -1,7 +1,5 @@
 import json
 from typing import List
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy.orm import sessionmaker
 
 import os
 import hashlib
@@ -9,24 +7,18 @@ import json
 import sqlite3
 import logging
 
-import sys
+import asyncio
 import os
 from sqlalchemy import create_engine, MetaData, Table, select, text
-
-# Connexion à la base de données
-DATABASE_URL = "postgresql+asyncpg://piren_usr:QuyZQpkobgrEbL8@lastproject.piren-seine.fr:5433/pynuts_db"
-sync_engine = create_engine(DATABASE_URL.replace("postgresql+asyncpg", "postgresql"))
-
-
-
+from core.database import sync_engine_pynuts 
 
 
 
 #DB_FILE = "checked_folder_hashes.db"
 #DATA_FOLDER = "dataviz"
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_FILE = os.path.join(BASE_DIR, "checked_folder_hashes.db")
-DATA_FOLDER = os.path.join(BASE_DIR, "dataviz")
+PATH_CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+PATH_DB_FILE = os.path.join(PATH_CURRENT_DIR, "checked_folder_hashes.db")
+DATA_FOLDER = os.path.join(PATH_CURRENT_DIR, "dataviz")
 
 LIST_TABLE : List[str] = ["output_edl_240912", "pk_map", "pk_station", "seneque_aesn_hydro", "seneque_aesn_hydro_basin"]
 
@@ -48,7 +40,7 @@ REQUIRED_KEYS = {
 
 def initialize_database():
     """Crée la table pour stocker les hashes si elle n'existe pas."""
-    conn = sqlite3.connect(DB_FILE)
+    conn = sqlite3.connect(PATH_DB_FILE)
     cursor = conn.cursor()
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS folder_hashes (
@@ -124,7 +116,7 @@ def calculate_hash_for_folder(folder_path):
 
 def get_previous_hash(folder_name):
     """Récupère le hash précédent d'un dossier."""
-    conn = sqlite3.connect(DB_FILE)
+    conn = sqlite3.connect(PATH_DB_FILE)
     cursor = conn.cursor()
     cursor.execute("SELECT hash_value FROM folder_hashes WHERE folder_name = ?", (folder_name,))
     result = cursor.fetchone()
@@ -133,7 +125,7 @@ def get_previous_hash(folder_name):
 
 def update_hash(folder_name, hash_value):
     """Met à jour ou insère un hash pour un dossier."""
-    conn = sqlite3.connect(DB_FILE)
+    conn = sqlite3.connect(PATH_DB_FILE)
     cursor = conn.cursor()
     cursor.execute("""
         INSERT INTO folder_hashes (folder_name, hash_value)
@@ -154,7 +146,7 @@ def need_to_be_updated(folder_name, folder_hash):
 
 def remove_invalid_hash(folder_name):
     """Supprime l'entrée de hash pour un dossier donné."""
-    conn = sqlite3.connect(DB_FILE)
+    conn = sqlite3.connect(PATH_DB_FILE)
     cursor = conn.cursor()
     cursor.execute("DELETE FROM folder_hashes WHERE folder_name = ?", (folder_name,))
     conn.commit()
@@ -242,6 +234,7 @@ def is_metadata_json_valide(folder_path):
             data["variables"], 
             data["exutoire_id"]
         )
+
         if not is_valid_db: # Si les datas ne sont pas dans la bdd
             error_msg.extend(db_errors)
         
@@ -267,12 +260,10 @@ def is_metadata_json_valide(folder_path):
     
     return False
 
-
-
 def validate_schema_and_data(schema_name, variables, exutoire_id):
     """
-    On verifie que :
-    - le schema existe dans la base de données
+    Vérifie que :
+    - le schéma existe dans la base de données
     - les variables existent comme colonnes dans la table output_edl_240912
     - exutoire_id existe dans la table seneque_aesn_hydro
     - les tables dans LIST_TABLE existent dans la base de données
@@ -280,8 +271,9 @@ def validate_schema_and_data(schema_name, variables, exutoire_id):
     error_messages = []
 
     try:
-        with sync_engine.connect() as connection:
-            # verifier si le schema existe
+        with sync_engine_pynuts.connect() as conn:
+
+            # Vérifier si le schéma existe
             schema_query = text("""
                 SELECT EXISTS (
                     SELECT 1 
@@ -289,15 +281,14 @@ def validate_schema_and_data(schema_name, variables, exutoire_id):
                     WHERE schema_name = :schema_name
                 );
             """)
-            schema_exists = connection.execute(schema_query, {"schema_name": schema_name}).scalar()
+            result = conn.execute(schema_query, {"schema_name": schema_name})
+            schema_exists = result.scalar()
             
             if not schema_exists:
-                print(f"Le schema '{schema_name}' n'existe pas dans la base de données.")
-                error_messages.append(f"Le schema '{schema_name}' n'existe pas dans la base de données.")
+                error_messages.append(f"Le schéma '{schema_name}' n'existe pas dans la base de données.")
                 return False, error_messages
             
-
-            # verifier si les tables dans LIST_TABLE existent
+            # Vérifier si les tables dans LIST_TABLE existent
             for table in LIST_TABLE:
                 table_query = text("""
                     SELECT EXISTS (
@@ -307,31 +298,27 @@ def validate_schema_and_data(schema_name, variables, exutoire_id):
                         AND table_name = :table_name
                     );
                 """)
-                table_exists = connection.execute(table_query, {
-                    "schema_name": schema_name,
-                    "table_name": table
-                }).scalar()
+                result = conn.execute(table_query, {"schema_name": schema_name, "table_name": table})
+                table_exists = result.scalar()
                 
                 if not table_exists:
-                    print(f"La table '{table}' n'existe pas dans le schema {schema_name}")
-                    error_messages.append(f"La table '{table}' n'existe pas dans le schema {schema_name}")
-
-            # verifier si les variables existent dans la table output_edl_240912
-            table_query = text("""
+                    error_messages.append(f"La table '{table}' n'existe pas dans le schéma {schema_name}")
+            
+            # Vérifier si les variables existent dans la table output_edl_240912
+            column_query = text("""
                 SELECT column_name 
                 FROM information_schema.columns 
                 WHERE table_schema = :schema_name 
                 AND table_name = 'output_edl_240912';
             """)
-            columns = [row[0].upper() for row in connection.execute(table_query, {"schema_name": schema_name})]
+            result = conn.execute(column_query, {"schema_name": schema_name})
+            columns = [row[0].upper() for row in result.fetchall()]
             
             for variable in variables:
                 if variable.upper() not in columns:
-                    print(f"La variable '{variable}' n'existe pas dans la table output_edl_240912 du schema {schema_name}")
-                    error_messages.append(f"La variable '{variable}' n'existe pas dans la table output_edl_240912 du schema {schema_name}")
-                    
-
-            # verifier si l'exutoire_id existe dans la table seneque_aesn_hydro
+                    error_messages.append(f"La variable '{variable}' n'existe pas dans la table output_edl_240912 du schéma {schema_name}")
+            
+            # Vérifier si l'exutoire_id existe dans la table seneque_aesn_hydro
             exutoire_query = text(f"""
                 SELECT EXISTS (
                     SELECT 1 
@@ -339,22 +326,18 @@ def validate_schema_and_data(schema_name, variables, exutoire_id):
                     WHERE id_hyd = :exutoire_id
                 );
             """)
-            exutoire_exists = connection.execute(exutoire_query, {
-                "exutoire_id": exutoire_id
-            }).scalar()
+            result = conn.execute(exutoire_query, {"exutoire_id": exutoire_id})
+            exutoire_exists = result.scalar()
             
             if not exutoire_exists:
-                print(f"L'exutoire_id {exutoire_id} n'existe pas dans la table seneque_aesn_hydro")
                 error_messages.append(f"L'exutoire_id {exutoire_id} n'existe pas dans la table seneque_aesn_hydro")
-
             
-
             return len(error_messages) == 0, error_messages
-
+    
     except Exception as e:
-        print(f"Erreur lors de la validation de la base de données: {str(e)}")
         error_messages.append(f"Erreur lors de la validation de la base de données: {str(e)}")
         return False, error_messages
+
     
 def main():
     initialize_database()
