@@ -77,7 +77,6 @@ const LogoComponent: FC<LogoComponentProps> = ({
             <a
                 className={`${className}`}
                 href={downloadLink}
-                target={download ? undefined : "_blank"}
                 rel={download ? undefined : "noopener noreferrer"}
                 style={containerStyle}
                 download={download ? link : undefined}
