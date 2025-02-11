@@ -12,7 +12,6 @@ import Add from "../../assets/add.svg?react";
 import Minus from "../../assets/minus.svg?react";
 import Expand from "../../assets/expand.svg?react";
 import LogoComponent from "../LogoComponent";
-import LoadingProgress from '../LoadingProgress/LoadingProgress';
 import { createRoot } from 'react-dom/client';
 import PopupContent from './PopupContent';
 
@@ -73,8 +72,6 @@ const MapComponent: React.FC<MapComponentProps> = ({
   const [bassinStyle, setBassinStyle] = useState<PathOptions | null>(null);
   const [stationSnap, setStationSnap] = useState<GeoJsonResponse | null>(null);
   const [stationSnapStyles, setStationSnapStyles] = useState<PathOptions | null>(null);
-  const lastIndex = 6;
-  const [currentIndex, setCurrentIndex] = useState(0);
   const idHydStartRef = useRef<number | null>(idHydStart);
   const idHydEndRef = useRef<number | null>(idHydEnd);
   const [loading, setLoading] = useState(true);
@@ -85,29 +82,39 @@ const MapComponent: React.FC<MapComponentProps> = ({
     idHydEndRef.current = idHydEnd;
   }, [idHydStart, idHydEnd]);
 
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      let index = 0;
-      setCurrentIndex(index);
       try {
-        const hydroSLDData = await getHydroSLD(program);
+        // Exécuter toutes les requêtes en parallèle
+        const [
+          hydroSLDData,
+          bassinData,
+          bassinSLDData,
+          stationSLDData,
+          hydroData,
+          stationData
+        ] = await Promise.all([
+          getHydroSLD(program),
+          getBassin(program),
+          getBassinSLD(program),
+          getStationSnapSld(program),
+          getHydro(program),
+          getStationSnap(program)
+        ]);
+  
+        // Traitement des données obtenues
         if (hydroSLDData) {
           const hydroSLDText = await hydroSLDData.text();
           setHydroStyles(parseSLDToStyles(hydroSLDText));
-          index++;
-          setCurrentIndex(index);
         }
-        
-        const bassinData = await getBassin(program);
+  
         if (bassinData) {
           setBassinData(bassinData);
           setBounds(calculateBounds(bassinData));
-          index++;
-          setCurrentIndex(index);
         }
-        
-        const bassinSLDData = await getBassinSLD(program);
+  
         if (bassinSLDData) {
           const bassinSLDText = await bassinSLDData.text();
           const styles = parseSLDToStyles(bassinSLDText);
@@ -116,10 +123,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
             weight: styles[0]?.weight || 3,
           });
         }
-        index++;
-        setCurrentIndex(index);
-        
-        const stationSLDData = await getStationSnapSld(program);
+  
         if (stationSLDData) {
           const stationSLDText = await stationSLDData.text();
           const styles = parseSLDToStyles(stationSLDText);
@@ -128,28 +132,25 @@ const MapComponent: React.FC<MapComponentProps> = ({
             weight: styles[0]?.weight || 3,
           });
         }
-        index++;
-        setCurrentIndex(index);
-        
-        index++;
-        setCurrentIndex(index);
-        const hydroData = await getHydro(program);
-        setHydroData(hydroData);
-        
-        const stationData = await getStationSnap(program);
+  
+        if (hydroData) {
+          setHydroData(hydroData);
+        }
+  
         if (stationData) {
           setStationSnap(stationData);
         }
-        
+  
       } catch (error) {
         console.error("Erreur lors du chargement des données :", error);
       } finally {
         setLoading(false);
       }
     };
-    
+  
     fetchData();
   }, [program]);
+
   
   const calculateBounds = (bassin: GeoJsonResponse): LatLngBounds => {
     const coordinates = bassin.features[0]?.geometry?.coordinates[0];
@@ -219,20 +220,6 @@ const MapComponent: React.FC<MapComponentProps> = ({
   
   return (
     <div className="map_component">
-    {loading && (
-      <div
-      style={{
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        zIndex: 1000,
-      }}
-      >
-      <LoadingProgress currentIndex={currentIndex} lastIndex={lastIndex} />
-      </div>
-    )}
-    
     {!loading && bounds && (
       <MapContainer
         attributionControl={false}
