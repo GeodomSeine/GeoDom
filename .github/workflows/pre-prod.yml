@@ -116,29 +116,29 @@ jobs:
            projectBaseDir: Backend
 
    deploy:
-    name: Deploy to VPS
-    needs:
+    name : Deploy Production
+    needs : 
      - analyze-backend
      - analyze-frontend
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v3
         with:
           node-version: 'lts/*'
-      - name: Build Frontend
+      - name: Build FrontEnd
         run: |
           cd FrontEnd
           npm install
           npm run build
-      - name: Package Backend
+      - name: Package back-end
         run: |
           cd Backend
           tar -czf back-end.tar.gz *
-          mv back-end.tar.gz ../
+          mv back-end.tar.gz ../  # Déplace l'artefact à la racine
       - name: Debug SSH Key
         run: |
           echo "${{ secrets.VPS_KEY }}" > debug_key
