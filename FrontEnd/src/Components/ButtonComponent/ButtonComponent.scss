@@ -6,16 +6,20 @@
     width: fit-content;
     height: fit-content;
 	justify-content: center;
-	color: $basic-white;
+    color: $basic-white;
+    background-color: $primary-blue;
 	padding:5px;
     border-radius:5px;
+    border: 1px solid $primary-blue;
+    @include transition;
 }
 .button_container:hover{
-    opacity: 0.8;
+    background-color: transparent;
+    color: $primary-blue;
 }
-.button_disable{
-    opacity: 0.4;
+
+.button_on_dark:hover{
+    color: $basic-white;
 }
-.button_disable:hover{
-    opacity: 0.4;
-}
+
+

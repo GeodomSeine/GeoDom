@@ -5,10 +5,10 @@
     align-items: center;
     justify-content: space-between;
     background-color: $basic-grey;
-    @include innershadow;
+    @include innerShadow;
     border-radius: 5px;
     input{
-        height: 35px;
+        height: 30px;
         background-color: unset;
         border: none;
         outline: none;   

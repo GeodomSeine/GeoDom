@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { getPrograms, ProgramResponse } from '../../services/api'; 
-import CardComponent from '../CardComponent/CardComponent'; 
+import CardComponent from './CardComponent'; 
 import "./HomeComponent.scss";
 import HeaderComponent from '../HeaderComponent/HeaderComponent';
 import { useProgram } from '../../contexts/ProgramContext';

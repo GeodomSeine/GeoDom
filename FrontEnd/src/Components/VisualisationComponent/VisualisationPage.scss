@@ -1,0 +1,26 @@
+@use "../../styles/main.scss" as *;
+
+.home_component{
+    .home_body{
+        display:flex; 
+        flex-direction: column;
+        @include headerSpace;
+        gap:10px;
+    }
+    // .home_body_lined{
+    //     display:flex;
+    //     flex-direction: row;
+    //     padding: 75px 10px 10px 10px;
+    //     gap:10px;
+    //     .space1{
+    //         width: 50%;
+    //         height: 100vh;
+    //     }
+    //     .space2{
+    //         width: 50%;
+    //         .space_container{
+    //             height: 86vh;
+    //         }
+    //     }
+    // }
+}

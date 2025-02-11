@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useMemo } from "react";
-import Espace1Component from "./Espace1Component/Espace1Component";
-import { useProgram } from "../contexts/ProgramContext";
-import HeaderComponent from "./HeaderComponent/HeaderComponent";
-import Espace2Component from "./Espace2Component/Espace2Component";
+import Espace1Component from "../Espace1Component/Espace1Component";
+import { useProgram } from "../../contexts/ProgramContext";
+import HeaderComponent from "../HeaderComponent/HeaderComponent";
+import Espace2Component from "../Espace2Component/Espace2Component";
 import './VisualisationPage.scss';
-import { Scenario, AmontAvalResponse, DataRequest, DataResponse, getData, getFullData, DataRequestFull, GeoJsonResponse, getPkGeom } from "../services/api";
+import { Scenario, AmontAvalResponse, DataRequest, DataResponse, getData, getFullData, DataRequestFull, GeoJsonResponse, getPkGeom } from "../../services/api";
 import { useNavigate } from "react-router";
-import CircularProgress from "@mui/material/CircularProgress";
+import Esapce3Component from "../Espace3Component/Espace3Component";
 
 
 const VisualisationPage: React.FC = () => {
@@ -23,7 +23,6 @@ const VisualisationPage: React.FC = () => {
   const [idHydStart, setIdHydStart] = useState<number | null>(null);
   const [idHydEnd, setIdHydEnd] = useState<number | null>(null);
   const [scenarios, setScenarios] = useState<Scenario[]>([]);
-  const [loadingData, setLoadingData] = useState<boolean>(false);
 
   // Génération dynamique de la requête `request`
   const [mode, setMode] = useState<"complet" | "amont-aval">("complet");
@@ -72,7 +71,6 @@ const VisualisationPage: React.FC = () => {
 
     const fetchData = async () => {
       try {
-        setLoadingData(true);
         let response: DataResponse | null = null;
         if (mode === "amont-aval" && request) {
           response = await getData(request);
@@ -91,7 +89,6 @@ const VisualisationPage: React.FC = () => {
           setData(null);
           setChartData(null);
         }
-        setLoadingData(false);
       } catch (err) {
         console.error("Erreur lors de la récupération des données :", err);
         setData(null);
@@ -143,12 +140,7 @@ const VisualisationPage: React.FC = () => {
 
   return (
     <div className='home_component'>
-      {loadingData && 
-        <div className="loader-container">
-          {/* Corentin, stp ici, aide moi à mettre la variable $secondary-blue, j'arrive pas mdr*/}
-          <CircularProgress style={{ color: "rgb(123, 193, 191)" }} /> 
-        </div>
-      }
+
       
       <HeaderComponent program={program.name} selectedVariables={selectedVariables} selectedScenarios={selectedScenarios} idHydStart={idHydStart} idHydEnd={idHydEnd} selectedPk={selectedPk} selectedStralher={selectedKey}/>
       {/* Section Paramètrage Général */}
@@ -183,6 +175,7 @@ const VisualisationPage: React.FC = () => {
             mode={mode}
           />
         )}
+        <Esapce3Component program={program.name}/>
       </div>
     </div>
   );

@@ -6,7 +6,7 @@ from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 from core.config import settings
-from routes import programs, pk, hydro, bassin, scenarios, data, sld, stationsnap, amont_aval, pk_geom, fulldata, data_donuts
+from routes import programs, pk, hydro, bassin, scenarios, data, sld, stationsnap, amont_aval, pk_geom, fulldata, data_donuts, space3_data
 from core.logger import logger
 from scheduler.scheduler import lifespan
 
@@ -35,6 +35,7 @@ app.include_router(amont_aval.router)
 app.include_router(pk_geom.router)
 app.include_router(fulldata.router)
 app.include_router(data_donuts.router)
+app.include_router(space3_data.router)
 
 # Front
 app.mount("/", StaticFiles(directory="./static", html=True), name="static")

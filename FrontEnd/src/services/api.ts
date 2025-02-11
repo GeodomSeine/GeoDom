@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "/api",
+  baseURL: "/api", //dev env http://127.0.0.1:8000
   headers: {
     "Content-Type": "application/json",
   },
@@ -76,6 +76,13 @@ export interface DataRequestFull {
   program: string;
   scenarios: number[];
   variables: string[];
+}
+
+export interface Space3DataRequest{
+  program: string;
+  scenarios: number[];
+  variables: string[];
+  decades: number[];
 }
 
 export interface DataPoint {
@@ -298,3 +305,15 @@ export const getFullData = async (
     return null;
   }
 };
+
+export const getSpace3Data = async (
+  request: Space3DataRequest | null
+): Promise<GeoJsonResponse | null> => {
+  try{
+    const response = await api.post<GeoJsonResponse>("/dataspace3", request);
+    return response.data;
+  }catch (error) {
+    console.error("Error fetching data:", error);
+    return null;
+  }
+}

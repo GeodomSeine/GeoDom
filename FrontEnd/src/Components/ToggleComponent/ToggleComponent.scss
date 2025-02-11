@@ -1,8 +1,7 @@
 @use "../../styles/main.scss" as *;
 
 .space_container{
-    @include shadow;
-    border-radius: 5px;
+    @include card;
     padding: 10px;
     display: flex;
     flex-direction: column;

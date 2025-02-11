@@ -1,9 +1,13 @@
 @use "../../styles/main.scss" as *;
 .map_component {
+    
     .leaflet-container {
-        height: 100%;
+        height: 500px;
+        //height: 100%;
         width: 100%;
-        @include card;
+        border-radius: 5px;
+        border: solid 2px $basic-grey;
+        
         .custom_buttons {
             position: absolute;
             top: 65px;
@@ -12,16 +16,14 @@
             display: flex;
             flex-direction: column;
             background-color: white;
-            @include card;
+            border-radius: 5px;
+            @include shadow;
+            
             .logo_container{
                 border-bottom: solid 2px $basic-grey;
                 cursor: pointer;
-                @include transition;
             }:last-child{
                 border: none;
-            }
-            .logo_container:hover{
-                background-color: $basic-grey;
             }
         }
         // .leaflet-control-container{
