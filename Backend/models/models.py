@@ -1,4 +1,4 @@
-from sqlalchemy import Integer, String, Numeric, BigInteger, Boolean, Date
+from sqlalchemy import Integer, String, Numeric, BigInteger, Boolean, Date, JSON
 from sqlalchemy.orm import Mapped, mapped_column, declarative_base
 from geoalchemy2 import Geometry
 from geoalchemy2.shape import to_shape
@@ -44,6 +44,7 @@ class SenequeAesnHydro:
             depth_m: Mapped[float] = mapped_column(Numeric)
             sbv_km2: Mapped[float] = mapped_column(Numeric)
             geom: Mapped[Geometry] = mapped_column(Geometry("MULTILINESTRING", srid=3035))
+            geojson_feature: Mapped[dict] = mapped_column(String)
 
         SenequeAesnHydro._class_cache[program] = DynamicSenequeAesnHydro
         return DynamicSenequeAesnHydro
