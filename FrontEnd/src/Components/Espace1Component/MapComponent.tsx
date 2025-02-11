@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, GeoJSON, LayersControl, useMap } from 'react-l
 import { CircleMarker, LatLngBounds, PathOptions } from 'leaflet';
 import { GeoJsonObject } from 'geojson';
 import 'leaflet/dist/leaflet.css';
-import { getHydro, getBassin, getStationSnap, getStationSnapSld, getHydroSLD, getBassinSLD, GeoJsonResponse, AmontAvalResponse } from '../../services/api';
+import {streamHydroData, getBassin, getStationSnap, getStationSnapSld, getHydroSLD, getBassinSLD, GeoJsonResponse, AmontAvalResponse } from '../../services/api';
 import { parseSLDToStyles } from '../../mapstyles/mapStyles';
 import "leaflet/dist/leaflet.css";
 import "./MapComponent.scss";
@@ -78,70 +78,62 @@ const MapComponent: React.FC<MapComponentProps> = ({
     idHydEndRef.current = idHydEnd;
   }, [idHydStart, idHydEnd]);
 
+
+
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        // Exécuter toutes les requêtes en parallèle
-        const [
-          hydroSLDData,
-          bassinData,
-          bassinSLDData,
-          stationSLDData,
-          hydroData,
-          stationData
-        ] = await Promise.all([
-          getHydroSLD(program),
-          getBassin(program),
-          getBassinSLD(program),
-          getStationSnapSld(program),
-          getHydro(program),
-          getStationSnap(program)
-        ]);
+        try {
+            // Chargement des autres couches (bassin, stations, etc.)
+            const [
+                hydroSLDData,
+                bassinData,
+                bassinSLDData,
+                stationSLDData,
+                stationData
+            ] = await Promise.all([
+                getHydroSLD(program),
+                getBassin(program),
+                getBassinSLD(program),
+                getStationSnapSld(program),
+                getStationSnap(program)
+            ]);
 
-        // Traitement des données obtenues
-        if (hydroSLDData) {
-          const hydroSLDText = await hydroSLDData.text();
-          setHydroStyles(parseSLDToStyles(hydroSLDText));
+            if (hydroSLDData) {
+                const hydroSLDText = await hydroSLDData.text();
+                setHydroStyles(parseSLDToStyles(hydroSLDText));
+            }
+
+            if (bassinData) {
+                setBassinData(bassinData);
+                setBounds(calculateBounds(bassinData));
+            }
+
+            if (bassinSLDData) {
+                const bassinSLDText = await bassinSLDData.text();
+                const styles = parseSLDToStyles(bassinSLDText);
+                setBassinStyle({ color: styles[0]?.color || "var(--basic-black)", weight: styles[0]?.weight || 3 });
+            }
+
+            if (stationSLDData) {
+                const stationSLDText = await stationSLDData.text();
+                const styles = parseSLDToStyles(stationSLDText);
+                setStationSnapStyles({ color: styles[0]?.color || "var(--success-color)", weight: styles[0]?.weight || 3 });
+            }
+
+            if (stationData) {
+                setStationSnap(stationData);
+            }
+
+            // Lancer le streaming des Hydros
+            await streamHydroData(program, setHydroData);
+        } catch (error) {
+            console.error("Erreur lors du chargement des données :", error);
         }
-
-        if (bassinData) {
-          setBassinData(bassinData);
-          setBounds(calculateBounds(bassinData));
-        }
-
-        if (bassinSLDData) {
-          const bassinSLDText = await bassinSLDData.text();
-          const styles = parseSLDToStyles(bassinSLDText);
-          setBassinStyle({
-            color: styles[0]?.color || "var(--basic-black)",
-            weight: styles[0]?.weight || 3,
-          });
-        }
-
-        if (stationSLDData) {
-          const stationSLDText = await stationSLDData.text();
-          const styles = parseSLDToStyles(stationSLDText);
-          setStationSnapStyles({
-            color: styles[0]?.color || "var(--success-color)",
-            weight: styles[0]?.weight || 3,
-          });
-        }
-
-        if (hydroData) {
-          setHydroData(hydroData);
-        }
-
-        if (stationData) {
-          setStationSnap(stationData);
-        }
-
-      } catch (error) {
-        console.error("Erreur lors du chargement des données :", error);
-      }
     };
 
     fetchData();
   }, [program]);
+
 
   const calculateBounds = (bassin: GeoJsonResponse): LatLngBounds => {
     const coordinates = bassin.features[0]?.geometry?.coordinates[0];
@@ -243,20 +235,20 @@ return (
       )}
 
       {hydroData && hydroStyles && (
-        <Overlay checked name="Hydrographie">
-          <GeoJSON
-            key={`hydro-${mode}`}
-            data={hydroData as GeoJsonObject}
-            style={getHydroStyle}
-            interactive={true}
-            onEachFeature={(feature, layer) => {
-              layer.off();
-              layer.on({
-                click: () => handleFeatureClick(feature, layer),
-              });
-            }}
-          />
-        </Overlay>
+          <Overlay checked name="Hydrographie">
+              <GeoJSON
+                  key={`hydro-${mode}-${hydroData.features.length}`} // 🟢 Forçage de mise à jour
+                  data={hydroData as GeoJsonObject}
+                  style={getHydroStyle}
+                  interactive={true}
+                  onEachFeature={(feature, layer) => {
+                      layer.off();
+                      layer.on({
+                          click: () => handleFeatureClick(feature, layer),
+                      });
+                  }}
+              />
+          </Overlay>
       )}
 
       {bassinData && bassinStyle && (

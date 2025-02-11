@@ -19,29 +19,21 @@ except (redis.ConnectionError, redis.TimeoutError):
 
 
 async def fetch_hydro_from_db(program: str, session: AsyncSession):
-    """Récupère les données hydrographiques depuis PostgreSQL.
-    
-    Args:
-        program (str): Nom du programme (schéma).
-        session (AsyncSession): Session de base de données.
-        
-    Yields:
-        bytes: Données hydrographiques au format GeoJSON.
-    """
+    """Récupère les données hydrographiques depuis PostgreSQL en streaming."""
     DynamicHydro = SenequeAesnHydro.create(program)
 
     try:
         query = select(DynamicHydro.geojson_feature)
         result = await session.stream(query)
 
-        while True:
-            rows = await result.fetchmany(1000)
-            if not rows:
-                break
-
-            for row in rows:
-                if row.geojson_feature:
-                    yield orjson.dumps(row.geojson_feature)
+        first = True
+        async for row in result:
+            if row.geojson_feature:
+                if first:
+                    first = False
+                else:
+                    yield b","
+                yield orjson.dumps(row.geojson_feature)
 
     except Exception:
         raise HTTPException(status_code=500, detail="Erreur interne du serveur")
@@ -73,9 +65,6 @@ async def geojson_stream(program: str):
         async for feature in fetch_hydro_from_db(program, session):
             if first:
                 first = False
-            else:
-                yield b","
-            
             yield feature
             all_features.append(feature.decode())
 

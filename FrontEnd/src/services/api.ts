@@ -317,3 +317,41 @@ export const getSpace3Data = async (
     return null;
   }
 }
+
+
+export const streamHydroData = async (program: string, setHydroData: React.Dispatch<React.SetStateAction<GeoJsonResponse | null>>) => {
+  try {
+      const response = await fetch(`/api/hydro/${program}`);
+      if (!response.body) {
+          console.error("Pas de corps de réponse.");
+          return;
+      }
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let accumulatedText = "";
+      let features: GeoJsonFeature[] = [];
+      setHydroData({ type: "FeatureCollection", name: "Hydrographie", crs: { type: "name", properties: { name: "urn:ogc:def:crs:EPSG::4326" } }, features: [] });
+      while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          accumulatedText += decoder.decode(value, { stream: true });
+          const jsonParts = accumulatedText.split("},{").map((s, i, arr) => {
+              if (i === 0) return s + "}";
+              if (i === arr.length - 1) return "{" + s;
+              return "{" + s + "}";
+          });
+          jsonParts.forEach((part) => {
+              try {
+                  const parsedFeature = JSON.parse(part);
+                  features.push(parsedFeature);
+                  setHydroData(prevData => prevData ? { ...prevData, features: [...prevData.features, parsedFeature] } : null);
+              } catch (e) {
+                  // JSON partiel, on attend plus de données
+              }
+          });
+          accumulatedText = jsonParts[jsonParts.length - 1]; // Garde la dernière partie pour le prochain batch
+      }
+  } catch (error) {
+      console.error("Erreur lors du streaming des données Hydro :", error);
+  }
+};
