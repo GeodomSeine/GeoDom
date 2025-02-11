@@ -78,6 +78,13 @@ export interface DataRequestFull {
   variables: string[];
 }
 
+export interface Space3DataRequest{
+  program: string;
+  scenarios: number[];
+  variables: string[];
+  decades: number[];
+}
+
 export interface DataPoint {
   decade: number;
   [variable: string]: number;
@@ -298,3 +305,15 @@ export const getFullData = async (
     return null;
   }
 };
+
+export const getSpace3Data = async (
+  request: Space3DataRequest | null
+): Promise<GeoJsonResponse | null> => {
+  try{
+    const response = await api.post<GeoJsonResponse>("/dataspace3", request);
+    return response.data;
+  }catch (error) {
+    console.error("Error fetching data:", error);
+    return null;
+  }
+}
