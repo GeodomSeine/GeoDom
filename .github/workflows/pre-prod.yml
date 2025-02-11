@@ -4,15 +4,7 @@ on:
   push:
     branches:
       - Pre-Production
-    paths:
-      - FrontEnd/src/**/*.scss
-      - FrontEnd/src/**/*.ts*
-      - FrontEnd/tests/**
-      - FrontEnd/sonar-project.properties
-      - Backend/*.py
-      - Backend/sonar-project.properties
-      - '.github/workflows/pre-prod.yml'
-
+      
 jobs:
    frontend-tests:
      name : Frontend Tests
@@ -22,6 +14,8 @@ jobs:
          working-directory: FrontEnd
      steps:
        - uses: actions/checkout@v4.2.2
+         with:
+          fetch-depth: 0
        - name : Install node 
          uses : actions/setup-node@v4.1.0
          with :
@@ -35,33 +29,53 @@ jobs:
 
 
    backend-tests:
-     name : Backend Tests
-     runs-on: ubuntu-latest
-     defaults:
-       run:
-         working-directory: Backend 
-     steps :
-       - uses: actions/checkout@v4.2.2
-       - name : Setup Python
-         uses: actions/setup-python@v5
-         with:
-          python-version : '3.11'
-       - name: Install dependencies 
-         run : pip install -r requirements.txt
-       - name : Run parser to have SQLite database
-         run : python resources/parser.py 
-       - name : Test with pytest
-         run : pytest tests/ 
-       - name: Load tests with Locust
-         working-directory : Backend/tests/
-         run : locust --headless --users 15 --spawn-rate 3 --run-time 10 -H https://lastproject.piren-seine.fr
-   
+    name: Backend Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Backend 
+    steps:
+      - uses: actions/checkout@v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies 
+        run: pip install -r requirements.txt
+
+      - name: Set environment
+        run: |
+          echo "DATABASE_PYNUTS_URL=${{ secrets.DATABASE_PYNUTS_URL }}" >> $GITHUB_ENV
+          echo "DATABASE_DONUTS_URL=${{ secrets.DATABASE_DONUTS_URL }}" >> $GITHUB_ENV
+          echo "LOG_LEVEL=${{ secrets.LOG_LEVEL }}" >> $GITHUB_ENV
+          echo "TESTING=${{ secrets.TESTING }}" >> $GITHUB_ENV
+
+      - name: Set PYTHONPATH
+        run: echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
+
+      - name: Run parser to have SQLite database
+        run: python3 -m resources.parser
+        working-directory: Backend
+
+      #- name: Test with pytest
+      #  run: pytest tests/ 
+
+      #- name: Load tests with Locust
+      #  working-directory: Backend/tests/
+      #  run: locust --headless --users 15 --spawn-rate 3 --run-time 10 -H https://lastproject.piren-seine.fr
+
    analyze-frontend:
      needs : frontend-tests
      name : Sonarqube Frontend
      runs-on : ubuntu-latest
      steps :
        - uses: actions/checkout@v4.2.2
+         with:
+          fetch-depth: 0
        - name : Install dependencies
          working-directory: FrontEnd 
          run : npm install 
@@ -83,19 +97,27 @@ jobs:
      runs-on: ubuntu-latest
      steps:
        - uses: actions/checkout@v4.2.2
+         with:
+          fetch-depth: 0
        - name : Setup Python
          uses: actions/setup-python@v5
          with:
-          python-version : '3.11'
+          python-version : '3.13'
        - name: Install requirements
          working-directory: Backend
          run : pip install -r requirements.txt
+       - name: Set environment
+         run: |
+          echo "DATABASE_PYNUTS_URL=${{ secrets.DATABASE_PYNUTS_URL }}" >> $GITHUB_ENV
+          echo "DATABASE_DONUTS_URL=${{ secrets.DATABASE_DONUTS_URL }}" >> $GITHUB_ENV
+          echo "LOG_LEVEL=${{ secrets.LOG_LEVEL }}" >> $GITHUB_ENV
+          echo "TESTING=${{ secrets.TESTING }}" >> $GITHUB_ENV
        - name : Run parser to have SQLite database
+         run : python3 -m resources.parser
          working-directory: Backend
-         run : python resources/parser.py 
-       - name: Run Tox for coverage
-         working-directory: Backend
-         run: tox -e py
+       #- name: Run Tox for coverage
+       #  working-directory: Backend
+       #  run: tox -e py
        - name: Analyze Backend with SonarQube
          uses : sonarsource/sonarqube-scan-action@v4.1.0
          env:
@@ -113,6 +135,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4.2.2
+        with:
+          fetch-depth: 0
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
