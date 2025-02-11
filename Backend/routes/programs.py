@@ -5,17 +5,31 @@ from fastapi.responses import JSONResponse, FileResponse
 from core.logger import logger
 
 router = APIRouter(prefix="/programs", tags=["Programs"])
+DATAVIZ_FOLDER = os.path.join("dataviz")
+RESOURCES_PATH = os.path.join(".", "resources")
 
-DATAVIZ_FOLDER = "dataviz"
-RESOURCES_PATH = "./resources"
+import sqlite3
 
+DB_PATH = os.path.join(".", "resources", "checked_folder_hashes.db")
 
 def get_valid_dataviz():
-    """Récupère la liste des programmes valides stockés localement."""
-    folder_path = os.path.join(RESOURCES_PATH, DATAVIZ_FOLDER)
-    if not os.path.exists(folder_path):
+    """Récupère la liste des dataviz valides depuis la base de données SQLite."""
+    
+    query = """
+        SELECT folder_name FROM folder_hashes;
+    """
+
+    try:
+        with sqlite3.connect(DB_PATH) as conn:
+            cursor = conn.cursor()
+            cursor.execute(query)
+            dataviz_list = [row[0] for row in cursor.fetchall()]
+        return dataviz_list
+
+    except sqlite3.Error as e:
+        print(f"Erreur lors de la récupération des dataviz : {e}")
         return []
-    return [f for f in os.listdir(folder_path) if os.path.isdir(os.path.join(folder_path, f))]
+
 
 
 @router.get("")
