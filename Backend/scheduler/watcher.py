@@ -7,11 +7,15 @@ import logging
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 
+
+log_dir = "error_log"
+os.makedirs(log_dir, exist_ok=True)  # Créer le dossier error_log s'il n'existe pas
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler(os.path.join("error_log", "watcher.log")),
+        logging.FileHandler(os.path.join(log_dir, "watcher.log")),
         logging.StreamHandler()
     ]
 )

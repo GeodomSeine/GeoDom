@@ -6,11 +6,14 @@ from contextlib import asynccontextmanager
 import logging
 from scheduler.watcher import setup_watcher
 
+log_dir = "error_log"
+os.makedirs(log_dir, exist_ok=True)  # Créer le dossier error_log s'il n'existe pas
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler(os.path.join("error_log", "scheduler.log")),
+        logging.FileHandler(os.path.join(log_dir, "scheduler.log")),
         logging.StreamHandler()
     ]
 )
