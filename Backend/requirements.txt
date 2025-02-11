@@ -11,3 +11,5 @@ apscheduler
 watchdog
 python-dotenv
 greenlet
+orjson
+redis

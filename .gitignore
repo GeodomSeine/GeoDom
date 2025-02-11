@@ -38,4 +38,5 @@ front/*coverage*
 # Static files
 Backend/static/*
 Backend/tests/*
-Backend/error_log/*
+
+dump.rdb
