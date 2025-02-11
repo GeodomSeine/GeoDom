@@ -40,3 +40,5 @@ Backend/static/*
 Backend/tests/*
 
 dump.rdb
+
+Backend/error_log/*

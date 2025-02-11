@@ -11,7 +11,7 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('watcher.log'),
+        logging.FileHandler(os.path.join("error_log", "watcher.log")),
         logging.StreamHandler()
     ]
 )

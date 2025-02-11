@@ -12,10 +12,6 @@ import os
 from sqlalchemy import create_engine, MetaData, Table, select, text
 from core.database import sync_engine_pynuts 
 
-
-
-#DB_FILE = "checked_folder_hashes.db"
-#DATA_FOLDER = "dataviz"
 PATH_CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 PATH_DB_FILE = os.path.join(PATH_CURRENT_DIR, "checked_folder_hashes.db")
 DATA_FOLDER = os.path.join(PATH_CURRENT_DIR, "dataviz")
@@ -72,8 +68,6 @@ def setup_logger(folder_name):
         file_handler = logging.FileHandler(log_file, mode='a', encoding='utf-8')
         file_handler.setFormatter(formatter)
         logger.addHandler(file_handler)
-
-
     
     return logger
 

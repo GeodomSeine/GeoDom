@@ -1,4 +1,5 @@
 # scheduler.py
+import os
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
@@ -9,7 +10,7 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('scheduler.log'),
+        logging.FileHandler(os.path.join("error_log", "scheduler.log")),
         logging.StreamHandler()
     ]
 )
