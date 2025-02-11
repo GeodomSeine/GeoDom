@@ -37,3 +37,4 @@ front/*coverage*
 
 # Static files
 Backend/static/*
+Backend/tests/*
