@@ -6,10 +6,12 @@ import { useNavigate } from 'react-router';
 
 interface HeaderComponentProps {
     actionButton:() => void;
+    onSearch?: (query:string)=>void;
 }
 
 const HeaderComponent : React.FC<HeaderComponentProps> = ({
     actionButton = () => "test",
+    onSearch,
 }) => {
     const navigate = useNavigate();
     const clicked =  () => {
@@ -19,7 +21,7 @@ const HeaderComponent : React.FC<HeaderComponentProps> = ({
         <div className="header_component">
             <LogoComponent size={"50px"} onClick={clicked}/>
             <div className='action_header'>
-                <SearchComponent></SearchComponent>
+                {onSearch && <SearchComponent onSearch={onSearch}/>}
                 <LogoComponent size={"35px"} Icon={Import} onClick={actionButton}/>
             </div>
         </div>

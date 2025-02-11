@@ -11,6 +11,7 @@
 
     export default function HomeComponent({}: Props) {
         const [programs, setPrograms] = React.useState<ProgramResponse | null>(null);
+        const [searchQuery, setSearchQuery] = React.useState(""); 
 
         const { setProgram } = useProgram();
         const navigate = useNavigate();
@@ -28,23 +29,42 @@
             navigate('/visualisation');
         };
 
+        const filteredPrograms = Array.isArray(programs) ? programs.filter((item) =>
+            item.title.toLowerCase().includes(searchQuery.toLowerCase())
+        ):( [] );
+
         return (
             <div className='home_component'>
-                <HeaderComponent actionButton={()=>{}}></HeaderComponent>
+                <HeaderComponent onSearch={setSearchQuery} actionButton={()=>{}}></HeaderComponent>
                 <div className="main_body">
                     <div className='main_scroll_area' >
-                        {Array.isArray(programs) && programs.map((item: Program) => (
-                            item.background && ( 
-                                <CardComponent
-                                    key={item.name}
-                                    title={item.title}
-                                    description={item.description}
-                                    variables={item.variables}
-                                    background={item.background}
-                                    onClick={() => handleCardClick(item)}
-                                />
+                        {searchQuery ? (filteredPrograms.length > 0 ? filteredPrograms.map((item: Program) => (
+                                    item.background && (
+                                        <CardComponent
+                                            key={item.name}
+                                            title={item.title}
+                                            description={item.description}
+                                            variables={item.variables}
+                                            background={item.background}
+                                            onClick={() => handleCardClick(item)}
+                                        />
+                                    )
+                                ))
+                                : <div className="no_results">Pas de résulats.</div>
                             )
-                        ))}
+                            : (Array.isArray(programs) && programs.map((item: Program) => (
+                                item.background && (
+                                    <CardComponent
+                                        key={item.name}
+                                        title={item.title}
+                                        description={item.description}
+                                        variables={item.variables}
+                                        background={item.background}
+                                        onClick={() => handleCardClick(item)}
+                                    />
+                                )
+                            )))
+                        }
                     </div>
                 </div>
             </div>
