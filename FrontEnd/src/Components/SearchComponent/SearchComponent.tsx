@@ -2,14 +2,24 @@ import { useRef } from 'react'
 import LogoComponent from '../LogoComponent'
 import Research from "../../assets/research.svg?react";
 import './SearchComponent.scss';
+import { useState } from 'react';
 
-type Props = {}
+type Props = {
+  onSearch: (query:string)=>void;
+}
 
-export default function SearchComponent({}: Props) {
+export default function SearchComponent({onSearch}: Props) {
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleIconClick = () => {
     inputRef.current?.focus();
+  };
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const query = event.target.value;
+    setSearchQuery(query);
+    onSearch(query); 
   };
 
   return (
@@ -18,13 +28,17 @@ export default function SearchComponent({}: Props) {
         ref={inputRef}
         placeholder='Recherche...'
         type="text"
+        value={searchQuery}
+        onChange={handleInputChange}
       />
       <LogoComponent
         containerSize={"30px"}
         size={"20px"}
         customColor={"var(--shade-lighter-grey)"}
         Icon={Research}
-        onClick={handleIconClick}/>
+        onClick={handleIconClick}
+        cursor={"text"}  
+      />
     </div>
   )
 }

@@ -6,7 +6,6 @@ import 'leaflet/dist/leaflet.css';
 import { getBassin, getBassinSLD, GeoJsonResponse } from '../../services/api';
 import { parseSLDToStyles } from '../../mapstyles/mapStyles';
 import "leaflet/dist/leaflet.css";
-import "./MapComponent.scss";
 import "../../styles/main.scss";
 
 const { BaseLayer, Overlay } = LayersControl;
