@@ -1,0 +1,67 @@
+{
+    "flow": {
+        "donuts": "water_flow",
+        "co_varfracom_id": 10113511,
+        "measurement_table": "measurement_physical"
+    },
+    "no3": {
+        "donuts": "no3",
+        "co_varfracom_id": 10121224,
+        "measurement_table": "measurement_chemical"
+    },
+    "nh4": {
+        "donuts": "nh4",
+        "co_varfracom_id": 10121226,
+        "measurement_table": "measurement_chemical"
+    },
+    "no2": {
+        "donuts": "no2",
+        "co_varfracom_id": 10121225,
+        "measurement_table": "measurement_chemical"
+    },
+    "po4": {
+        "donuts": "po4",
+        "co_varfracom_id": 10121324,
+        "measurement_table": "measurement_chemical"
+    },
+    "tp": {
+        "donuts": "tp",
+        "co_varfracom_id": 10121311,
+        "measurement_table": "measurement_chemical"
+    },
+    "doc": {
+        "donuts": "doc",
+        "co_varfracom_id": 10121122,
+        "measurement_table": "measurement_chemical"
+    },
+    "oxy": {
+        "donuts": "d_oxy",
+        "co_varfracom_id": 10121511,
+        "measurement_table": "measurement_chemical"
+    },
+    "dsi": {
+        "donuts": "tdsi",
+        "co_varfracom_id": 10121421,
+        "measurement_table": "measurement_chemical"
+    },
+    "spm": {
+        "donuts": "tss",
+        "co_varfracom_id": 10113121,
+        "measurement_table": "measurement_physical"
+    },
+    "phy": {
+        "donuts": "phy_chla",
+        "co_varfracom_id": 10122111,
+        "measurement_table": "measurement_biological"
+    },
+    "fecolif": {
+        "donuts": "totcolif",
+        "co_varfracom_id": 10122151,
+        "measurement_table": "measurement_biological"
+    },
+    "ph":{
+        "donuts": "ph",
+        "co_varfracom_id": 10121931,
+        "measurement_table": "measurement_chemical"
+    }
+}

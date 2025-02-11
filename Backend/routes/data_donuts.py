@@ -4,9 +4,16 @@ from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import func
 from core.database import async_session_donuts, async_session_pynuts
-from models.models import Pk, PkStation
+from models.models import Pk, PkStation, Scenario, Measurement
 from core.logger import logger
+import os
 
+JSON_VARIABLES_PATH = "./routes/variables_pynuts_donuts.json"
+if not os.path.exists(JSON_VARIABLES_PATH):
+    logger.warning(f"Json variables file not found")
+
+with open(JSON_VARIABLES_PATH, "r", encoding="utf-8") as json_file:
+    pynuts_to_donuts = json.load(json_file)
 
 router = APIRouter(prefix="/data_donuts", tags=["Données d'observation"])
 
@@ -84,16 +91,63 @@ def date_to_decade(date: str):
     scenario = year - 2016
 
     return decade, scenario
-    
 
-async def get_data(session_donuts: AsyncSession, obj_ord_pk_to_station: dict[str, int], scenarios: list[int], variables: list[str]):
+
+async def get_scenario_year(session_pynuts: AsyncSession, scenarios: list[int]):
+    query = select(Scenario.id, Scenario.obs_year).where(Scenario.id.in_(scenarios))
+    result = await session_pynuts.execute(query)
+    return {row.id: row.obs_year for row in result.fetchall()}
+
+
+async def get_data(session_donuts: AsyncSession, station_data: dict[str, int], scenario_years: dict[int, int], variables: list[str]):
     try:
-        
-        pass
+        measurements = {obj_ord_pk: {} for obj_ord_pk in station_data.keys()}
 
+        for var in variables:
+            if var not in pynuts_to_donuts:
+                continue
+            var_info = pynuts_to_donuts[var]
+            MeasurementModel = Measurement.create(var_info["measurement_table"])
+            co_varfracom_id = var_info["co_varfracom_id"]
+
+            # Construire la requête en filtrant les données et en sélectionnant une seule valeur par scénario et décade
+            query = select(
+                MeasurementModel.station_id,
+                ((func.extract('month', MeasurementModel.update_date) - 1) * 3 + func.floor((func.extract('day', MeasurementModel.update_date) - 1) / 10) + 1).label("decade"),
+                func.extract('year', MeasurementModel.update_date).label("year"),
+                func.avg(MeasurementModel.value).label("value")  # Sélection d'une valeur unique par scénario et décade
+            ).where(
+                MeasurementModel.station_id.in_(station_data.values()),
+                MeasurementModel.co_varfracom_id == co_varfracom_id,
+                func.extract('year', MeasurementModel.update_date).in_(scenario_years.values())
+            ).group_by(
+                MeasurementModel.station_id,
+                "decade",
+                "year"
+            )
+            
+            result = await session_donuts.execute(query)
+            logger.info(f"result : {result.mappings().all()}")
+
+            for row in result.mappings().all():
+                station_id = row["station_id"]
+                decade = int(row["decade"])
+                year = int(row["year"])
+                value = row["value"]
+                scenario = next((sc for sc, yr in scenario_years.items() if yr == year), None)
+                
+                obj_ord_pk = next((key for key, val in station_data.items() if val == station_id), None)
+                if obj_ord_pk:
+                    if var not in measurements[obj_ord_pk]:
+                        measurements[obj_ord_pk][var] = {i: [] for i in range(1, 37)}
+                    
+                    measurements[obj_ord_pk][var][decade] = [{"scenario": scenario, "value": value}]
+        
+        return measurements 
     except Exception as e:
         logger.error("Erreur lors de la récupération des données d'observation : %s", e)
         raise HTTPException(status_code=500, detail=str(e))
+
 
 
 @router.post("")
@@ -110,11 +164,13 @@ async def get_data_donuts(body: dict):
         scenario_list = [int(s) for s in scenarios]
 
         async with async_session_pynuts() as session_pynuts, async_session_donuts() as session_donuts:
+            scenario_years = await get_scenario_year(session_pynuts, scenario_list)
+            logger.info(f"scenario years : {scenario_years}")
             station_data = await get_station_id_by_pk(program, session_pynuts, pk_list)
+            logger.info(f"station data : {station_data}")
+            data = await get_data(session_donuts, station_data, scenario_years, variables)
 
-        logger.info("station_data: %s", station_data)
-        return station_data 
-
+        return data
     except Exception as e:
         logger.error("Error fetching data: %s", e)
         raise HTTPException(status_code=500, detail=str(e))

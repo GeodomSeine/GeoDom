@@ -1,4 +1,4 @@
-from sqlalchemy import Integer, String, Numeric, BigInteger, Boolean, Date, JSON
+from sqlalchemy import Integer, String, Numeric, BigInteger, Boolean, Date, JSON, Time, VARCHAR
 from sqlalchemy.orm import Mapped, mapped_column, declarative_base
 from geoalchemy2 import Geometry
 from geoalchemy2.shape import to_shape
@@ -166,3 +166,43 @@ class PkStation:
 
         PkStation._class_cache[program] = DynamicPkStation
         return DynamicPkStation
+
+
+class Measurement:
+    _class_cache = {}
+
+    @staticmethod
+    def create(measurement_type: str):
+        """
+        Crée une classe Measurement dynamique pour accéder aux tables measurement_chemical, 
+        measurement_biological ou measurement_physical dans le schéma 'data'.
+
+        Args:
+            measurement_type (str): Nom de la table (measurement_chemical, measurement_biological, measurement_physical).
+
+        Returns:
+            type: Classe dynamique.
+        """
+        if measurement_type in Measurement._class_cache:
+            return Measurement._class_cache[measurement_type]
+
+        class DynamicMeasurement(Base):
+            __tablename__ = measurement_type
+            __table_args__ = {"schema": "data"}
+
+            id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+            co_varfracom_id: Mapped[int] = mapped_column(Integer)
+            station_id: Mapped[int] = mapped_column(Integer)
+            distribution_id: Mapped[int] = mapped_column(Integer)
+            value: Mapped[float] = mapped_column(Numeric)
+            timestep: Mapped[str] = mapped_column(String(1))
+            validity: Mapped[str] = mapped_column(VARCHAR)
+            meas_depth: Mapped[float] = mapped_column(Numeric(11, 4))
+            meas_date: Mapped[Date] = mapped_column(Date)
+            meas_time: Mapped[Time] = mapped_column(Time)
+            update_date: Mapped[Date] = mapped_column(Date)
+            update_remark: Mapped[str] = mapped_column(VARCHAR)
+            flag: Mapped[str] = mapped_column(VARCHAR(20))
+
+        Measurement._class_cache[measurement_type] = DynamicMeasurement
+        return DynamicMeasurement
