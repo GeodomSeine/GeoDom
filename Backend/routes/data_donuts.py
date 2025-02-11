@@ -67,32 +67,6 @@ async def get_station_id_by_pk(program: str, session_pynuts: AsyncSession, pk_li
         raise HTTPException(status_code=500, detail=str(e))
 
 
-def date_to_decade(date: str):
-    """
-    Convertit une date en une décade (période de 10 jours) et scénario.
-    (scénario 1 : 2017, 2 : 2018 ... 5: 2021) 
-    Exemple: 2017-01-01 -> decade 1, scenario 1 
-    2017-01-11 -> decade 2, scenario 1
-    2020-03-01 -> decade 6, scenario 4
-    2020-03-11 -> decade 7, scenario 4
-    2020-12-31 -> decade 36, scenario 4
-    """
-
-    year, month, day = date.split("-")
-    year = int(year)
-    month = int(month)
-    day = int(day)
-
-    if month == 1:
-        decade = 1 + (day - 1) // 10
-    else:
-        decade = 1 + (month - 1) * 3 + (day - 1) // 10
-
-    scenario = year - 2016
-
-    return decade, scenario
-
-
 async def get_scenario_year(session_pynuts: AsyncSession, scenarios: list[int]):
     query = select(Scenario.id, Scenario.obs_year).where(Scenario.id.in_(scenarios))
     result = await session_pynuts.execute(query)
@@ -110,12 +84,11 @@ async def get_data(session_donuts: AsyncSession, station_data: dict[str, int], s
             MeasurementModel = Measurement.create(var_info["measurement_table"])
             co_varfracom_id = var_info["co_varfracom_id"]
 
-            # Construire la requête en filtrant les données et en sélectionnant une seule valeur par scénario et décade
             query = select(
                 MeasurementModel.station_id,
                 ((func.extract('month', MeasurementModel.update_date) - 1) * 3 + func.floor((func.extract('day', MeasurementModel.update_date) - 1) / 10) + 1).label("decade"),
                 func.extract('year', MeasurementModel.update_date).label("year"),
-                func.avg(MeasurementModel.value).label("value")  # Sélection d'une valeur unique par scénario et décade
+                func.avg(MeasurementModel.value).label("value") 
             ).where(
                 MeasurementModel.station_id.in_(station_data.values()),
                 MeasurementModel.co_varfracom_id == co_varfracom_id,
@@ -126,10 +99,9 @@ async def get_data(session_donuts: AsyncSession, station_data: dict[str, int], s
                 "year"
             )
             
-            result = await session_donuts.execute(query)
-            logger.info(f"result : {result.mappings().all()}")
-
-            for row in result.mappings().all():
+            result = await session_donuts.execute(query)            
+            mapped_result = result.mappings().all()
+            for row in mapped_result:
                 station_id = row["station_id"]
                 decade = int(row["decade"])
                 year = int(row["year"])
@@ -137,6 +109,7 @@ async def get_data(session_donuts: AsyncSession, station_data: dict[str, int], s
                 scenario = next((sc for sc, yr in scenario_years.items() if yr == year), None)
                 
                 obj_ord_pk = next((key for key, val in station_data.items() if val == station_id), None)
+
                 if obj_ord_pk:
                     if var not in measurements[obj_ord_pk]:
                         measurements[obj_ord_pk][var] = {i: [] for i in range(1, 37)}
@@ -147,7 +120,6 @@ async def get_data(session_donuts: AsyncSession, station_data: dict[str, int], s
     except Exception as e:
         logger.error("Erreur lors de la récupération des données d'observation : %s", e)
         raise HTTPException(status_code=500, detail=str(e))
-
 
 
 @router.post("")
@@ -165,9 +137,7 @@ async def get_data_donuts(body: dict):
 
         async with async_session_pynuts() as session_pynuts, async_session_donuts() as session_donuts:
             scenario_years = await get_scenario_year(session_pynuts, scenario_list)
-            logger.info(f"scenario years : {scenario_years}")
             station_data = await get_station_id_by_pk(program, session_pynuts, pk_list)
-            logger.info(f"station data : {station_data}")
             data = await get_data(session_donuts, station_data, scenario_years, variables)
 
         return data
