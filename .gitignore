@@ -38,3 +38,4 @@ front/*coverage*
 # Static files
 Backend/static/*
 Backend/tests/*
+Backend/static/index.html
