@@ -9,14 +9,7 @@ from models.models import SenequeAesnHydro
 
 router = APIRouter(prefix="/hydro", tags=["Hydrographie"])
 
-try:
-    redis_client = redis.Redis(host="localhost", port=6379, db=0, decode_responses=True)
-    redis_client.ping()
-    redis_enabled = True
-except (redis.ConnectionError, redis.TimeoutError):
-    redis_client = None
-    redis_enabled = False 
-
+redis_client = redis.from_url("redis://localhost:6379")
 
 async def fetch_hydro_from_db(program: str, session: AsyncSession):
     """Récupère les données hydrographiques depuis PostgreSQL en streaming."""
@@ -27,64 +20,52 @@ async def fetch_hydro_from_db(program: str, session: AsyncSession):
         result = await session.stream(query)
 
         first = True
-        async for row in result:
-            if row.geojson_feature:
-                if first:
-                    first = False
-                else:
-                    yield b","
-                yield orjson.dumps(row.geojson_feature)
+        async for batch in result.partitions(7000):
+            for row in batch:
+                if row.geojson_feature:
+                    if first:
+                        first = False
+                    else:
+                        yield b","
+                    yield orjson.dumps(row.geojson_feature)
 
     except Exception:
         raise HTTPException(status_code=500, detail="Erreur interne du serveur")
 
-
 async def geojson_stream(program: str):
-    """Générateur asynchrone pour envoyer un flux GeoJSON avec cache Redis.
-    
-    Args:
-        program (str): Nom du programme (schéma).
-        
-    Yields:
-        bytes: Données hydrographiques au format GeoJSON.
-    """
-    cache_key = f"hydro:{program}"
-
-    if redis_enabled:
-        cached_data = redis_client.get(cache_key)
-        if cached_data:
-            yield cached_data.encode()
-            return
+    """Générateur asynchrone pour envoyer un flux GeoJSON depuis PostgreSQL ou depuis le cache Redis."""
+    if redis_client:
+        try:
+            cached_data = redis_client.get(program)
+            if cached_data:
+                yield cached_data
+                return
+        except redis.exceptions.RedisError as e:
+            pass
 
     async with async_session_pynuts() as session:
         first = True
         yield b'{"type": "FeatureCollection", "features": ['
 
-        all_features = [] 
+        all_features = []
 
         async for feature in fetch_hydro_from_db(program, session):
             if first:
                 first = False
             yield feature
-            all_features.append(feature.decode())
+            all_features.append(feature)
 
         yield b"]}"
 
-    if redis_enabled and all_features:
-        redis_data = '{"type": "FeatureCollection", "features": [' + ",".join(all_features) + "]}"
-        redis_client.setex(cache_key, 24 * 3600, redis_data)
-
+        if redis_client:
+            try:
+                redis_client.setex(program, 3600, b"".join(all_features))
+            except redis.exceptions.RedisError as e:
+                pass
 
 @router.get("/{program}")
 async def get_hydro(program: str):
-    """Retourne les données hydrographiques d'un programme sous forme de GeoJSON en streaming.
-    
-    Args:
-        program (str): Nom du programme (schéma).
-        
-    Returns:
-        StreamingResponse: Données hydrographiques au format GeoJSON.
-    """
+    """Retourne les données hydrographiques d'un programme sous forme de GeoJSON en streaming."""
     return StreamingResponse(
         geojson_stream(program),
         media_type="application/json"
