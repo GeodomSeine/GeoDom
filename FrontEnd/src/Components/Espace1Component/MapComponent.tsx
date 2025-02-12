@@ -14,6 +14,7 @@ import Expand from "../../assets/expand.svg?react";
 import LogoComponent from "../LogoComponent";
 import { createRoot } from 'react-dom/client';
 import PopupContent from './PopupContent';
+import { FitBounds } from './FitBounds';
 
 const { BaseLayer, Overlay } = LayersControl;
 
@@ -211,6 +212,7 @@ return (
       minZoom={6}
       zoomControl={false}
   >
+    <FitBounds bounds={bounds} />
     <CustomControls bounds={bounds} />
     <LayersControl>
       <BaseLayer checked name="BaseLayer">
