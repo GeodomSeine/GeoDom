@@ -83,6 +83,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
   useEffect(() => {
     const fetchData = async () => {
         try {
+
             // Chargement des autres couches (bassin, stations, etc.)
             const [
                 hydroSLDData,
@@ -113,6 +114,8 @@ const MapComponent: React.FC<MapComponentProps> = ({
                 const styles = parseSLDToStyles(bassinSLDText);
                 setBassinStyle({ color: styles[0]?.color || "var(--basic-black)", weight: styles[0]?.weight || 3 });
             }
+            
+            await streamHydroData(program, setHydroData);
 
             if (stationSLDData) {
                 const stationSLDText = await stationSLDData.text();
@@ -124,8 +127,6 @@ const MapComponent: React.FC<MapComponentProps> = ({
                 setStationSnap(stationData);
             }
 
-            // Lancer le streaming des Hydros
-            await streamHydroData(program, setHydroData);
         } catch (error) {
             console.error("Erreur lors du chargement des données :", error);
         }
