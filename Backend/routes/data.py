@@ -9,7 +9,6 @@ from core.logger import logger
 
 router = APIRouter(prefix="/data", tags=["Données"])
 
-
 @router.post("")
 async def get_data(body: dict):
     """
@@ -56,6 +55,7 @@ async def get_data(body: dict):
                 obj_ord_pk = pk_entry.get("obj_ord_pk")
 
                 if not all([id_obj, strahler, pk, obj_ord_pk]):
+                    logger.warning(f"Invalid pk entry: {pk_entry}")
                     continue
 
                 # Construire la requête pour chaque PK
@@ -87,6 +87,13 @@ async def get_data(body: dict):
                 result = await session.execute(query)
                 data = result.fetchall()
 
+                # Si aucune donnée n'est trouvée, lever une exception 404
+                if not data:
+                    raise HTTPException(
+                        status_code=404,
+                        detail=f"No data found for program '{program}', scenarios {scenarios}, variables {variables}, and pk list.",
+                    )
+
                 # Formater les données
                 formatted_data = []
                 for row in data:
@@ -99,14 +106,16 @@ async def get_data(body: dict):
 
                 result_data[obj_ord_pk] = {"data": formatted_data}
 
-            if not result_data:
-                raise HTTPException(
-                    status_code=404,
-                    detail=f"No data found for program '{program}', scenarios {scenarios}, variables {variables}, and pk list.",
-                )
-
             return result_data
 
+    except HTTPException as e:
+        # Si une HTTPException est levée, la propager
+        logger.error(f"HTTPException: {e.detail}")
+        raise e
+    except AttributeError as e:
+        # Si un scenario n'existe pas dans la table, lever une exception 404
+        logger.error(f"AttributeError: {str(e)}")
+        raise HTTPException(status_code=404, detail=f"No data found : Scenarios '{scenarios}' does not exist in the table.")
     except Exception as e:
-        logger.error("Error fetching data: %s", e)
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Unexpected error: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Internal server error")
