@@ -6,7 +6,6 @@ import Espace2Component from "../Espace2Component/Espace2Component";
 import './VisualisationPage.scss';
 import { Scenario, AmontAvalResponse, DataRequest, DataResponse, getData, getFullData, DataRequestFull, GeoJsonResponse, getPkGeom } from "../../services/api";
 import { useNavigate } from "react-router";
-import Espace3Component from "../Espace3Component/Espace3Component";
 
 const VisualisationPage: React.FC = () => {
   const { program } = useProgram();
@@ -181,7 +180,6 @@ const VisualisationPage: React.FC = () => {
             mode={mode}
           />
         )}
-        <Espace3Component program={program.name}/>
       </div>
     </div>
   );
