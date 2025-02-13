@@ -82,10 +82,10 @@ async def get_data_order_by_strahler(body: dict):
     except Exception as e:
         logger.error("Error fetching data: %s", e)
         raise HTTPException(status_code=500, detail=str(e))
-    
+
 
 @router.post("/data")
-async def get_data(body: dict):
+async def get_data_good(body: dict):
     """
     Récupère les percentiles 5, 50 (médiane), et 90 pour une ou plusieurs variables sur toutes les décades,
     en agrégeant toutes les données par décennie pour un ou plusieurs scénarios et plusieurs PKs.
@@ -121,54 +121,68 @@ async def get_data(body: dict):
         # Construire la liste des scénarios
         scenario_list = [int(s) for s in scenarios]
         decade_list = [int(d) for d in decades]
-        obj_ord_pk_list=[pk_entry.get("obj_ord_pk") for pk_entry in pk_list]
 
         async with async_session_pynuts() as session:
-            query = (
-                select(
-                    table.c.obj,
-                    table.c.ord, 
-                    table.c.pk,
-                    *[
-                        func.percentile_cont(0.05).within_group(table.c[variable].asc()).label(f"{variable}_p5")
-                        for variable in variables
-                    ] + [
-                        func.percentile_cont(0.50).within_group(table.c[variable].asc()).label(f"{variable}_p50")
-                        for variable in variables
-                    ] + [
-                        func.percentile_cont(0.90).within_group(table.c[variable].asc()).label(f"{variable}_p90")
-                        for variable in variables
-                    ]
+            result_data = {}
+
+            for pk_entry in pk_list:
+                id_obj = pk_entry.get("id_obj")
+                strahler = pk_entry.get("strahler")
+                pk = pk_entry.get("pk")
+                obj_ord_pk = pk_entry.get("obj_ord_pk")
+
+                if not all([id_obj, strahler, pk, obj_ord_pk]):
+                    continue
+
+                # Construire la requête pour chaque PK
+                query = (
+                    select(
+                        table.c.obj,
+                        table.c.ord, 
+                        table.c.pk,
+                        *[
+                            func.percentile_cont(0.05).within_group(table.c[variable].asc()).label(f"{variable}_p5")
+                            for variable in variables
+                        ] + [
+                            func.percentile_cont(0.50).within_group(table.c[variable].asc()).label(f"{variable}_p50")
+                            for variable in variables
+                        ] + [
+                            func.percentile_cont(0.90).within_group(table.c[variable].asc()).label(f"{variable}_p90")
+                            for variable in variables
+                        ]
+                    )
+                    .where(
+                        table.c.pk == pk,
+                        table.c.obj == id_obj,
+                        table.c.ord == strahler,
+                        table.c.scn.in_(scenario_list),
+                        table.c.dec.in_(decade_list)
+                    )
+                    .group_by(table.c.obj, table.c.ord, table.c.pk)
+                    .order_by(table.c.obj, table.c.ord, table.c.pk)
                 )
-                .where(
-                    table.c.scn.in_(scenario_list),
-                    table.c.dec.in_(decade_list)
-                )
-                .group_by(table.c.obj, table.c.ord, table.c.pk)
-                .order_by(table.c.obj, table.c.ord, table.c.pk)
-            )
 
-            # Exécuter la requête
-            result = await session.execute(query)
-            data = result.fetchall()
+                # Exécuter la requête
+                result = await session.execute(query)
+                data = result.fetchall()
+                logger.info(f"Data for {obj_ord_pk} : {data}")
 
-            # Formater les données
-            formatted_data = {}
-            for row in data:
-                obj_ord_pk = f"{row.obj}_{row.ord}_{row.pk}"
-                formatted_data[obj_ord_pk] = {}
-                for variable in variables:
-                    formatted_data[obj_ord_pk][f"{variable}_p5"] = getattr(row, f"{variable}_p5")
-                    formatted_data[obj_ord_pk][f"{variable}_p50"] = getattr(row, f"{variable}_p50")
-                    formatted_data[obj_ord_pk][f"{variable}_p90"] = getattr(row, f"{variable}_p90")
+                for row in data:
+                    obj_ord_pk = f"{row.obj}_{row.ord}_{row.pk}"
+                    result_data[obj_ord_pk] = {}
+                    for variable in variables:
+                        result_data[obj_ord_pk][f"{variable}_p5"] = getattr(row, f"{variable}_p5")
+                        result_data[obj_ord_pk][f"{variable}_p50"] = getattr(row, f"{variable}_p50")
+                        result_data[obj_ord_pk][f"{variable}_p90"] = getattr(row, f"{variable}_p90")
 
-            if not formatted_data:
+
+            if not result_data:
                 raise HTTPException(
                     status_code=404,
                     detail=f"No data found for program '{program}', scenarios {scenarios}, variables {variables}, and pk list.",
                 )
 
-            return formatted_data
+            return result_data
 
     except Exception as e:
         logger.error("Error fetching data: %s", e)
