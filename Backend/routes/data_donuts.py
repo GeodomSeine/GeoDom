@@ -122,7 +122,7 @@ async def get_data(session_donuts: AsyncSession, station_data: dict[str, int], s
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("")
+@router.post("/data")
 async def get_data_donuts(body: dict):
     try:
         program = body.get("program")
