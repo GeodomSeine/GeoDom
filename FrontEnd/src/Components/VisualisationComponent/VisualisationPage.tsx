@@ -137,15 +137,12 @@ const VisualisationPage: React.FC = () => {
   // not the best code, because it forced the click on the href when updated
   const handleExportJson = (): void => {
     const data = {
-      name : program,
-      complete : selectedKey !== null, 
-      selected_order : selectedKey, 
-      pk_start : idHydStart,
-      pk_end : idHydEnd,
-      selected_pk : selectedPk,
+      name : program?.name,
+      selected : selectedKey, 
+      hydro_id_start : idHydStart,
+      hydro_id_end : idHydEnd,
       variables : selectedVariables,
-      scenarios : selectedScenarios
-      
+      scenarios : selectedScenarios.map((scenario) => scenario.id)
   };
     const jsonString = JSON.stringify(data, null, 2);
     const blob = new Blob([jsonString], { type: "application/json" });
@@ -155,7 +152,7 @@ const VisualisationPage: React.FC = () => {
     const downloadLink = document.querySelector("a.logo_container") as HTMLAnchorElement | null;
     if (downloadLink) {
         downloadLink.href = url;
-        downloadLink.download = data.name?.name + ".json";
+        downloadLink.download = data.name + ".json";
         downloadLink.click(); 
     }
   };
