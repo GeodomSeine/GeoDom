@@ -20,6 +20,7 @@ interface HeaderComponentProps {
         variables: string[];
         scenarios: number[];
     };
+    visualizationData?: { name: string; variables: string[] }[];
 }
 
 const HeaderComponent: React.FC<HeaderComponentProps> = ({
@@ -27,6 +28,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
     showImportButton = false,
     showExportButton = false,
     exportData,
+    visualizationData = [],
 }) => {
     const navigate = useNavigate();
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -63,7 +65,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
                 )}
             </div>
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-                <ImportJsonComponent />
+                <ImportJsonComponent visualizationData={visualizationData} />
             </Modal>
         </div>
     );

@@ -33,9 +33,14 @@ export default function HomeComponent({}: Props) {
         item.title.toLowerCase().includes(searchQuery.toLowerCase())
     ):( [] );
 
+    const visualizationData = Array.isArray(programs) ? programs.map(program => ({
+        name: program.name,
+        variables: program.variables
+    })) : [];
+
     return (
         <div className='home_component'>
-            <HeaderComponent onSearch={setSearchQuery} showImportButton={true} />
+            <HeaderComponent onSearch={setSearchQuery} showImportButton={true} visualizationData={visualizationData} />
             <div className="main_body">
                 <div className='main_scroll_area' >
                     {searchQuery ? (filteredPrograms.length > 0 ? filteredPrograms.map((item: Program) => (
