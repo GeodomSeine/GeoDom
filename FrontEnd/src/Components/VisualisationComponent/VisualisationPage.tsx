@@ -1,12 +1,9 @@
 import React, { useState, useEffect, useMemo } from "react";
-import Espace1Component from "../Espace1Component/Espace1Component";
+import S1 from "../Espace1Component/S1";
 import { useProgram } from "../../contexts/ProgramContext";
-import HeaderComponent from "../HeaderComponent/HeaderComponent";
-import Espace2Component from "../Espace2Component/Espace2Component";
 import './VisualisationPage.scss';
 import { Scenario, AmontAvalResponse, DataRequest, DataResponse, getData, getFullData, DataRequestFull, GeoJsonResponse, getPkGeom } from "../../services/api";
 import { useNavigate } from "react-router";
-import Esapce3Component from "../Espace3Component/Espace3Component";
 
 
 const VisualisationPage: React.FC = () => {
@@ -111,7 +108,7 @@ const VisualisationPage: React.FC = () => {
     };
     if(mode === "amont-aval"){
       fetchPk();
-    }
+    } 
   }, [selectedKey]);
 
   const keyMapping = useMemo(() => {
@@ -135,30 +132,30 @@ const VisualisationPage: React.FC = () => {
 
 
   // not the best code, because it forced the click on the href when updated
-  const handleExportJson = (): void => {
-    const data = {
-      name : program,
-      complete : selectedKey !== null, 
-      selected_order : selectedKey, 
-      pk_start : idHydStart,
-      pk_end : idHydEnd,
-      selected_pk : selectedPk,
-      variables : selectedVariables,
-      scenarios : selectedScenarios
+  // const handleExportJson = (): void => {
+  //   const data = {
+  //     name : program,
+  //     complete : selectedKey !== null, 
+  //     selected_order : selectedKey, 
+  //     pk_start : idHydStart,
+  //     pk_end : idHydEnd,
+  //     selected_pk : selectedPk,
+  //     variables : selectedVariables,
+  //     scenarios : selectedScenarios
       
-  };
-    const jsonString = JSON.stringify(data, null, 2);
-    const blob = new Blob([jsonString], { type: "application/json" });
+  // };
+  //   const jsonString = JSON.stringify(data, null, 2);
+  //   const blob = new Blob([jsonString], { type: "application/json" });
 
-    const url = URL.createObjectURL(blob);
+  //   const url = URL.createObjectURL(blob);
 
-    const downloadLink = document.querySelector("a.logo_container") as HTMLAnchorElement | null;
-    if (downloadLink) {
-        downloadLink.href = url;
-        downloadLink.download = data.name?.name + ".json";
-        downloadLink.click(); 
-    }
-  };
+  //   const downloadLink = document.querySelector("a.logo_container") as HTMLAnchorElement | null;
+  //   if (downloadLink) {
+  //       downloadLink.href = url;
+  //       downloadLink.download = data.name?.name + ".json";
+  //       downloadLink.click(); 
+  //   }
+  // };
 
 
   if (!program) {
@@ -169,10 +166,10 @@ const VisualisationPage: React.FC = () => {
   return (
     <div className='home_component'>
 
-      <HeaderComponent actionButton={handleExportJson}/>
+      {/* <HeaderComponent actionButton={handleExportJson}/> */}
       {/* Section Paramètrage Général */}
         <div className='home_body'>
-        <Espace1Component
+        <S1
           program={program.name}
           exutoire_id={program.exutoire_id}
           variables={program.variables}
@@ -192,17 +189,12 @@ const VisualisationPage: React.FC = () => {
           setScenarios={setScenarios}
           mode={mode}
           setMode={setMode}
+          min={min}
+          max={max}
+          sliderChange={handleSliderChange}
+          data={chartData}
         />
-        {chartData && (
-          <Espace2Component
-            min={min}
-            max={max}
-            sliderChange={handleSliderChange}
-            data={chartData}
-            mode={mode}
-          />
-        )}
-        <Esapce3Component program={program.name}/>
+        {/* <Esapce3Component program={program.name}/> */}
       </div>
     </div>
   );

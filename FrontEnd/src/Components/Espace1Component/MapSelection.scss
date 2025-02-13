@@ -1,5 +1,7 @@
 @use "../../styles/main.scss" as *;
 .map_component {
+    height: calc(100% - 50px);
+    width: 100%;
     .leaflet-container {
         height: 100%;
         width: 100%;

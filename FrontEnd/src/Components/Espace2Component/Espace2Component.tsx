@@ -63,7 +63,6 @@ const Esapce2Component: React.FC<Esapce2ComponentProps> = ({
             />
           ))}
         </div>
-        
       </ToggleComponent>
     </div>
   );

@@ -53,7 +53,7 @@ interface ControlComponentProps {
               onChange={() => setMode("amont-aval")}>
           </InputComponent>
         </div>
-  
+
         {mode === "amont-aval" && (
           <div className='selected_pks'>
             {/* Logique amont-aval ici */}
@@ -64,7 +64,7 @@ interface ControlComponentProps {
             </div>
           </div>
         )}
-  
+
         {/* Sélection des variables */}
         <div className='selected_indicators'>
           <h3>Indicateurs</h3>

@@ -6,7 +6,7 @@ import 'leaflet/dist/leaflet.css';
 import {streamHydroData, getBassin, getStationSnap, getStationSnapSld, getHydroSLD, getBassinSLD, GeoJsonResponse, AmontAvalResponse } from '../../services/api';
 import { parseSLDToStyles } from '../../mapstyles/mapStyles';
 import "leaflet/dist/leaflet.css";
-import "./MapComponent.scss";
+import "./MapSelection.scss";
 import "../../styles/main.scss";
 import Add from "../../assets/add.svg?react";
 import Minus from "../../assets/minus.svg?react";
@@ -14,11 +14,10 @@ import Expand from "../../assets/expand.svg?react";
 import LogoComponent from "../LogoComponent";
 import { createRoot } from 'react-dom/client';
 import PopupContent from './PopupContent';
-import { FitBounds } from './FitBounds';
 
 const { BaseLayer, Overlay } = LayersControl;
 
-interface MapComponentProps {
+interface MapSelectionProps {
   program: string;
   exutoire_id: number;
   idHydStart: number | null;
@@ -35,7 +34,6 @@ const CustomControls: React.FC<{ bounds: LatLngBounds | null }> = ({ bounds }) =
   const zoomToBounds = () => {
     bounds && map.fitBounds(bounds);
   };
-
   return (
     <div className="custom_buttons">
       {bounds && (
@@ -53,7 +51,7 @@ const CustomControls: React.FC<{ bounds: LatLngBounds | null }> = ({ bounds }) =
   );
 };
 
-const MapComponent: React.FC<MapComponentProps> = ({
+const MapSelection: React.FC<MapSelectionProps> = ({
   program,
   exutoire_id,
   idHydStart,
@@ -173,6 +171,7 @@ for (const rule of hydroStyles) {
 return { color: "var(--basic-black)", weight: 1 };
 };
 
+// handle click on a pk, to create a selection pop-up
 const handleFeatureClick = (feature: { properties: { [key: string]: any } }, layer: any) => {
 const properties = feature.properties;
 
@@ -191,6 +190,8 @@ const onSelectAval = () => {
 };
 
 const root = createRoot(popupContent);
+// here unfotunatly for the moment, leaflet only accept pre-render html element, 
+// so we need to prerender element in order for them to appear in the pop-up, removing the advantages of React
 root.render(
   <PopupContent
     properties={properties}
@@ -209,10 +210,9 @@ return (
       attributionControl={false}
       bounds={bounds || [[50.9, -1.5], [46.5, 8.5]]}
       zoom={6} 
-      minZoom={6}
+      minZoom={6} 
       zoomControl={false}
   >
-    <FitBounds bounds={bounds} />
     <CustomControls bounds={bounds} />
     <LayersControl>
       <BaseLayer checked name="BaseLayer">
@@ -280,4 +280,4 @@ return (
 );
 };
 
-export default MapComponent;
+export default MapSelection;

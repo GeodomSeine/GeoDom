@@ -6,16 +6,18 @@ import LogoComponent from "../LogoComponent";
 interface ToggleContainerProps {
   title: string;
   children: ReactNode;
+  className?: string;
 }
 
 const ToggleContainer: React.FC<ToggleContainerProps> = ({
   title,
   children,
+  className = "space_container",
 }) => {
   const [isVisible, setIsVisible] = useState(true);
 
   return (
-    <div className="space_container">
+    <div className={className}>
       <div className="space_header">
         <h2>{title}</h2>
         <LogoComponent
@@ -24,7 +26,7 @@ const ToggleContainer: React.FC<ToggleContainerProps> = ({
           Icon={Arrow}
           onClick={() => setIsVisible((prev) => !prev)}/>
       </div>
-      <div className="space_body" style={{ display: isVisible ? "flex" : "none" }}>
+      <div className={`space_body ${isVisible ? "" : "hidden"}`}>
         {children}
       </div>
     </div>

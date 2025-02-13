@@ -62,6 +62,7 @@ const VariableChart: React.FC<VariableChartProps> = ({ variable, decades, data, 
   };
 
   const options : ChartOptions<"line"> = {
+    responsive: true,
     plugins: {
       zoom: {
         zoom: {
@@ -86,13 +87,20 @@ const VariableChart: React.FC<VariableChartProps> = ({ variable, decades, data, 
     }
   };
 
+  const style: React.CSSProperties = {
+      display: "flex",
+      alignItems: "center",
+      flexDirection: "row",
+      justifyContent: "space-between",
+      fontSize: "0.6rem"
+  };
+
   return (
     <div className={`${className}`}>
-      <div>
-        <h3>{`Graph for ${variable}`}</h3>
+      <div style={style}>
         <ButtonComponent txt={"Reset Zoom"} onClick={resetZoom}></ButtonComponent>
       </div>
-      <Line ref={chartRef} data={chartData} options={options} />
+      <Line ref={chartRef} data={chartData} options={options}/>
     </div>
   );
 };
