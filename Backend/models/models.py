@@ -109,7 +109,8 @@ class Pk:
             obj_ord_pk: Mapped[str] = mapped_column(String, nullable=True)
             catchment_id: Mapped[int] = mapped_column(Integer, primary_key=True)
             the_geom: Mapped[Geometry] = mapped_column(Geometry("LINESTRING", srid=3035), nullable=True)
-
+            geojson_feature: Mapped[dict] = mapped_column(JSONB)
+            
         Pk._class_cache[program] = DynamicPk
         return DynamicPk
 
