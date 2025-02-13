@@ -5,8 +5,8 @@ from core.config import settings
 
 # moteurs BDD
 sync_engine_pynuts = create_engine(settings.DATABASE_PYNUTS_URL.replace("postgresql+asyncpg", "postgresql"))
-async_engine_pynuts = create_async_engine(settings.DATABASE_PYNUTS_URL, echo=True)
-async_engine_donuts = create_async_engine(settings.DATABASE_DONUTS_URL, echo=True)
+async_engine_pynuts = create_async_engine(settings.DATABASE_PYNUTS_URL, echo=settings.DB_ENGINE_LOG)
+async_engine_donuts = create_async_engine(settings.DATABASE_DONUTS_URL, echo=settings.DB_ENGINE_LOG)
 
 # sessions BDD
 async_session_pynuts = sessionmaker(async_engine_pynuts, expire_on_commit=False, class_=AsyncSession)
