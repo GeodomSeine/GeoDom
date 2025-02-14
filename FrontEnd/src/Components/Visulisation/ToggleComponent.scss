@@ -39,6 +39,7 @@
             min-width: auto;
             gap: 10px;
             justify-content: center;
+            height: calc(100% - 55px);
             // need to handle this better with typescript
             .variable-chart{
                 width: 100%;
