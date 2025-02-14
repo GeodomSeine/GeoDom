@@ -1,7 +1,7 @@
-import LogoComponent from '../LogoComponent'
+import LogoComponent from '../SimpleComponents/LogoComponent'
 import Import from "../../assets/import.svg?react"
 import "./HeaderComponent.scss";
-import SearchComponent from '../SearchComponent/SearchComponent'
+import SearchComponent from '../SimpleComponents/SearchComponent'
 import { useNavigate } from 'react-router';
 
 interface HeaderComponentProps {

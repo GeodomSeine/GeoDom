@@ -1,6 +1,6 @@
 import React, { FC } from "react";
-import HomeLogo from "../assets/logo.svg?react";
-import "../styles/main.scss";
+import HomeLogo from "../../assets/logo.svg?react";
+import "../../styles/main.scss";
 
 interface LogoComponentProps {
     containerSize?: string | number;

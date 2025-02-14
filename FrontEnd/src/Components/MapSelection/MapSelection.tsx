@@ -1,19 +1,19 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { MapContainer, TileLayer, GeoJSON, LayersControl, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, GeoJSON, LayersControl } from 'react-leaflet';
 import { CircleMarker, LatLngBounds, PathOptions } from 'leaflet';
 import { GeoJsonObject } from 'geojson';
 import 'leaflet/dist/leaflet.css';
-import {streamHydroData, getBassin, getStationSnap, getStationSnapSld, getHydroSLD, getBassinSLD, GeoJsonResponse, AmontAvalResponse } from '../../services/api';
+import {streamHydroData, getBassin, getStationSnap, getStationSnapSld, getHydroSLD, getBassinSLD, GeoJsonResponse, AmontAvalResponse, Scenario } from '../../services/api';
 import { parseSLDToStyles } from '../../mapstyles/mapStyles';
 import "leaflet/dist/leaflet.css";
 import "./MapSelection.scss";
 import "../../styles/main.scss";
-import Add from "../../assets/add.svg?react";
-import Minus from "../../assets/minus.svg?react";
-import Expand from "../../assets/expand.svg?react";
-import LogoComponent from "../LogoComponent";
 import { createRoot } from 'react-dom/client';
 import PopupContent from './PopupContent';
+import SliderComponent from '../SimpleComponents/SliderComponent';
+import MapButtons from '../SimpleComponents/MapButtons';
+import ControlComponent from './ControlComponent';
+import { calculateBounds } from '../../utils/mapUtils';
 
 const { BaseLayer, Overlay } = LayersControl;
 
@@ -26,30 +26,19 @@ interface MapSelectionProps {
   setIdHydStart: (id: number | null) => void;
   setIdHydEnd: (id: number | null) => void;
   selectedPk?: GeoJsonResponse;
+  resetSelection: () => void;
+  variables: string[];
+  scenarios: Scenario[];
+  selectedVariables: string[];
+  setSelectedVariables: (variables: string[]) => void;
+  selectedScenarios: Scenario[];
+  setSelectedScenarios: (scenarios: Scenario[]) => void;
   mode: "complet" | "amont-aval";
+  setMode: (mode: "complet" | "amont-aval") => void;
+  handleSliderChange: (value: number) => void; 
+  min: number; 
+  max: number; 
 }
-
-const CustomControls: React.FC<{ bounds: LatLngBounds | null }> = ({ bounds }) => {
-  const map = useMap();
-  const zoomToBounds = () => {
-    bounds && map.fitBounds(bounds);
-  };
-  return (
-    <div className="custom_buttons">
-      {bounds && (
-        <LogoComponent Icon={Expand} size={"35px"} onClick={zoomToBounds} />
-      )}
-      <LogoComponent
-        Icon={Add}
-        size={"35px"}
-        onClick={() => map.setZoom(map.getZoom() + 1)} />
-      <LogoComponent
-        Icon={Minus}
-        size={"35px"}
-        onClick={() => map.setZoom(map.getZoom() - 1)} />
-    </div>
-  );
-};
 
 const MapSelection: React.FC<MapSelectionProps> = ({
   program,
@@ -59,8 +48,19 @@ const MapSelection: React.FC<MapSelectionProps> = ({
   amontAvalResponse,
   setIdHydStart,
   setIdHydEnd,
+  scenarios,
   selectedPk,
-  mode
+  resetSelection,
+  variables,
+  selectedVariables,
+  setSelectedVariables,
+  selectedScenarios,
+  setSelectedScenarios,
+  mode,
+  setMode,
+  handleSliderChange,
+  min, 
+  max, 
 }) => {
   const [hydroData, setHydroData] = useState<GeoJsonResponse | null>(null);
   const [bassinData, setBassinData] = useState<GeoJsonResponse | null>(null);
@@ -134,26 +134,6 @@ const MapSelection: React.FC<MapSelectionProps> = ({
     fetchData();
   }, [program]);
 
-
-  const calculateBounds = (bassin: GeoJsonResponse): LatLngBounds => {
-    const coordinates = bassin.features[0]?.geometry?.coordinates[0];
-    if (!coordinates) return new LatLngBounds([0, 0], [0, 0]);
-
-    let minLat = 90,
-      maxLat = -90,
-      minLng = 180,
-      maxLng = -180;
-
-    coordinates.forEach(([lng, lat]: number[]) => {
-      if (lat < minLat) minLat = lat;
-      if (lat > maxLat) maxLat = lat;
-      if (lng < minLng) minLng = lng;
-      if (lng > maxLng) maxLng = lng;
-});
-
-return new LatLngBounds([minLat, minLng], [maxLat, maxLng]);
-};
-
 const getHydroStyle = (feature: any): PathOptions => {
 const strahler = feature.properties?.strahler;
 const id = feature.properties?.id_hyd;
@@ -213,7 +193,21 @@ return (
       minZoom={6} 
       zoomControl={false}
   >
-    <CustomControls bounds={bounds} />
+    <MapButtons bounds={bounds}>
+        <ControlComponent
+          idHydStart={idHydStart}
+          idHydEnd={idHydEnd}
+          resetSelection={resetSelection}
+          variables={variables}
+          selectedVariables={selectedVariables}
+          setSelectedVariables={setSelectedVariables}
+          selectedScenarios={selectedScenarios}
+          setSelectedScenarios={setSelectedScenarios}
+          scenarios={scenarios}
+          mode={mode}
+          setMode={setMode}
+        />
+    </MapButtons>
     <LayersControl>
       <BaseLayer checked name="BaseLayer">
         <TileLayer
@@ -276,6 +270,15 @@ return (
       )}
     </LayersControl>
   </MapContainer>
+
+  <SliderComponent 
+    min={min} 
+    max={max} 
+    step={1} 
+    onChange={handleSliderChange} 
+    leftLabel={mode == "amont-aval" ? "Pk min" : "Strahler min"} 
+    rightLabel={mode == "amont-aval" ? "Pk max" : "Strahler max"}
+  />
 </div>
 );
 };

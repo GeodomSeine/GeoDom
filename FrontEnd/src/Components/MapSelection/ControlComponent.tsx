@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { Scenario } from '../../services/api';
 import './ControlComponent.scss';
-import ButtonComponent from '../ButtonComponent/ButtonComponent';
-import InputComponent from '../InputComponent/InputComponent';
+import ButtonComponent from '../SimpleComponents/ButtonComponent';
+import InputComponent from '../SimpleComponents/InputComponent';
 
 interface ControlComponentProps {
     idHydStart: number | null;

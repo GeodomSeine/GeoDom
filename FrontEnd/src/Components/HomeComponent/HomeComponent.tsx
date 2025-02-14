@@ -2,7 +2,7 @@
     import { getPrograms, ProgramResponse } from '../../services/api'; 
     import CardComponent from './CardComponent'; 
     import "./HomeComponent.scss";
-    import HeaderComponent from '../HeaderComponent/HeaderComponent';
+    import HeaderComponent from './HeaderComponent';
     import { useProgram } from '../../contexts/ProgramContext';
     import { Program } from '../../services/api';
     import { useNavigate } from 'react-router-dom';

@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import LogoComponent from '../LogoComponent'
+import LogoComponent from './LogoComponent'
 import Research from "../../assets/research.svg?react";
 import './SearchComponent.scss';
 import { useState } from 'react';

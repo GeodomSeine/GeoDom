@@ -13,7 +13,7 @@ import {
   ChartOptions,
 } from "chart.js";
 import zoomPlugin from "chartjs-plugin-zoom";
-import ButtonComponent from "./ButtonComponent/ButtonComponent";
+import ButtonComponent from "./ButtonComponent";
 
 ChartJS.register(
   CategoryScale,
@@ -63,29 +63,29 @@ const VariableChart: React.FC<VariableChartProps> = ({ variable, decades, data, 
 
   const options : ChartOptions<"line"> = {
     responsive: true,
-    plugins: {
-      zoom: {
-        zoom: {
-          wheel: {
-            enabled: true,
-          },
-          pinch: {
-            enabled: true,
-          },
-          //mode: 'xy',
-        },
-        limits: {
-          x: { min: 0, max: decades.length - 1 }, // Limite pour les labels
-          y: { min: Math.min(...data.p5), max: Math.max(...data.p90) }, // Limites dynamiques selon les données
-        },
-      },
-    },
+    // plugins: {
+    //   zoom: {
+    //     zoom: {
+    //       wheel: {
+    //         enabled: true,
+    //       },
+    //       pinch: {
+    //         enabled: true,
+    //       },
+    //       //mode: 'xy',
+    //     },
+    //     limits: {
+    //       x: { min: 0, max: decades.length - 1 }, // Limite pour les labels
+    //       y: { min: Math.min(...data.p5), max: Math.max(...data.p90) }, // Limites dynamiques selon les données
+    //     },
+    //   },
+    // },
   };
-  const resetZoom = () => {
-    if (chartRef.current) {
-      chartRef.current.resetZoom();
-    }
-  };
+  // const resetZoom = () => {
+  //   if (chartRef.current) {
+  //     chartRef.current.resetZoom();
+  //   }
+  // };
 
   const style: React.CSSProperties = {
       display: "flex",
@@ -98,7 +98,7 @@ const VariableChart: React.FC<VariableChartProps> = ({ variable, decades, data, 
   return (
     <div className={`${className}`}>
       <div style={style}>
-        <ButtonComponent txt={"Reset Zoom"} onClick={resetZoom}></ButtonComponent>
+        <ButtonComponent txt={"Reset Zoom"}></ButtonComponent>
       </div>
       <Line ref={chartRef} data={chartData} options={options}/>
     </div>

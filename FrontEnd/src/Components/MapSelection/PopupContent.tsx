@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import ButtonComponent from "../ButtonComponent/ButtonComponent";
+import ButtonComponent from "../SimpleComponents/ButtonComponent";
 import "./PopupContent.scss";
 
 interface PopupContentProps {

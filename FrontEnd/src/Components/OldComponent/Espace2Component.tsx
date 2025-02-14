@@ -1,7 +1,7 @@
 import React from "react";
-import VariableChart from "../VariableChart";
-import ToggleComponent from "../ToggleComponent/ToggleComponent";
-import SliderComponent from "../SliderComponent/SliderComponent";
+import VariableChart from "../SimpleComponents/VariableChart";
+import ToggleComponent from "../Visulisation/ToggleComponent";
+import SliderComponent from "../SimpleComponents/SliderComponent";
 import "./Espace2Component.scss";
 
 interface Esapce2ComponentProps {

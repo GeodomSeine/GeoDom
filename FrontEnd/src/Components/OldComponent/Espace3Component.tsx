@@ -1,6 +1,6 @@
 import React, {useMemo, useEffect, useState} from "react";
 import "./Espace3Component.scss";
-import ToggleComponent from "../ToggleComponent/ToggleComponent";
+import ToggleComponent from "../Visulisation/ToggleComponent";
 import { Space3DataRequest, getSpace3Data, GeoJsonResponse } from "../../services/api";
 import MapComponent from "./MapComponent";
 

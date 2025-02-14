@@ -3,7 +3,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ProgramProvider } from './contexts/ProgramContext';
 import HomeComponent from './Components/HomeComponent/HomeComponent';
-import VisualisationPage from './Components/VisualisationComponent/VisualisationPage';
+import VisualisationPage from './Components/Visulisation/VisualisationPage';
 
 
 const App: React.FC = () => {
