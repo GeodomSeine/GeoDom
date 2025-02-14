@@ -1,24 +1,23 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { MapContainer, TileLayer, GeoJSON, LayersControl, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, GeoJSON, LayersControl } from 'react-leaflet';
 import { CircleMarker, LatLngBounds, PathOptions } from 'leaflet';
 import { GeoJsonObject } from 'geojson';
 import 'leaflet/dist/leaflet.css';
-import {streamHydroData, getBassin, getStationSnap, getStationSnapSld, getHydroSLD, getBassinSLD, GeoJsonResponse, AmontAvalResponse } from '../../services/api';
+import {streamHydroData, getBassin, getStationSnap, getStationSnapSld, getHydroSLD, getBassinSLD, GeoJsonResponse, AmontAvalResponse, Scenario } from '../../services/api';
 import { parseSLDToStyles } from '../../mapstyles/mapStyles';
 import "leaflet/dist/leaflet.css";
-import "./MapComponent.scss";
+import "./MapSelection.scss";
 import "../../styles/main.scss";
-import Add from "../../assets/add.svg?react";
-import Minus from "../../assets/minus.svg?react";
-import Expand from "../../assets/expand.svg?react";
-import LogoComponent from "../LogoComponent";
 import { createRoot } from 'react-dom/client';
 import PopupContent from './PopupContent';
-import { FitBounds } from './FitBounds';
+import SliderComponent from '../SimpleComponents/SliderComponent';
+import MapButtons from '../SimpleComponents/MapButtons';
+import ControlComponent from './ControlComponent';
+import { calculateBounds } from '../../utils/mapUtils';
 
 const { BaseLayer, Overlay } = LayersControl;
 
-interface MapComponentProps {
+interface MapSelectionProps {
   program: string;
   exutoire_id: number;
   idHydStart: number | null;
@@ -27,33 +26,21 @@ interface MapComponentProps {
   setIdHydStart: (id: number | null) => void;
   setIdHydEnd: (id: number | null) => void;
   selectedPk?: GeoJsonResponse;
+  resetSelection: () => void;
+  variables: string[];
+  scenarios: Scenario[];
+  selectedVariables: string[];
+  setSelectedVariables: (variables: string[]) => void;
+  selectedScenarios: Scenario[];
+  setSelectedScenarios: (scenarios: Scenario[]) => void;
   mode: "complet" | "amont-aval";
+  setMode: (mode: "complet" | "amont-aval") => void;
+  handleSliderChange: (value: number) => void; 
+  min: number; 
+  max: number; 
 }
 
-const CustomControls: React.FC<{ bounds: LatLngBounds | null }> = ({ bounds }) => {
-  const map = useMap();
-  const zoomToBounds = () => {
-    bounds && map.fitBounds(bounds);
-  };
-
-  return (
-    <div className="custom_buttons">
-      {bounds && (
-        <LogoComponent Icon={Expand} size={"35px"} onClick={zoomToBounds} />
-      )}
-      <LogoComponent
-        Icon={Add}
-        size={"35px"}
-        onClick={() => map.setZoom(map.getZoom() + 1)} />
-      <LogoComponent
-        Icon={Minus}
-        size={"35px"}
-        onClick={() => map.setZoom(map.getZoom() - 1)} />
-    </div>
-  );
-};
-
-const MapComponent: React.FC<MapComponentProps> = ({
+const MapSelection: React.FC<MapSelectionProps> = ({
   program,
   exutoire_id,
   idHydStart,
@@ -61,8 +48,19 @@ const MapComponent: React.FC<MapComponentProps> = ({
   amontAvalResponse,
   setIdHydStart,
   setIdHydEnd,
+  scenarios,
   selectedPk,
-  mode
+  resetSelection,
+  variables,
+  selectedVariables,
+  setSelectedVariables,
+  selectedScenarios,
+  setSelectedScenarios,
+  mode,
+  setMode,
+  handleSliderChange,
+  min, 
+  max, 
 }) => {
   const [hydroData, setHydroData] = useState<GeoJsonResponse | null>(null);
   const [bassinData, setBassinData] = useState<GeoJsonResponse | null>(null);
@@ -136,26 +134,6 @@ const MapComponent: React.FC<MapComponentProps> = ({
     fetchData();
   }, [program]);
 
-
-  const calculateBounds = (bassin: GeoJsonResponse): LatLngBounds => {
-    const coordinates = bassin.features[0]?.geometry?.coordinates[0];
-    if (!coordinates) return new LatLngBounds([0, 0], [0, 0]);
-
-    let minLat = 90,
-      maxLat = -90,
-      minLng = 180,
-      maxLng = -180;
-
-    coordinates.forEach(([lng, lat]: number[]) => {
-      if (lat < minLat) minLat = lat;
-      if (lat > maxLat) maxLat = lat;
-      if (lng < minLng) minLng = lng;
-      if (lng > maxLng) maxLng = lng;
-});
-
-return new LatLngBounds([minLat, minLng], [maxLat, maxLng]);
-};
-
 const getHydroStyle = (feature: any): PathOptions => {
 const strahler = feature.properties?.strahler;
 const id = feature.properties?.id_hyd;
@@ -173,6 +151,7 @@ for (const rule of hydroStyles) {
 return { color: "var(--basic-black)", weight: 1 };
 };
 
+// handle click on a pk, to create a selection pop-up
 const handleFeatureClick = (feature: { properties: { [key: string]: any } }, layer: any) => {
 const properties = feature.properties;
 
@@ -191,6 +170,8 @@ const onSelectAval = () => {
 };
 
 const root = createRoot(popupContent);
+// here unfotunatly for the moment, leaflet only accept pre-render html element, 
+// so we need to prerender element in order for them to appear in the pop-up, removing the advantages of React
 root.render(
   <PopupContent
     properties={properties}
@@ -209,11 +190,24 @@ return (
       attributionControl={false}
       bounds={bounds || [[50.9, -1.5], [46.5, 8.5]]}
       zoom={6} 
-      minZoom={6}
+      minZoom={6} 
       zoomControl={false}
   >
-    <FitBounds bounds={bounds} />
-    <CustomControls bounds={bounds} />
+    <MapButtons bounds={bounds}>
+        <ControlComponent
+          idHydStart={idHydStart}
+          idHydEnd={idHydEnd}
+          resetSelection={resetSelection}
+          variables={variables}
+          selectedVariables={selectedVariables}
+          setSelectedVariables={setSelectedVariables}
+          selectedScenarios={selectedScenarios}
+          setSelectedScenarios={setSelectedScenarios}
+          scenarios={scenarios}
+          mode={mode}
+          setMode={setMode}
+        />
+    </MapButtons>
     <LayersControl>
       <BaseLayer checked name="BaseLayer">
         <TileLayer
@@ -276,8 +270,17 @@ return (
       )}
     </LayersControl>
   </MapContainer>
+
+  <SliderComponent 
+    min={min} 
+    max={max} 
+    step={1} 
+    onChange={handleSliderChange} 
+    leftLabel={mode == "amont-aval" ? "Pk min" : "Strahler min"} 
+    rightLabel={mode == "amont-aval" ? "Pk max" : "Strahler max"}
+  />
 </div>
 );
 };
 
-export default MapComponent;
+export default MapSelection;

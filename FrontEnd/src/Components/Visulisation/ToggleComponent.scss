@@ -1,0 +1,74 @@
+@use "../../styles/main.scss" as *;
+
+.space_container {
+    @include card;
+    display: flex;
+    flex-direction: row;
+    padding: 8px;
+    gap: 8px;
+    flex: 1 1 calc(50% - 24px);
+    height: calc(100vh - 20px);
+    .space_header {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        writing-mode: vertical-rl;
+        transform: rotate(180deg);
+        cursor: pointer;
+        .set_is_visible, .is_visible {
+            transition: transform 0.3s ease;
+            transform: rotate(-90deg);
+            
+        }
+        .set_is_visible {
+            transform: rotate(90deg);
+        }
+    }
+    .space_body {
+        width: calc(100% - 45px);
+        display: flex;
+        gap: 8px;
+        flex-direction: column;
+        .space_body_tile{
+            @include reverseCard;
+            padding: 8px;
+            display: flex;
+            overflow-y: scroll;
+            flex-wrap: wrap;
+            width: 100%;
+            min-width: auto;
+            gap: 10px;
+            justify-content: center;
+            height: calc(100% - 55px);
+            // need to handle this better with typescript
+            .variable-chart{
+                width: 100%;
+                max-width: 43vw;
+            }
+        }
+        .space_body_footer{
+            padding: 8px;
+        }
+    }
+    .space_body.hidden {
+        display: none;  
+    }   
+    
+}
+.space_container:has(.space_body.hidden){
+    flex: 0 0 50px;
+    overflow: hidden;
+}
+
+@media (max-width: 1160px) {
+    .space_container{
+        .space_body{
+            .space_body_tile{
+                .variable-chart{
+                    min-width: 87vw;
+                }
+            }
+        }
+    }
+}
+

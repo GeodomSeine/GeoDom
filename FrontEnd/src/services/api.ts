@@ -7,6 +7,7 @@ const api = axios.create({
   },
 });
 
+/* SelectionMap types */
 export interface GeoJsonFeature {
   type: string;
   properties: any;
@@ -47,6 +48,7 @@ export interface DataRequest {
   pk: Pk[];
 }
 
+/*Program (home) types and interfaces */
 export interface Program {
   name: string;
   title: string;
@@ -60,29 +62,12 @@ export interface ProgramResponse {
   programs?: Program[];
 }
 
-export interface AmontAvalResponse {
-  id_hyd: number[];
-  pk: Pk[];
-}
-
+/* Data by pk (Time graphs) types and interfaces */
 export interface DataRequest {
   program: string;
   scenarios: number[];
   variables: string[];
   pk: Pk[];
-}
-
-export interface DataRequestFull {
-  program: string;
-  scenarios: number[];
-  variables: string[];
-}
-
-export interface Space3DataRequest{
-  program: string;
-  scenarios: number[];
-  variables: string[];
-  decades: number[];
 }
 
 export interface DataPoint {
@@ -92,6 +77,62 @@ export interface DataPoint {
 
 export interface DataResponse {
   [key: string]: { data: DataPoint[] };
+}
+
+/* Data by strahler (Time graphs) types and interfaces */
+export interface DataRequestFull {
+  program: string;
+  scenarios: number[];
+  variables: string[];
+}
+
+/*Scenario types and interfaces */
+export interface Scenario {
+  id: number;
+  code: string;
+  description: string;
+  year: number;
+}
+
+export interface ScenarioResponse {
+  scenarios: Scenario[];
+}
+
+/* Colored map types and interfaces */
+interface ColorData {
+  range : [number, number];
+  color: string;
+}
+
+export interface LegendData{
+  sld: boolean;
+  classification?: string;
+  nb_classes?: number;
+  colors?: ColorData[];
+}
+
+interface VariableData {
+  [key: string]: number;
+}
+
+interface Data {
+  [objOrdPk: string]: VariableData;
+}
+
+interface Legend {
+  [variable: string]: LegendData;
+}
+
+export interface ColoredMapResponseData{
+  data: Data;
+  legend: Legend;
+}
+
+export interface ColorMapRequest{
+  program : string, 
+  scenarios : number[], 
+  decades: number[], 
+  variables: string[]
 }
 
 export const getAval = async (
@@ -124,17 +165,6 @@ export const getAmontAval = async (
     return null;
   }
 };
-
-export interface Scenario {
-  id: number;
-  code: string;
-  description: string;
-  year: number;
-}
-
-export interface ScenarioResponse {
-  scenarios: Scenario[];
-}
 
 export const getScenarios = async (): Promise<ScenarioResponse | null> => {
   try {
@@ -306,19 +336,6 @@ export const getFullData = async (
   }
 };
 
-export const getSpace3Data = async (
-  request: Space3DataRequest | null
-): Promise<GeoJsonResponse | null> => {
-  try{
-    const response = await api.post<GeoJsonResponse>("/dataspace3", request);
-    return response.data;
-  }catch (error) {
-    console.error("Error fetching data:", error);
-    return null;
-  }
-}
-
-
 export const streamHydroData = async (program: string, setHydroData: React.Dispatch<React.SetStateAction<GeoJsonResponse | null>>) => {
   try {
       const response = await fetch(`/api/hydro/${program}`);
@@ -353,5 +370,27 @@ export const streamHydroData = async (program: string, setHydroData: React.Dispa
       }
   } catch (error) {
       console.error("Erreur lors du streaming des données Hydro :", error);
+  }
+};
+
+export const getColoredMapData = async (request: ColorMapRequest): Promise<ColoredMapResponseData | null> => {
+  try {
+    const response = await api.post<ColoredMapResponseData>("/dataprofil/formap", request);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    return null;
+  }
+};
+
+export const getVariableSld = async (variable: string): Promise<Blob | null> => {
+  try {
+    const response = await api.get<Blob>(`/sld/variable/${variable}`, {
+      responseType: "blob",
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching Bassin SLD:", error);
+    return null;
   }
 };

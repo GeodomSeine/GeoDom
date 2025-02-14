@@ -13,7 +13,7 @@ import {
   ChartOptions,
 } from "chart.js";
 import zoomPlugin from "chartjs-plugin-zoom";
-import ButtonComponent from "./ButtonComponent/ButtonComponent";
+// import ButtonComponent from "./ButtonComponent";
 
 ChartJS.register(
   CategoryScale,
@@ -62,37 +62,45 @@ const VariableChart: React.FC<VariableChartProps> = ({ variable, decades, data, 
   };
 
   const options : ChartOptions<"line"> = {
-    plugins: {
-      zoom: {
-        zoom: {
-          wheel: {
-            enabled: true,
-          },
-          pinch: {
-            enabled: true,
-          },
-          //mode: 'xy',
-        },
-        limits: {
-          x: { min: 0, max: decades.length - 1 }, // Limite pour les labels
-          y: { min: Math.min(...data.p5), max: Math.max(...data.p90) }, // Limites dynamiques selon les données
-        },
-      },
-    },
+    responsive: true,
+    // plugins: {
+    //   zoom: {
+    //     zoom: {
+    //       wheel: {
+    //         enabled: true,
+    //       },
+    //       pinch: {
+    //         enabled: true,
+    //       },
+    //       //mode: 'xy',
+    //     },
+    //     limits: {
+    //       x: { min: 0, max: decades.length - 1 }, // Limite pour les labels
+    //       y: { min: Math.min(...data.p5), max: Math.max(...data.p90) }, // Limites dynamiques selon les données
+    //     },
+    //   },
+    // },
   };
-  const resetZoom = () => {
-    if (chartRef.current) {
-      chartRef.current.resetZoom();
-    }
-  };
+  // const resetZoom = () => {
+  //   if (chartRef.current) {
+  //     chartRef.current.resetZoom();
+  //   }
+  // };
+
+  // const style: React.CSSProperties = {
+  //     display: "flex",
+  //     alignItems: "center",
+  //     flexDirection: "row",
+  //     justifyContent: "space-between",
+  //     fontSize: "0.6rem"
+  // };
 
   return (
     <div className={`${className}`}>
-      <div>
-        <h3>{`Graph for ${variable}`}</h3>
-        <ButtonComponent txt={"Reset Zoom"} onClick={resetZoom}></ButtonComponent>
-      </div>
-      <Line ref={chartRef} data={chartData} options={options} />
+      {/* <div style={style}>
+        <ButtonComponent txt={"Reset Zoom"}></ButtonComponent>
+      </div> */}
+      <Line ref={chartRef} data={chartData} options={options}/>
     </div>
   );
 };
