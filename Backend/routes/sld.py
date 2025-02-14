@@ -7,7 +7,7 @@ router = APIRouter(prefix="/sld", tags=["Styles SLD"])
 
 RESOURCES_PATH = "./resources"
 DATAVIZ_FOLDER = "dataviz"
-
+VARIABLE_FOLDER = "variables"
 
 def get_sld_file_path(program: str, filename: str):
     """
@@ -21,6 +21,21 @@ def get_sld_file_path(program: str, filename: str):
         str: Chemin du fichier SLD.
     """
     return os.path.join(RESOURCES_PATH, DATAVIZ_FOLDER, program, filename)
+
+
+def get_variable_sld_file_path(variable: str):
+    """
+    Construit le chemin absolu du fichier SLD.
+
+    Args:
+        variable (str): Nom de la variable.
+
+    Returns:
+        str: Chemin du fichier SLD.
+    """
+    filename = f"{variable}.sld"
+
+    return os.path.join(RESOURCES_PATH, VARIABLE_FOLDER, filename)
 
 
 @router.get("/bassin/{program}")
@@ -79,3 +94,40 @@ async def get_stationsnap_sld(program: str):
 
     return FileResponse(file_path, headers={"Content-Type": "application/xml; charset=utf-8"})
 
+
+@router.get("/pk/{program}")
+async def get_pk_sld(program: str):
+    """
+    Récupère le fichier SLD de PK pour un programme donné.
+
+    Args:
+        program (str): Nom du programme.
+
+    Returns:
+        FileResponse: Le fichier SLD de PK.
+    """
+    file_path = get_sld_file_path(program, "pk_map.sld")
+
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail=f"SLD introuvable : {file_path}")
+
+    return FileResponse(file_path, headers={"Content-Type": "application/xml; charset=utf-8"})
+
+
+@router.get("/variable/{variable}")
+async def get_pk_sld(variable: str):
+    """
+    Récupère le fichier SLD de la variable donnée.
+
+    Args:
+        variable (str): Nom de la variable.
+
+    Returns:
+        FileResponse: Le fichier SLD de la variable.
+    """
+    file_path = get_variable_sld_file_path(variable)
+
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail=f"SLD introuvable : {file_path}")
+
+    return FileResponse(file_path, headers={"Content-Type": "application/xml; charset=utf-8"})

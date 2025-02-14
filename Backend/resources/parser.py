@@ -23,7 +23,8 @@ EXPECTED_FILES = {
     "seneque_aesn_hydro.sld",
     "seneque_aesn_hydro_basin.sld",
     "stations_donuts.sld",
-    "background.png"
+    "background.png", 
+    "pk_map.sld"
 }
 
 REQUIRED_KEYS = {
