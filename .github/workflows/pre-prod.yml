@@ -137,8 +137,8 @@ jobs:
       - name: Package back-end
         run: |
           cd Backend
-          tar -czf back-end.tar.gz *
-          mv back-end.tar.gz ../  # Déplace l'artefact à la racine
+          tar -czf geodom.tar.gz *
+          mv geodom.tar.gz ../  # Déplace l'artefact à la racine
       - name: Debug SSH Key
         run: |
           echo "${{ secrets.VPS_KEY }}" > debug_key
