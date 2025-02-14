@@ -161,4 +161,9 @@ jobs:
           key: ${{ secrets.VPS_KEY }}
           port: 22
           debug: true
-          script: bash deploy.sh pre-production
+          script: |
+            export DATABASE_PYNUTS_URL="${{ secrets.DATABASE_PYNUTS_URL }}"
+            export DATABASE_DONUTS_URL="${{ secrets.DATABASE_DONUTS_URL }}"
+            export TESTING="${{ secrets.TESTING }}"
+            export LOG_LEVEL="${{ secrets.LOG_LEVEL }}"
+            bash deploy.sh pre-production
