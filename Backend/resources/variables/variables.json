@@ -1,0 +1,31 @@
+{
+    "flow" : {
+        "classification" : "quantile", 
+        "nb_classes" : 5, 
+        "colors" : ["#c6dbef", "#4292c6", "#2171b5", "#08519c", "#08306b"]
+    }, 
+    "dic" : {
+        "classification" : "quantile", 
+        "nb_classes" : 5, 
+        "colors" : ["#ffd6aa", "#cca381", "#956d56", "#956d56", "#280000"]
+    },
+    "ta" : {
+        "classification" : "quantile",
+        "nb_classes" : 2,
+        "colors" : ["#bfbdbd", "#797979"]
+    }, 
+    "doc":{
+        "classification" : "quantile",
+        "nb_classes" : 5, 
+        "colors": ["#ffd6aa", "#cca381", "#956d56", "#956d56", "#280000"]
+    },
+    "no3":{
+        "classification" : "sld"
+    }, 
+    "ph":{
+        "classification" : "sld"
+    }, 
+    "nh4" : {
+        "classification" : "sld"
+    }
+}
