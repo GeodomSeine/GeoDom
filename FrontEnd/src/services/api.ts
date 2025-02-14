@@ -176,6 +176,19 @@ export const getScenarios = async (): Promise<ScenarioResponse | null> => {
   }
 };
 
+// Récupérer le fichier SLD pour Bassin
+export const getSld = async (uri: string): Promise<Blob | null> => {
+  try {
+    const response = await api.get<Blob>(uri, {
+      responseType: "blob",
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching SLD:", error);
+    return null;
+  }
+};
+
 // Récupérer les données Hydro
 export const getHydro = async (
   program: string
@@ -206,28 +219,17 @@ export const getBassin = async (
 
 // Récupérer le fichier SLD pour Hydro
 export const getHydroSLD = async (program: string): Promise<Blob | null> => {
-  try {
-    const response = await api.get<Blob>(`/sld/hydro/${program}`, {
-      responseType: "blob",
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching Hydro SLD:", error);
-    return null;
-  }
+  return getSld(`/sld/hydro/${program}`);
 };
 
 // Récupérer le fichier SLD pour Bassin
 export const getBassinSLD = async (program: string): Promise<Blob | null> => {
-  try {
-    const response = await api.get<Blob>(`/sld/bassin/${program}`, {
-      responseType: "blob",
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching Bassin SLD:", error);
-    return null;
-  }
+  return getSld(`/sld/bassin/${program}`);
+};
+
+// Récupérer le fichier SLD pour PK
+export const getPkSld = async (program: string): Promise<Blob | null> => {
+  return getSld(`/sld/pk/${program}`);
 };
 
 export const getData = async (
@@ -310,18 +312,8 @@ export const getStationSnap = async (
   }
 };
 
-export const getStationSnapSld = async (
-  program: string
-): Promise<Blob | null> => {
-  try {
-    const response = await api.get<Blob>(`/sld/stationsnap/${program}`, {
-      responseType: "blob",
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching station snap SLD:", error);
-    return null;
-  }
+export const getStationSnapSld = async (program: string): Promise<Blob | null> => {
+  return getSld(`/sld/stationsnap/${program}`);
 };
 
 export const getFullData = async (
@@ -335,6 +327,7 @@ export const getFullData = async (
     return null;
   }
 };
+
 
 export const streamHydroData = async (program: string, setHydroData: React.Dispatch<React.SetStateAction<GeoJsonResponse | null>>) => {
   try {
@@ -373,6 +366,45 @@ export const streamHydroData = async (program: string, setHydroData: React.Dispa
   }
 };
 
+
+export const streamPkData = async (program: string, setPkData: React.Dispatch<React.SetStateAction<GeoJsonResponse | null>>) => {
+  try {
+      const response = await fetch(`/api/pk/${program}`);
+      if (!response.body) {
+          console.error("Pas de corps de réponse.");
+          return;
+      }
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let accumulatedText = "";
+      let features: GeoJsonFeature[] = [];
+      setPkData({ type: "FeatureCollection", name: "Hydrographie", crs: { type: "name", properties: { name: "urn:ogc:def:crs:EPSG::4326" } }, features: [] });
+      while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          accumulatedText += decoder.decode(value, { stream: true });
+          const jsonParts = accumulatedText.split("},{").map((s, i, arr) => {
+              if (i === 0) return s + "}";
+              if (i === arr.length - 1) return "{" + s;
+              return "{" + s + "}";
+          });
+          jsonParts.forEach((part) => {
+              try {
+                  const parsedFeature = JSON.parse(part);
+                  features.push(parsedFeature);
+                  setPkData(prevData => prevData ? { ...prevData, features: [...prevData.features, parsedFeature] } : null);
+              } catch (e) {
+                  // JSON partiel, on attend plus de données
+              }
+          });
+          accumulatedText = jsonParts[jsonParts.length - 1]; // Garde la dernière partie pour le prochain batch
+      }
+  } catch (error) {
+      console.error("Erreur lors du streaming des données Hydro :", error);
+  }
+};
+
+
 export const getColoredMapData = async (request: ColorMapRequest): Promise<ColoredMapResponseData | null> => {
   try {
     const response = await api.post<ColoredMapResponseData>("/dataprofil/formap", request);
@@ -384,13 +416,5 @@ export const getColoredMapData = async (request: ColorMapRequest): Promise<Color
 };
 
 export const getVariableSld = async (variable: string): Promise<Blob | null> => {
-  try {
-    const response = await api.get<Blob>(`/sld/variable/${variable}`, {
-      responseType: "blob",
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching Bassin SLD:", error);
-    return null;
-  }
+  return getSld(`/sld/variable/${variable}`);
 };

@@ -1,14 +1,17 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useProgram } from "../../contexts/ProgramContext";
 import './VisualisationPage.scss';
-import { getScenarios, getAmontAval, Scenario, AmontAvalResponse, DataRequest, DataResponse, getData, getFullData, DataRequestFull, GeoJsonResponse, getPkGeom, ColoredMapResponseData, ColorMapRequest, getColoredMapData } from "../../services/api";
+import { getScenarios, getAmontAval, Scenario, AmontAvalResponse, DataRequest, DataResponse, getData, getFullData, DataRequestFull, GeoJsonResponse, getPkGeom, ColoredMapResponseData, ColorMapRequest, getColoredMapData, getBassin, getBassinSLD, getPkSld, streamPkData } from "../../services/api";
 import { useNavigate } from "react-router";
 import ToggleContainer from "./ToggleComponent";
 import VariableChart from "../SimpleComponents/VariableChart";
 import MapSelection from "../MapSelection/MapSelection";
 import ColoredMapComponent from "../ColoredMapComponent/ColoredMapComponent";
 import DecadeRangeComponent from "../SimpleComponents/DecadeRangeComponent";
-  
+import { LatLngBounds, PathOptions } from "leaflet";
+import { calculateBounds } from "../../utils/mapUtils";
+import { parseSLDToStyles } from "../../mapstyles/mapStyles";
+
 type ChartData = Array<{
   decade: number;
   [variable: string]: number;
@@ -23,9 +26,9 @@ const VisualisationPage: React.FC = () => {
   const [selectedDecades, setSelectedDecades] = useState<number[]>([1, 2, 3]);
   const [data, setData] = useState<DataResponse | null>(null);
   const [coloredMapData, setColoredMapData] = useState<ColoredMapResponseData | null>(null);
-
+  
   const [selectedKey, setSelectedKey] = useState<string | null>(null); 
-
+  
   const [chartData, setChartData] = useState<ChartData | null>(null);
   const [selectedPk, setSelectedPk] = useState<GeoJsonResponse | undefined>(undefined);
   const [idHydStart, setIdHydStart] = useState<number | null>(null);
@@ -34,6 +37,71 @@ const VisualisationPage: React.FC = () => {
   
   // Génération dynamique de la requête `request`
   const [mode, setMode] = useState<"complet" | "amont-aval">("complet");
+  
+  
+  const [pkData, setPkData] = useState<GeoJsonResponse | null>(null);
+  const [pkStyles, setPkStyles] = useState<any[]>([]);
+  const [bassinData, setBassinData] = useState<GeoJsonResponse | null>(null);
+  const [bassinStyle, setBassinStyle] = useState<PathOptions | null>(null);
+  const [bounds, setBounds] = useState<LatLngBounds | null>(null);
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      if(!program){
+        return;
+      }
+
+      try {
+        const [
+          bassinData,
+          bassinSLDData,
+          pkSLDData,
+        ] = await Promise.all([
+          getBassin(program.name),
+          getBassinSLD(program.name),
+          getPkSld(program.name),
+        ]);
+        
+        if (bassinData) {
+          setBassinData(bassinData);
+          setBounds(calculateBounds(bassinData));
+        }
+        
+        if (pkSLDData) {
+          const pkSLDText = await pkSLDData.text();
+          setPkStyles(parseSLDToStyles(pkSLDText));
+        }
+        
+        if (bassinSLDData) {
+          const bassinSLDText = await bassinSLDData.text();
+          const styles = parseSLDToStyles(bassinSLDText);
+          setBassinStyle({ color: styles[0]?.color || "var(--basic-black)", weight: styles[0]?.weight || 3 });
+        }
+        
+        await streamPkData(program.name, setPkData);
+      } catch (error) {
+        console.error("Erreur lors du chargement des données :", error);
+      }
+    };
+    
+    fetchData();
+  }, [program]);
+  
+  /*
+  "properties": {"pk": 3, "id_obj": 197, "code_bas": "1", "strahler": 1, "obj_ord_pk": "197_1_3", "catchment_id": 7075}
+  */ 
+  const getPkStyles = (feature: any): PathOptions => {
+    const strahler = feature.properties?.strahler;
+    
+    for (const rule of pkStyles) {
+      if (strahler >= rule.min && strahler <= rule.max){
+        return { color: rule.color, weight: rule.weight };
+      }
+    }
+    
+    return { color: "var(--basic-black)", weight: 1 };
+  };
+  
   
   // Sélectionner la première variable par défaut
   useEffect(() => {
@@ -72,7 +140,7 @@ const VisualisationPage: React.FC = () => {
       decades: selectedDecades
     }
   }, [program, selectedScenarios, selectedVariables, selectedDecades]);
-
+  
   
   useEffect(() => {
     if (!selectedVariables.length || !selectedScenarios.length) {
@@ -167,7 +235,7 @@ const VisualisationPage: React.FC = () => {
       setSelectedKey(newKey);
     }
   };
-
+  
   const handleDecadeChange = (value : number[]) => {
     setSelectedDecades(value);
   }
@@ -249,57 +317,68 @@ const VisualisationPage: React.FC = () => {
     <div className='home_component_visualisation'>
     
     {/* Section Paramètrage Général */}
-      <div className='home_body'>
-        <ToggleContainer title="Carte de sélection">
-          <MapSelection
-            program={program.name}
-            exutoire_id={program.exutoire_id}
-            idHydStart={idHydStart}
-            idHydEnd={idHydEnd}
-            setIdHydStart={setIdHydStart}
-            setIdHydEnd={setIdHydEnd}
-            amontAvalResponse={amontAvalResponse}
-            selectedPk={selectedPk}
-            mode={mode}
-            handleSliderChange={handleSliderChange}
-            min={min}
-            max={max}
-            resetSelection={resetSelection}
-            variables={program.variables}
-            selectedVariables={selectedVariables}
-            setSelectedVariables={setSelectedVariables}
-            selectedScenarios={selectedScenarios}
-            setSelectedScenarios={setSelectedScenarios}
-            scenarios={scenarios}
-            setMode={setMode}
-          />
+    <div className='home_body'>
+    <ToggleContainer title="Carte de sélection">
+    <MapSelection
+    program={program.name}
+    exutoire_id={program.exutoire_id}
+    idHydStart={idHydStart}
+    idHydEnd={idHydEnd}
+    setIdHydStart={setIdHydStart}
+    setIdHydEnd={setIdHydEnd}
+    amontAvalResponse={amontAvalResponse}
+    selectedPk={selectedPk}
+    mode={mode}
+    handleSliderChange={handleSliderChange}
+    min={min}
+    max={max}
+    resetSelection={resetSelection}
+    variables={program.variables}
+    selectedVariables={selectedVariables}
+    setSelectedVariables={setSelectedVariables}
+    selectedScenarios={selectedScenarios}
+    setSelectedScenarios={setSelectedScenarios}
+    scenarios={scenarios}
+    setMode={setMode}
+    />
+    </ToggleContainer>
+    {chartData?.length &&
+      <ToggleContainer title="Graph" containsTile={true}>
+      {Object.entries(groupedData).map(([variable, chartData], index) => (
+        <VariableChart
+        key={variable}
+        className={`variable-chart chart-${index}`} 
+        variable={variable}
+        decades={decades}
+        data={chartData}
+        />
+      ))}
       </ToggleContainer>
-      {chartData?.length &&
-        <ToggleContainer title="Graph" containsTile={true}>
-              {Object.entries(groupedData).map(([variable, chartData], index) => (
-                <VariableChart
-                    key={variable}
-                    className={`variable-chart chart-${index}`} 
-                    variable={variable}
-                    decades={decades}
-                    data={chartData}
-                />
-              ))}
-        </ToggleContainer>
+    }
+    {coloredMapData &&
+      <ToggleContainer title="Profil en long" containsTile={true} secondChild={
+        <DecadeRangeComponent onChange={handleDecadeChange} min={1} max={36} leftLabel={'Première décade'} rightLabel={'dernière décade'} />
       }
-      {coloredMapData &&
-        <ToggleContainer title="Profil en long" containsTile={true} secondChild={
-            <DecadeRangeComponent onChange={handleDecadeChange} min={1} max={36} leftLabel={'Première décade'} rightLabel={'dernière décade'} />
-          }
-          children = {
-            Object.entries(coloredMapData.legend).map(([variable, __], index) => (
-              <ColoredMapComponent data={coloredMapData} variable={variable} className={`variable-chart chart-${index}`}/>
-            ))
-          }
-        >
-        </ToggleContainer>
-      }
-      </div>
+        children = {
+          Object.entries(coloredMapData.legend).map(([variable, __], index) => (
+            <ColoredMapComponent 
+              key={variable}
+              data={coloredMapData}
+              variable={variable}
+              className={`variable-chart chart-${index}`} 
+              pkData={pkData} 
+              pkStyles={[]} 
+              bassinData={bassinData} 
+              bassinStyle={bassinStyle} 
+              bounds={bounds} 
+              getPkStyles={getPkStyles}          
+            />
+          ))
+        }
+      >
+      </ToggleContainer>
+    }
+    </div>
     </div>
   );
 };
