@@ -11,7 +11,7 @@ jobs:
     permissions:
       contents: write
     outputs:
-      new_tag: ${{ steps.set_tag.outputs.new_tag }}  # Passez NEW_TAG comme output du job
+      new_tag: ${{ steps.bump_version.outputs.new_tag }}  # Passez NEW_TAG comme output du job
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -21,7 +21,6 @@ jobs:
         run: |
           LATEST_TAG=$(git describe --tags --abbrev=0 || echo "v0.0.0")
           echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
-
       - name: Bump version
         id: bump_version
         run: |
@@ -31,17 +30,13 @@ jobs:
           MINOR=${VERSION_PARTS[1]}
           PATCH=${VERSION_PARTS[2]}
           NEW_TAG="v$MAJOR.$MINOR.$((PATCH + 1))"
-          echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
-
-      - name: Set output tag
-        id: set_tag
-        run: echo "new_tag=${{ env.NEW_TAG }}" >> $GITHUB_ENV
-
+          echo "NEW_TAG=$NEW_TAG"
+          echo "::set-output name=new_tag::$NEW_TAG"  # Définir NEW_TAG comme output
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ env.NEW_TAG }}
-          name: Release ${{ env.NEW_TAG }}
+          tag_name: ${{ steps.bump_version.outputs.new_tag }}
+          name: Release ${{ steps.bump_version.outputs.new_tag }}
           draft: false
           prerelease: false
         env:
@@ -70,10 +65,10 @@ jobs:
             echo "🚀 Téléchargement de la release ${NEW_TAG} sur le VPS..."
             
             # Téléchargement de l'archive tar.gz directement sur le VPS
-            wget -O ~/production/geodom.tar.gz $DOWNLOAD_URL
+            wget --header="Authorization: token ${{ secrets.GITHUB_TOKEN }}" -O ~/production/geodom.tar.gz $DOWNLOAD_URL
             
             echo "📦 Archive téléchargée, décompression..."
             # Extraction de l'archive tar.gz
             tar -xzf ~/production/geodom.tar.gz -C ~/production
             echo "🔧 Déploiement de la release sur le VPS..."
-            bash ~/production/deploy.sh production
+            bash deploy.sh production
