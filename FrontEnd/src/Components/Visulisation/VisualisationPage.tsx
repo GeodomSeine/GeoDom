@@ -1,12 +1,17 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useProgram } from "../../contexts/ProgramContext";
 import './VisualisationPage.scss';
-import { getScenarios, getAmontAval, Scenario, AmontAvalResponse, DataRequest, DataResponse, getData, getFullData, DataRequestFull, GeoJsonResponse, getPkGeom } from "../../services/api";
+import { getScenarios, getAmontAval, Scenario, AmontAvalResponse, DataRequest, DataResponse, getData, getFullData, DataRequestFull, GeoJsonResponse, getPkGeom, ColoredMapResponseData, ColorMapRequest, getColoredMapData } from "../../services/api";
 import { useNavigate } from "react-router";
 import ToggleContainer from "./ToggleComponent";
 import VariableChart from "../SimpleComponents/VariableChart";
 import MapSelection from "../MapSelection/MapSelection";
-
+import ColoredMapComponent from "../ColoredMapComponent/ColoredMapComponent";
+  
+type ChartData = Array<{
+  decade: number;
+  [variable: string]: number;
+}>;
 
 const VisualisationPage: React.FC = () => {
   const { program } = useProgram();
@@ -14,13 +19,12 @@ const VisualisationPage: React.FC = () => {
   const [selectedVariables, setSelectedVariables] = useState<string[]>([]);
   const [selectedScenarios, setSelectedScenarios] = useState<Scenario[]>([]);
   const [amontAvalResponse, setAmontAvalResponse] = useState<AmontAvalResponse | null>(null);
-  
+  const [selectedDecades, setSelectedDecades] = useState<number[]>([1, 2, 3]);
   const [data, setData] = useState<DataResponse | null>(null);
+  const [coloredMapData, setColoredMapData] = useState<ColoredMapResponseData | null>(null);
+
   const [selectedKey, setSelectedKey] = useState<string | null>(null); 
-  type ChartData = Array<{
-    decade: number;
-    [variable: string]: number;
-  }>;
+
   const [chartData, setChartData] = useState<ChartData | null>(null);
   const [selectedPk, setSelectedPk] = useState<GeoJsonResponse | undefined>(undefined);
   const [idHydStart, setIdHydStart] = useState<number | null>(null);
@@ -58,6 +62,17 @@ const VisualisationPage: React.FC = () => {
     };
   }, [program, selectedScenarios, selectedVariables, mode]);
   
+  const requestColoredMap: ColorMapRequest | null = useMemo(() => {
+    if (!program) return null;
+    return {
+      program : program.name,
+      scenarios: selectedScenarios.map((scenario) => scenario.id),
+      variables: selectedVariables.map((variable) => variable.toLowerCase()),
+      decades: selectedDecades
+    }
+  }, [program, selectedScenarios, selectedVariables, selectedDecades]);
+
+  
   useEffect(() => {
     if (!selectedVariables.length || !selectedScenarios.length) {
       setData(null);
@@ -92,10 +107,19 @@ const VisualisationPage: React.FC = () => {
           setData(null);
           setChartData(null);
         }
+        if(!requestColoredMap){
+          return;
+        }
+        
+        let coloredResponse = await getColoredMapData(requestColoredMap);
+        if(coloredResponse){
+          setColoredMapData(coloredResponse);
+        }
       } catch (err) {
         console.error("Erreur lors de la récupération des données :", err);
         setData(null);
         setChartData(null);
+        setColoredMapData(null);
       }
     };
     
@@ -142,6 +166,10 @@ const VisualisationPage: React.FC = () => {
       setSelectedKey(newKey);
     }
   };
+
+  const handleDecadeChange = (value : number[]) => {
+    setSelectedDecades(value);
+  }
   
   // old S1 code
   useEffect(() => {
@@ -221,7 +249,7 @@ const VisualisationPage: React.FC = () => {
     
     {/* Section Paramètrage Général */}
       <div className='home_body'>
-        <ToggleContainer title="Map">
+        <ToggleContainer title="Carte de sélection">
           <MapSelection
             program={program.name}
             exutoire_id={program.exutoire_id}
@@ -259,16 +287,8 @@ const VisualisationPage: React.FC = () => {
         </ToggleContainer>
       }
       {chartData?.length &&
-        <ToggleContainer title="Graph">
-          {Object.entries(groupedData).map(([variable, chartData], index) => (
-            <VariableChart
-              key={variable}
-              className={`variable-chart chart-${index}`} 
-              variable={variable}
-              decades={decades}
-              data={chartData}
-            />
-          ))}
+        <ToggleContainer title="Profil en long">
+          <ColoredMapComponent handleDecadeChange={handleDecadeChange} data={coloredMapData}/>
         </ToggleContainer>
       }
       </div>
