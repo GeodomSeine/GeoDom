@@ -21,6 +21,7 @@ jobs:
         run: |
           LATEST_TAG=$(git describe --tags --abbrev=0 || echo "v0.0.0")
           echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
+
       - name: Bump version
         id: bump_version
         run: |
@@ -32,6 +33,7 @@ jobs:
           NEW_TAG="v$MAJOR.$MINOR.$((PATCH + 1))"
           echo "NEW_TAG=$NEW_TAG"
           echo "::set-output name=new_tag::$NEW_TAG"  # Définir NEW_TAG comme output
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
@@ -71,4 +73,9 @@ jobs:
             # Extraction de l'archive tar.gz
             tar -xzf ~/production/geodom.tar.gz -C ~/production
             echo "🔧 Déploiement de la release sur le VPS..."
+            script: |
+            export DATABASE_PYNUTS_URL="${{ secrets.DATABASE_PYNUTS_URL }}"
+            export DATABASE_DONUTS_URL="${{ secrets.DATABASE_DONUTS_URL }}"
+            export TESTING="${{ secrets.TESTING }}"
+            export LOG_LEVEL="${{ secrets.LOG_LEVEL }}"
             bash deploy.sh production
