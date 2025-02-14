@@ -6,10 +6,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from core.database import async_session_pynuts
 from models.models import SenequeAesnHydro
+import os
 
 router = APIRouter(prefix="/hydro", tags=["Hydrographie"])
-
-redis_client = redis.from_url("redis://localhost:6379")
+redis_url = os.getenv("REDIS_URL", "redis://redis:6379")
+redis_client = redis.from_url(redis_url)
 
 async def fetch_hydro_from_db(program: str, session: AsyncSession):
     """Récupère les données hydrographiques depuis PostgreSQL en streaming."""
