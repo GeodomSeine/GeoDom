@@ -7,6 +7,7 @@ import ToggleContainer from "./ToggleComponent";
 import VariableChart from "../SimpleComponents/VariableChart";
 import MapSelection from "../MapSelection/MapSelection";
 import ColoredMapComponent from "../ColoredMapComponent/ColoredMapComponent";
+import DecadeRangeComponent from "../SimpleComponents/DecadeRangeComponent";
   
 type ChartData = Array<{
   decade: number;
@@ -124,7 +125,7 @@ const VisualisationPage: React.FC = () => {
     };
     
     fetchData();
-  }, [request, requestFull, mode]);
+  }, [requestColoredMap, request, requestFull, mode]);
   
   useEffect(() => {
     if (!data || !selectedKey || program == undefined) return;
@@ -286,9 +287,16 @@ const VisualisationPage: React.FC = () => {
               ))}
         </ToggleContainer>
       }
-      {chartData?.length &&
-        <ToggleContainer title="Profil en long">
-          <ColoredMapComponent handleDecadeChange={handleDecadeChange} data={coloredMapData}/>
+      {coloredMapData &&
+        <ToggleContainer title="Profil en long" containsTile={true} secondChild={
+            <DecadeRangeComponent onChange={handleDecadeChange} min={1} max={36} leftLabel={'Première décade'} rightLabel={'dernière décade'} />
+          }
+          children = {
+            Object.entries(coloredMapData.legend).map(([variable, __], index) => (
+              <ColoredMapComponent data={coloredMapData} variable={variable} className={`variable-chart chart-${index}`}/>
+            ))
+          }
+        >
         </ToggleContainer>
       }
       </div>

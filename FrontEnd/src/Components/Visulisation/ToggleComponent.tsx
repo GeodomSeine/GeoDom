@@ -6,6 +6,7 @@ import LogoComponent from "../SimpleComponents/LogoComponent";
 interface ToggleContainerProps {
   title: string;
   children: ReactNode;
+  secondChild?:ReactNode;
   className?: string;
   containsTile?: boolean;
 }
@@ -13,6 +14,7 @@ interface ToggleContainerProps {
 const ToggleContainer: React.FC<ToggleContainerProps> = ({
   title,
   children,
+  secondChild,
   className = "space_container",
   containsTile,
 }) => {
@@ -29,13 +31,30 @@ const ToggleContainer: React.FC<ToggleContainerProps> = ({
         />
       </div>
       <div className={`space_body ${isVisible ? "" : "hidden"}`}>
-      {containsTile ? (
-        <div className="space_body_tile">
-          {children}
-        </div>
-      ) : (
-        children
-      )}
+        {containsTile && secondChild && (
+          <>
+            <div className="space_body_tile">
+              {children}
+            </div>
+            <div className="space_body_footer">
+              {secondChild}
+            </div>
+          </>
+        )}
+        {containsTile && !secondChild && (
+          <div className="space_body_tile">
+            {children}
+          </div>
+        )}
+        {!containsTile && !secondChild && (
+          children
+        )}
+        {!containsTile && secondChild &&(
+          <>
+            {children}
+            {secondChild}
+          </>
+        )}
       </div>
     </div>
   );

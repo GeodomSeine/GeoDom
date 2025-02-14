@@ -1,25 +1,20 @@
 import React from 'react';
-import DecadeRangeComponent from '../SimpleComponents/DecadeRangeComponent';
 import { ColoredMapResponseData } from '../../services/api';
 import LegendSld from '../LegendComponent/LegendSld';
 import LegendQuantile from '../LegendComponent/LegendQuantile';
 
 type Props = {
-    handleDecadeChange: (value: number[]) => void;
     data: ColoredMapResponseData | null;
+    variable: string;
+    className: string;
 };
 
-const ColoredMapComponent: React.FC<Props> = ({ handleDecadeChange, data }) => {
+const ColoredMapComponent: React.FC<Props> = ({ data, variable, className }) => {
   return (
-    <div>
-      <DecadeRangeComponent onChange={handleDecadeChange} min={1} max={36} step={1} leftLabel={'1'} rightLabel={'36'} />
-      {data && (
-        <div>
-          {Object.entries(data.legend).map(([variable, legendData]) => (
-            legendData.sld ? <LegendSld variable={variable}/> : <LegendQuantile variable={variable} legendData={legendData}/>
-          ))}
-        </div>
-      )}
+    <div className={className}>
+      {data && 
+        (data.legend[variable].sld ? <LegendSld variable={variable}/> : <LegendQuantile variable={variable} legendData={data.legend[variable]}/>)
+      }
     </div>
   );
 };

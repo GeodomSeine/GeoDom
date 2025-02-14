@@ -28,6 +28,7 @@
         width: calc(100% - 45px);
         display: flex;
         gap: 8px;
+        flex-direction: column;
         .space_body_tile{
             @include reverseCard;
             padding: 8px;
@@ -43,6 +44,9 @@
                 width: 100%;
                 max-width: 43vw;
             }
+        }
+        .space_body_footer{
+            padding: 8px;
         }
     }
     .space_body.hidden {
