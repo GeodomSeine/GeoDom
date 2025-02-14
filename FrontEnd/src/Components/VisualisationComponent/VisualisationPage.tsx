@@ -7,7 +7,6 @@ import './VisualisationPage.scss';
 import { Scenario, AmontAvalResponse, DataRequest, DataResponse, getData, getFullData, DataRequestFull, GeoJsonResponse, getPkGeom } from "../../services/api";
 import { useNavigate } from "react-router";
 
-
 const VisualisationPage: React.FC = () => {
   const { program } = useProgram();
   const navigate = useNavigate();
@@ -26,12 +25,12 @@ const VisualisationPage: React.FC = () => {
   // Génération dynamique de la requête `request`
   const [mode, setMode] = useState<"complet" | "amont-aval">("complet");
 
-    // Sélectionner la première variable par défaut
-    useEffect(() => {
-      if (program && program.variables && program.variables.length > 0) {
-        setSelectedVariables([program.variables[0]]);
-      }
-    }, [program]);
+  // Sélectionner la première variable par défaut
+  useEffect(() => {
+    if (program && program.variables && program.variables.length > 0) {
+      setSelectedVariables([program.variables[0]]);
+    }
+  }, [program]);
 
   const request: DataRequest | null = useMemo(() => {
     if (!program || !amontAvalResponse || mode !== "amont-aval") return null;
@@ -132,42 +131,25 @@ const VisualisationPage: React.FC = () => {
     }
   };
 
-
-  // not the best code, because it forced the click on the href when updated
-  const handleExportJson = (): void => {
-    const data = {
-      name : program?.name,
-      selected : selectedKey, 
-      hydro_id_start : idHydStart,
-      hydro_id_end : idHydEnd,
-      variables : selectedVariables,
-      scenarios : selectedScenarios.map((scenario) => scenario.id)
-  };
-    const jsonString = JSON.stringify(data, null, 2);
-    const blob = new Blob([jsonString], { type: "application/json" });
-
-    const url = URL.createObjectURL(blob);
-
-    const downloadLink = document.querySelector("a.logo_container") as HTMLAnchorElement | null;
-    if (downloadLink) {
-        downloadLink.href = url;
-        downloadLink.download = data.name + ".json";
-        downloadLink.click(); 
-    }
-  };
-
-
   if (!program) {
     navigate("/");
     return null;
   }
 
+  const exportData = {
+    name: program?.name,
+    selected: selectedKey,
+    hydro_id_start: idHydStart,
+    hydro_id_end: idHydEnd,
+    variables: selectedVariables,
+    scenarios: selectedScenarios.map((scenario) => scenario.id)
+  };
+
   return (
     <div className='home_component'>
-
-      <HeaderComponent actionButton={handleExportJson}/>
+      <HeaderComponent showExportButton={true} exportData={exportData} />
       {/* Section Paramètrage Général */}
-        <div className='home_body'>
+      <div className='home_body'>
         <Espace1Component
           program={program.name}
           exutoire_id={program.exutoire_id}
