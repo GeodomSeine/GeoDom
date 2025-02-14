@@ -1,6 +1,7 @@
 import pytest
+import pytest_asyncio
 from fastapi.testclient import TestClient
-from main import app  # Assurez-vous que votre application FastAPI est importée correctement
+from main import app 
 
 client = TestClient(app)
 
@@ -66,7 +67,7 @@ invalid_body_invalid_variable = {
 # Corps de requête avec des scénarios qui ne retournent aucune donnée
 no_data_body = {
     "program": "dataviz_orgeval_carbone",
-    "scenarios": [2],  # Scénario inexistant
+    "scenarios": [999],  # Scénario inexistant
     "variables": ["flow"],
     "pk": [
         {
@@ -80,7 +81,8 @@ no_data_body = {
     ]
 }
 
-def test_get_data_valid():
+@pytest.mark.asyncio
+async def test_get_data_valid():
     response = client.post("/data", json=valid_body)
     assert response.status_code == 200
     data = response.json()
@@ -94,17 +96,20 @@ def test_get_data_valid():
             assert "flow_p50" in entry
             assert "flow_p90" in entry
 
-def test_get_data_missing_fields():
+@pytest.mark.asyncio
+async def test_get_data_missing_fields():
     response = client.post("/data", json=invalid_body_missing_fields)
     assert response.status_code == 400
     assert response.json()["detail"] == "Missing required fields: program, scenarios, variables, pk."
 
-def test_get_data_invalid_variable():
+@pytest.mark.asyncio
+async def test_get_data_invalid_variable():
     response = client.post("/data", json=invalid_body_invalid_variable)
     assert response.status_code == 400
     assert response.json()["detail"] == "Variable 'invalid_variable' does not exist in the table."
 
-def test_get_data_no_data_found():
-    response = client.post("/data", json=valid_body)
+@pytest.mark.asyncio
+async def test_get_data_no_data_found():
+    response = client.post("/data", json=no_data_body)
     assert response.status_code == 404
     assert "No data found" in response.json()["detail"]

@@ -6,6 +6,8 @@ psycopg2-binary
 locust
 tox
 pytest
+pytest-xdist
+pytest-asyncio
 coverage
 apscheduler
 watchdog
