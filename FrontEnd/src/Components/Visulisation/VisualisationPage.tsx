@@ -246,16 +246,16 @@ const VisualisationPage: React.FC = () => {
           />
       </ToggleContainer>
       {chartData?.length &&
-        <ToggleContainer title="Graph">
-          {Object.entries(groupedData).map(([variable, chartData], index) => (
-            <VariableChart
-              key={variable}
-              className={`variable-chart chart-${index}`} 
-              variable={variable}
-              decades={decades}
-              data={chartData}
-            />
-          ))}
+        <ToggleContainer title="Graph" containsTile={true}>
+              {Object.entries(groupedData).map(([variable, chartData], index) => (
+                <VariableChart
+                    key={variable}
+                    className={`variable-chart chart-${index}`} 
+                    variable={variable}
+                    decades={decades}
+                    data={chartData}
+                />
+              ))}
         </ToggleContainer>
       }
       {chartData?.length &&

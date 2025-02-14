@@ -14,31 +14,56 @@
         justify-content: space-between;
         writing-mode: vertical-rl;
         transform: rotate(180deg);
+        cursor: pointer;
         .set_is_visible, .is_visible {
             transition: transform 0.3s ease;
             transform: rotate(-90deg);
-            cursor: pointer;
+            
         }
         .set_is_visible {
             transform: rotate(90deg);
         }
     }
     .space_body {
-        transition: all 0.3s ease-in-out;
         width: calc(100% - 45px);
         display: flex;
-        flex-flow: row wrap;
         gap: 8px;
-        .variable-chart{
-            width: calc(50% - 4px);
-            height: fit-content;
+        .space_body_tile{
+            @include reverseCard;
+            padding: 8px;
+            display: flex;
+            overflow-y: scroll;
+            flex-wrap: wrap;
+            width: 100%;
+            min-width: auto;
+            gap: 10px;
+            justify-content: center;
+            // need to handle this better with typescript
+            .variable-chart{
+                width: 100%;
+                max-width: 43vw;
+            }
         }
     }
     .space_body.hidden {
         display: none;  
     }   
+    
 }
 .space_container:has(.space_body.hidden){
     flex: 0 0 50px;
     overflow: hidden;
 }
+
+@media (max-width: 1160px) {
+    .space_container{
+        .space_body{
+            .space_body_tile{
+                .variable-chart{
+                    min-width: 87vw;
+                }
+            }
+        }
+    }
+}
+

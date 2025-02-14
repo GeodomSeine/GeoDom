@@ -13,7 +13,7 @@ import {
   ChartOptions,
 } from "chart.js";
 import zoomPlugin from "chartjs-plugin-zoom";
-import ButtonComponent from "./ButtonComponent";
+// import ButtonComponent from "./ButtonComponent";
 
 ChartJS.register(
   CategoryScale,
@@ -87,19 +87,19 @@ const VariableChart: React.FC<VariableChartProps> = ({ variable, decades, data, 
   //   }
   // };
 
-  const style: React.CSSProperties = {
-      display: "flex",
-      alignItems: "center",
-      flexDirection: "row",
-      justifyContent: "space-between",
-      fontSize: "0.6rem"
-  };
+  // const style: React.CSSProperties = {
+  //     display: "flex",
+  //     alignItems: "center",
+  //     flexDirection: "row",
+  //     justifyContent: "space-between",
+  //     fontSize: "0.6rem"
+  // };
 
   return (
     <div className={`${className}`}>
-      <div style={style}>
+      {/* <div style={style}>
         <ButtonComponent txt={"Reset Zoom"}></ButtonComponent>
-      </div>
+      </div> */}
       <Line ref={chartRef} data={chartData} options={options}/>
     </div>
   );
