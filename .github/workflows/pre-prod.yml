@@ -162,6 +162,4 @@ jobs:
           key: ${{ secrets.VPS_KEY }}
           port: 22
           debug: true
-          script: |
-            cd ~/pre-production/
-            bash deploy.sh
+          script: bash deploy.sh pre-production
