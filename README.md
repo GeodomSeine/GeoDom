@@ -29,8 +29,9 @@ Dans `Backend`, créez un fichier **`.env`** contenant les accès aux bases de d
 ```ini
 DATABASE_PYNUTS_URL=<URL_de_connexion_PYNUTS>
 DATABASE_DONUTS_URL=<URL_de_connexion_DONUTS>
-TESTING=<true or false>
+TESTING=<True or False>
 LOG_LEVEL=<niveau_de_log>
+DB_ENGINE_LOG=<True or False>
 ```
 
 ---
