@@ -108,7 +108,7 @@ async def get_amont_aval(program: str, id_hyd_start: int, id_hyd_end: int):
                 (DynamicSenequeAesnHydro.verdin >= verdin_end)
             )
 
-            result = await session.execute(query)
+            result = await session.execute(query) # 'NoneType' object has no attribute 'send'
             id_hyd_data = [row[0] for row in result.fetchall()]
             pk_list = await fetch_pks(program, id_hyd_data)
             return {"id_hyd": id_hyd_data, "pk" : pk_list}
