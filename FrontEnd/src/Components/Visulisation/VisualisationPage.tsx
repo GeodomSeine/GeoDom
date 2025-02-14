@@ -8,7 +8,6 @@ import VariableChart from "../SimpleComponents/VariableChart";
 import MapSelection from "../MapSelection/MapSelection";
 
 
-
 const VisualisationPage: React.FC = () => {
   const { program } = useProgram();
   const navigate = useNavigate();
@@ -127,8 +126,15 @@ const VisualisationPage: React.FC = () => {
     }, {} as Record<number, string>);
   }, [data]);
   
-  const min = useMemo(() => Math.min(...Object.keys(keyMapping).map(Number)), [keyMapping]);
-  const max = useMemo(() => Math.max(...Object.keys(keyMapping).map(Number)), [keyMapping]);
+  const min = useMemo(() => {
+    const keys = Object.keys(keyMapping).map(Number);
+    return keys.length > 0 ? Math.min(...keys) : 1;
+  }, [keyMapping]);
+  
+  const max = useMemo(() => {
+    const keys = Object.keys(keyMapping).map(Number);
+    return keys.length > 0 ? Math.max(...keys) : 1;
+  }, [keyMapping]);
   
   const handleSliderChange = (value: number) => {
     const newKey = keyMapping[value];
@@ -136,102 +142,74 @@ const VisualisationPage: React.FC = () => {
       setSelectedKey(newKey);
     }
   };
-
+  
   // old S1 code
   useEffect(() => {
-      const fetchScenarios = async () => {
-        const data = await getScenarios();
-        if (data) {
-          setScenarios(data.scenarios);
-    
-          // Sélectionner les 3 premiers scénarios par défaut
-          if (data.scenarios.length > 0) {
-            const firstThreeScenarios = data.scenarios.slice(0, 3);
-            setSelectedScenarios(firstThreeScenarios);
-          } else {
-            setSelectedScenarios(data.scenarios);
-          }
+    const fetchScenarios = async () => {
+      const data = await getScenarios();
+      if (data) {
+        setScenarios(data.scenarios);
+        
+        // Sélectionner les 3 premiers scénarios par défaut
+        if (data.scenarios.length > 0) {
+          const firstThreeScenarios = data.scenarios.slice(0, 3);
+          setSelectedScenarios(firstThreeScenarios);
+        } else {
+          setSelectedScenarios(data.scenarios);
         }
-      };
-      fetchScenarios();
-    }, [setSelectedScenarios]);
-    
-  
-    const fetchResults = async () => {
-      if (idHydStart && idHydEnd) {
-        const data = await getAmontAval(program!.name, idHydStart, idHydEnd);
-        setAmontAvalResponse(data);
       }
     };
-  
-    useEffect(() => {
-      if(idHydEnd === program?.exutoire_id || (idHydStart && idHydEnd)){
-        fetchResults();
-      }
-    }, [idHydStart, idHydEnd]);
-  
-    const resetSelection = () => {
-      setIdHydStart(null);
-      setIdHydEnd(null);
-      setAmontAvalResponse(null);
-      setSelectedPk(undefined);
-    };
-
-    // old graph S1 code
-    const decades = chartData?.length ? chartData.map((entry) => entry.decade) : [];
-    const variablesGraph = chartData?.length 
-    ? Object.keys(chartData[0]).filter((key) => key !== "decade") 
-    : [];
-
-    const groupedData: Record<
-      string,
-      { p5: number[]; p50: number[]; p90: number[] }
-    > = {};
-
-    variablesGraph.forEach((variableKey) => {
-      const [baseVariable] = variableKey.split("_");
-      if (!groupedData[baseVariable]) {
-        groupedData[baseVariable] = { p5: [], p50: [], p90: [] };
-      }
-      if (chartData?.length) {
-        chartData.forEach((entry) => {
-          if (variableKey.endsWith("_p5"))
-            groupedData[baseVariable].p5.push(entry[variableKey]);
-          if (variableKey.endsWith("_p50"))
-            groupedData[baseVariable].p50.push(entry[variableKey]);
-          if (variableKey.endsWith("_p90"))
-            groupedData[baseVariable].p90.push(entry[variableKey]);
-        });
-      }
-    });
+    fetchScenarios();
+  }, [setSelectedScenarios]);
   
   
-  // not the best code, because it forced the click on the href when updated
-  // const handleExportJson = (): void => {
-  //   const data = {
-  //     name : program,
-  //     complete : selectedKey !== null, 
-  //     selected_order : selectedKey, 
-  //     pk_start : idHydStart,
-  //     pk_end : idHydEnd,
-  //     selected_pk : selectedPk,
-  //     variables : selectedVariables,
-  //     scenarios : selectedScenarios
+  const fetchResults = async () => {
+    if (idHydStart && idHydEnd) {
+      const data = await getAmontAval(program!.name, idHydStart, idHydEnd);
+      setAmontAvalResponse(data);
+    }
+  };
   
-  // };
-  //   const jsonString = JSON.stringify(data, null, 2);
-  //   const blob = new Blob([jsonString], { type: "application/json" });
+  useEffect(() => {
+    if(idHydEnd === program?.exutoire_id || (idHydStart && idHydEnd)){
+      fetchResults();
+    }
+  }, [idHydStart, idHydEnd]);
   
-  //   const url = URL.createObjectURL(blob);
+  const resetSelection = () => {
+    setIdHydStart(null);
+    setIdHydEnd(null);
+    setAmontAvalResponse(null);
+    setSelectedPk(undefined);
+  };
   
-  //   const downloadLink = document.querySelector("a.logo_container") as HTMLAnchorElement | null;
-  //   if (downloadLink) {
-  //       downloadLink.href = url;
-  //       downloadLink.download = data.name?.name + ".json";
-  //       downloadLink.click(); 
-  //   }
-  // };
+  // old graph S1 code
+  const decades = chartData?.length ? chartData.map((entry) => entry.decade) : [];
+  const variablesGraph = chartData?.length 
+  ? Object.keys(chartData[0]).filter((key) => key !== "decade") 
+  : [];
   
+  const groupedData: Record<
+  string,
+  { p5: number[]; p50: number[]; p90: number[] }
+  > = {};
+  
+  variablesGraph.forEach((variableKey) => {
+    const [baseVariable] = variableKey.split("_");
+    if (!groupedData[baseVariable]) {
+      groupedData[baseVariable] = { p5: [], p50: [], p90: [] };
+    }
+    if (chartData?.length) {
+      chartData.forEach((entry) => {
+        if (variableKey.endsWith("_p5"))
+          groupedData[baseVariable].p5.push(entry[variableKey]);
+        if (variableKey.endsWith("_p50"))
+          groupedData[baseVariable].p50.push(entry[variableKey]);
+        if (variableKey.endsWith("_p90"))
+          groupedData[baseVariable].p90.push(entry[variableKey]);
+      });
+    }
+  });
   
   if (!program) {
     navigate("/");
@@ -241,7 +219,6 @@ const VisualisationPage: React.FC = () => {
   return (
     <div className='home_component_visualisation'>
     
-    {/* <HeaderComponent actionButton={handleExportJson}/> */}
     {/* Section Paramètrage Général */}
       <div className='home_body'>
         <ToggleContainer title="Map">
@@ -267,77 +244,36 @@ const VisualisationPage: React.FC = () => {
             scenarios={scenarios}
             setMode={setMode}
           />
-          {/* <ControlComponent
-            idHydStart={idHydStart}
-            idHydEnd={idHydEnd}
-            resetSelection={resetSelection}
-            variables={program.variables}
-            selectedVariables={selectedVariables}
-            setSelectedVariables={setSelectedVariables}
-            selectedScenarios={selectedScenarios}
-            setSelectedScenarios={setSelectedScenarios}
-            scenarios={scenarios}
-            mode={mode}
-            setMode={setMode}
-          /> */}
-        </ToggleContainer>
+      </ToggleContainer>
       {chartData?.length &&
         <ToggleContainer title="Graph">
-        {Object.entries(groupedData).map(([variable, chartData], index) => (
-          <VariableChart
-          key={variable}
-          className={`variable-chart chart-${index}`} 
-          variable={variable}
-          decades={decades}
-          data={chartData}
-          />
-        ))}
+          {Object.entries(groupedData).map(([variable, chartData], index) => (
+            <VariableChart
+              key={variable}
+              className={`variable-chart chart-${index}`} 
+              variable={variable}
+              decades={decades}
+              data={chartData}
+            />
+          ))}
         </ToggleContainer>
       }
       {chartData?.length &&
         <ToggleContainer title="Graph">
-        {Object.entries(groupedData).map(([variable, chartData], index) => (
-          <VariableChart
-          key={variable}
-          className={`variable-chart chart-${index}`} 
-          variable={variable}
-          decades={decades}
-          data={chartData}
-          />
-        ))}
+          {Object.entries(groupedData).map(([variable, chartData], index) => (
+            <VariableChart
+              key={variable}
+              className={`variable-chart chart-${index}`} 
+              variable={variable}
+              decades={decades}
+              data={chartData}
+            />
+          ))}
         </ToggleContainer>
       }
+      </div>
+    </div>
+  );
+};
 
-        
-        {/* <S1
-          program={program.name}
-          exutoire_id={program.exutoire_id}
-          variables={program.variables}
-          selectedVariables={selectedVariables}
-          setSelectedVariables={setSelectedVariables}
-          selectedScenarios={selectedScenarios}
-          setSelectedScenarios={setSelectedScenarios}
-          setAmontAvalResponse={setAmontAvalResponse}
-          amontAvalResponse={amontAvalResponse}
-          selectedPk={selectedPk}
-          setSelectedPk={setSelectedPk}
-          idHydStart={idHydStart}
-          setIdHydStart={setIdHydStart}
-          idHydEnd={idHydEnd}
-          setIdHydEnd={setIdHydEnd}
-          scenarios={scenarios}
-          setScenarios={setScenarios}
-          mode={mode}
-          setMode={setMode}
-          min={min}
-          max={max}
-          sliderChange={handleSliderChange}
-          data={chartData}
-          /> */}
-          {/* <Esapce3Component program={program.name}/> */}
-          </div>
-        </div>
-      );
-    };
-    
-    export default VisualisationPage;
+export default VisualisationPage;
