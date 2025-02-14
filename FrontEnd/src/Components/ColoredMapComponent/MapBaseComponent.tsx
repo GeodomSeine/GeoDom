@@ -3,7 +3,7 @@ import { LayersControl, MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
 import { LatLngBounds, PathOptions } from 'leaflet';
 import { GeoJsonObject } from 'geojson';
 import "./MapBaseComponent.scss";
-import MapController from './MapController';
+import MapControls from '../SimpleComponents/MapButtons';
 
 const { BaseLayer, Overlay } = LayersControl;
 
@@ -29,7 +29,7 @@ function MapBaseComponent({ /*data, variable,*/pkData, pkStyles, bassinData, bas
                 minZoom={6} 
                 zoomControl={false}
             >
-                <MapController bounds={bounds}/>
+                <MapControls bounds={bounds} hasController={false}/>
                 <LayersControl>
                     <BaseLayer checked name="BaseLayer">
                         <TileLayer
