@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - Pre-Production
-
 jobs:
    frontend-tests:
      name: Frontend Tests
