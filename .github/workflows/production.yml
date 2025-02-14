@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    outputs:
+      new_tag: ${{ steps.set_tag.outputs.new_tag }}  # Passez NEW_TAG comme output du job
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -31,6 +33,10 @@ jobs:
           NEW_TAG="v$MAJOR.$MINOR.$((PATCH + 1))"
           echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
 
+      - name: Set output tag
+        id: set_tag
+        run: echo "new_tag=${{ env.NEW_TAG }}" >> $GITHUB_ENV
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
@@ -40,3 +46,34 @@ jobs:
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  deploy-to-vps:
+    runs-on: ubuntu-latest
+    needs: create-release
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Deploy on VPS
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_KEY }}
+          port: 22
+          debug: true
+          script: |
+            # Variables
+            NEW_TAG="${{ needs.create-release.outputs.new_tag }}"  # Utilisation de l'output du job précédent
+            DOWNLOAD_URL="https://github.com/${{ github.repository }}/archive/refs/tags/${NEW_TAG}.tar.gz"
+            
+            echo "🚀 Téléchargement de la release ${NEW_TAG} sur le VPS..."
+            
+            # Téléchargement de l'archive tar.gz directement sur le VPS
+            wget -O ~/production/geodom.tar.gz $DOWNLOAD_URL
+            
+            echo "📦 Archive téléchargée, décompression..."
+            # Extraction de l'archive tar.gz
+            tar -xzf ~/production/geodom.tar.gz -C ~/production
+            echo "🔧 Déploiement de la release sur le VPS..."
+            bash ~/production/deploy.sh production
