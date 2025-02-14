@@ -1,4 +1,5 @@
 import json
+import pandas as pd
 from fastapi import APIRouter, HTTPException
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -6,8 +7,36 @@ from sqlalchemy import func
 from core.database import async_session_pynuts, load_output_table_sync
 from models.models import Pk
 from core.logger import logger
+import os
 
 router = APIRouter(prefix="/dataprofil", tags=["Données pour les graphiques de profils en long"])
+
+
+RESOURCES_PATH = "./resources"
+VARIABLE_FOLDER = "variables"
+JSON_FILENAME = "variables.json"
+
+def load_variable_config():
+    file_path = os.path.join(RESOURCES_PATH, VARIABLE_FOLDER, JSON_FILENAME)
+
+    with open(file_path, "r") as file:
+        return json.load(file)
+
+
+def generate_class_intervals(values, nb_classes, colors):
+    if len(values) < nb_classes:
+        nb_classes = len(values) 
+    classes_bins = pd.qcut(values, q=nb_classes, retbins=True)[1]
+    intervals = []
+    for i in range(len(classes_bins) - 1):
+        intervals.append({
+            "range": [classes_bins[i], classes_bins[i + 1]],
+            "color": colors[i] if i < len(colors) else "#000000"
+        })
+    return intervals
+
+
+variable_config = load_variable_config()
 
 
 @router.post("/fulldata")
@@ -199,7 +228,7 @@ async def get_data_formap(body: dict):
         body (dict): Contient les clés `program`, `scenarios`, `variables`, et `decades`.
 
     Returns:
-        dict: Les données regroupées par `obj_ord_pk`.
+        dict: Les données regroupées par `obj_ord_pk` avec une légende des classes de valeurs.
     """
     try:
         program = body.get("program")
@@ -224,6 +253,7 @@ async def get_data_formap(body: dict):
 
         async with async_session_pynuts() as session:
             result_data = {}
+            legend_data = {}
 
             query = (
                 select(
@@ -248,6 +278,8 @@ async def get_data_formap(body: dict):
             result = await session.execute(query)
             data = result.fetchall()
 
+            value_dict = {var: [] for var in variables}
+
             for row in data:
                 obj_ord_pk = f"{row.obj}_{row.ord}_{row.pk}"
                 result_data[obj_ord_pk] = {}
@@ -255,6 +287,25 @@ async def get_data_formap(body: dict):
                     result_data[obj_ord_pk][f"{variable}_p5"] = getattr(row, f"{variable}_p5")
                     result_data[obj_ord_pk][f"{variable}_p50"] = getattr(row, f"{variable}_p50")
                     result_data[obj_ord_pk][f"{variable}_p90"] = getattr(row, f"{variable}_p90")
+                    if getattr(row, f"{variable}_p50") is not None:
+                        value_dict[variable].append(getattr(row, f"{variable}_p50"))
+
+            for variable in variables:
+                var_config = variable_config.get(variable, {})
+                if var_config.get("classification") == "sld":
+                    legend_data[variable] = {"sld": True}
+                else:
+                    if value_dict[variable]:
+                        legend_data[variable] = {
+                            "sld": False,
+                            "classification": var_config.get("classification"),
+                            "nb_classes": var_config.get("nb_classes"),
+                            "colors": generate_class_intervals(
+                                value_dict[variable], 
+                                var_config.get("nb_classes", 5), 
+                                var_config.get("colors", [])
+                            )
+                        }
 
             if not result_data:
                 raise HTTPException(
@@ -262,7 +313,7 @@ async def get_data_formap(body: dict):
                     detail=f"No data found for program '{program}', scenarios {scenarios}, and variables {variables}."
                 )
 
-            return result_data
+            return {"data": result_data, "legend": legend_data}
     
     except Exception as e:
         logger.error("Error fetching data: %s", e)

@@ -13,3 +13,4 @@ python-dotenv
 greenlet
 orjson
 redis
+pandas
