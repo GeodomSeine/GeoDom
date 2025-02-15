@@ -343,7 +343,7 @@ const VisualisationPage: React.FC = () => {
     />
     </ToggleContainer>
     {chartData?.length &&
-      <ToggleContainer title="Graph" containsTile={true}>
+      <ToggleContainer title="Graphiques temporels" containsTile={true}>
       {Object.entries(groupedData).map(([variable, chartData], index) => (
         <VariableChart
         key={variable}
@@ -356,7 +356,7 @@ const VisualisationPage: React.FC = () => {
       </ToggleContainer>
     }
     {coloredMapData &&
-      <ToggleContainer title="Profil en long" containsTile={true} secondChild={
+      <ToggleContainer title="Carte des seuils" containsTile={true} secondChild={
         <DecadeRangeComponent onChange={handleDecadeChange} min={1} max={36} leftLabel={'Première décade'} rightLabel={'dernière décade'} />
       }
         children = {
