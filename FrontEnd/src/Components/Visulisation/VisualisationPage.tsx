@@ -179,22 +179,24 @@ const VisualisationPage: React.FC = () => {
         if(!requestColoredMap){
           return;
         }
-        
-        let coloredResponse = await getColoredMapData(requestColoredMap);
-        if(coloredResponse){
-          setColoredMapData(coloredResponse);
-        }
+
       } catch (err) {
         console.error("Erreur lors de la récupération des données :", err);
         setData(null);
         setChartData(null);
-        setColoredMapData(null);
       }
     };
     
     fetchData();
-  }, [requestColoredMap, request, requestFull, mode]);
+  }, [request, requestFull, mode]);
   
+  useEffect(() => {
+    if (!requestColoredMap) return;
+    getColoredMapData(requestColoredMap).then((data) => {
+      setColoredMapData(data);
+    });
+  }, [requestColoredMap]);
+
   useEffect(() => {
     if (!data || !selectedKey || program == undefined) return;
     setChartData(data[selectedKey].data);
