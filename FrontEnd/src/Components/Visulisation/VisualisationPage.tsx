@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useProgram } from "../../contexts/ProgramContext";
 import './VisualisationPage.scss';
-import { getScenarios, getAmontAval, Scenario, AmontAvalResponse, DataRequest, DataResponse, getData, getFullData, DataRequestFull, GeoJsonResponse, getPkGeom, ColoredMapResponseData, ColorMapRequest, getColoredMapData, getBassin, getBassinSLD, getPkSld, streamPkData } from "../../services/api";
+import { getScenarios, getAmontAval, Scenario, AmontAvalResponse, DataRequest, DataResponse, getData, getFullData, DataRequestFull, GeoJsonResponse, getPkGeom, ColoredMapResponseData, ColorMapRequest, getColoredMapData, getBassin, getBassinSLD, getPkSld, streamPkData, ProfileGraphDataResponse, ProfileGraphPkRequest, getProfileData, getProfileFullData } from "../../services/api";
 import { useNavigate } from "react-router";
 import ToggleContainer from "./ToggleComponent";
 import VariableChart from "../SimpleComponents/VariableChart";
@@ -12,6 +12,7 @@ import { LatLngBounds, PathOptions } from "leaflet";
 import { calculateBounds } from "../../utils/mapUtils";
 import { parseSLDToStyles } from "../../mapstyles/mapStyles";
 import SliderComponent from "../SimpleComponents/SliderComponent";
+import ProfileGraph from "../SimpleComponents/ProfileGraph";
 
 type ChartData = Array<{
   decade: number;
@@ -27,7 +28,8 @@ const VisualisationPage: React.FC = () => {
   const [selectedDecades, setSelectedDecades] = useState<number[]>([1, 2, 3]);
   const [data, setData] = useState<DataResponse | null>(null);
   const [coloredMapData, setColoredMapData] = useState<ColoredMapResponseData | null>(null);
-  
+  const [profileGraphData, setProfileGraphData] = useState<ProfileGraphDataResponse | null>(null);
+
   const [selectedKey, setSelectedKey] = useState<string | null>(null); 
   
   const [chartData, setChartData] = useState<ChartData | null>(null);
@@ -142,7 +144,17 @@ const VisualisationPage: React.FC = () => {
     }
   }, [program, selectedScenarios, selectedVariables, selectedDecades]);
   
-  
+  const profileDataRequest: ProfileGraphPkRequest | null = useMemo(() => {
+    if (!program || !amontAvalResponse || mode !== "amont-aval") return null;
+    return {
+      program: program.name,
+      scenarios: selectedScenarios.map((scenario) => scenario.id),
+      variables: selectedVariables.map((variable) => variable.toLowerCase()),
+      pk: amontAvalResponse.pk || [],
+      decades: selectedDecades
+    }
+  }, [program, selectedScenarios, selectedVariables, amontAvalResponse, mode, selectedDecades]);
+
   useEffect(() => {
     if (!selectedVariables.length || !selectedScenarios.length) {
       setData(null);
@@ -177,24 +189,29 @@ const VisualisationPage: React.FC = () => {
           setData(null);
           setChartData(null);
         }
-        if(!requestColoredMap){
-          return;
-        }
-
       } catch (err) {
         console.error("Erreur lors de la récupération des données :", err);
         setData(null);
         setChartData(null);
       }
     };
-    
+
+    if(mode === "amont-aval" && profileDataRequest){
+      getProfileData(profileDataRequest)
+      .then((data) => {
+        setProfileGraphData(data);
+      });
+    } 
     fetchData();
-  }, [request, requestFull, mode]);
+  }, [request, requestFull, mode, profileDataRequest]);
   
   useEffect(() => {
     if (!requestColoredMap) return;
     getColoredMapData(requestColoredMap).then((data) => {
       setColoredMapData(data);
+    });
+    getProfileFullData(requestColoredMap).then((data) => {
+      setProfileGraphData(data);
     });
   }, [requestColoredMap]);
 
@@ -332,6 +349,7 @@ const VisualisationPage: React.FC = () => {
   
   return (
     <div className='home_component_visualisation'>
+    
       <div className='home_body'>
         <ToggleContainer title="Carte de sélection" secondChild={sharedSlider}>
           <MapSelection
@@ -354,7 +372,6 @@ const VisualisationPage: React.FC = () => {
             setMode={setMode}
           />
         </ToggleContainer>
-
         {chartData?.length &&
           <ToggleContainer title="Graphiques temporels" containsTile={true} secondChild={sharedSlider}>
           {Object.entries(groupedData).map(([variable, chartData], index) => (
@@ -369,7 +386,7 @@ const VisualisationPage: React.FC = () => {
           </ToggleContainer>
         }
         {coloredMapData &&
-          <ToggleContainer title="Carte des seuils" containsTile={true} secondChild={
+          <ToggleContainer title="Carte des seuils" containsTile={true} >
             <DecadeRangeComponent onChange={handleDecadeChange} min={1} max={36} leftLabel={'Première décade'} rightLabel={'dernière décade'} />
           }
             children = {
@@ -389,6 +406,13 @@ const VisualisationPage: React.FC = () => {
               ))
             }
           >
+          </ToggleContainer>
+        }
+        {profileGraphData &&
+          <ToggleContainer title="Profil en long" containsTile={true}>
+            {selectedVariables.map((variable, index) => (
+              <ProfileGraph className={`variable_chart chart_${index}`}  key={`profile_${variable}`} variable={variable.toLowerCase()} data={profileGraphData} xKey={mode === "amont-aval" ? "PK" : "Strahler"}/>
+            ))}
           </ToggleContainer>
         }
       </div>
