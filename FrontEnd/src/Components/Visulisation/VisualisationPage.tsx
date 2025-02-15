@@ -347,7 +347,7 @@ const VisualisationPage: React.FC = () => {
       {Object.entries(groupedData).map(([variable, chartData], index) => (
         <VariableChart
         key={variable}
-        className={`variable-chart chart-${index}`} 
+        className={`variable_chart chart_${index}`} 
         variable={variable}
         decades={decades}
         data={chartData}
@@ -365,7 +365,7 @@ const VisualisationPage: React.FC = () => {
               key={variable}
               data={coloredMapData}
               variable={variable}
-              className={`variable-chart chart-${index}`} 
+              className={`variable_chart chart_${index}`} 
               pkData={pkData} 
               pkStyles={[]} 
               bassinData={bassinData} 
