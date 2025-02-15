@@ -51,8 +51,12 @@ const ToggleContainer: React.FC<ToggleContainerProps> = ({
         )}
         {!containsTile && secondChild &&(
           <>
-            {children}
-            {secondChild}
+            <div className="space_body_block">
+              {children}
+            </div>
+            <div className="space_body_footer">
+              {secondChild}
+            </div>
           </>
         )}
       </div>

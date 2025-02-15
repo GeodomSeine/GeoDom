@@ -2,6 +2,7 @@ import React from "react";
 import Slider from "react-slider";
 import './SliderComponent.scss';
 type CustomSliderProps = {
+  value?: number;
   min: number; 
   max: number; 
   step: number; 
@@ -10,11 +11,9 @@ type CustomSliderProps = {
   rightLabel: string;
 };
 
-
-const SliderComponent: React.FC<CustomSliderProps> = ({ min, max, step, onChange, leftLabel, rightLabel }) => {
+const SliderComponent: React.FC<CustomSliderProps> = ({ value, min, max, step, onChange, leftLabel, rightLabel }) => {
 
   return (
-
     <div className="slider_container">
         <div className="slider_text"><p>{leftLabel}</p><p>{rightLabel}</p></div>
         <Slider
@@ -24,6 +23,7 @@ const SliderComponent: React.FC<CustomSliderProps> = ({ min, max, step, onChange
           max={max}
           step={step}
           onChange={onChange}
+          value={value !== undefined ? value : undefined}
           renderThumb={(props, state) => <div {...props}>{state.valueNow}</div>}
         />
     </div>

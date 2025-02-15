@@ -11,6 +11,7 @@ import DecadeRangeComponent from "../SimpleComponents/DecadeRangeComponent";
 import { LatLngBounds, PathOptions } from "leaflet";
 import { calculateBounds } from "../../utils/mapUtils";
 import { parseSLDToStyles } from "../../mapstyles/mapStyles";
+import SliderComponent from "../SimpleComponents/SliderComponent";
 
 type ChartData = Array<{
   decade: number;
@@ -231,12 +232,26 @@ const VisualisationPage: React.FC = () => {
     return keys.length > 0 ? Math.max(...keys) : 1;
   }, [keyMapping]);
   
+
+  const [sliderValue, setSliderValue] = useState(min);
+
   const handleSliderChange = (value: number) => {
+    setSliderValue(value);
     const newKey = keyMapping[value];
-    if (newKey) {
-      setSelectedKey(newKey);
-    }
+    if (newKey) setSelectedKey(newKey);
   };
+
+  const sharedSlider = (
+    <SliderComponent
+      value={sliderValue}
+      min={min}
+      max={max}
+      step={1}
+      onChange={handleSliderChange}
+      leftLabel={mode === "amont-aval" ? "Pk min" : "Strahler min"}
+      rightLabel={mode === "amont-aval" ? "Pk max" : "Strahler max"}
+    />
+  );
   
   const handleDecadeChange = (value : number[]) => {
     setSelectedDecades(value);
@@ -317,70 +332,66 @@ const VisualisationPage: React.FC = () => {
   
   return (
     <div className='home_component_visualisation'>
-    
-    {/* Section Paramètrage Général */}
-    <div className='home_body'>
-    <ToggleContainer title="Carte de sélection">
-    <MapSelection
-    program={program.name}
-    exutoire_id={program.exutoire_id}
-    idHydStart={idHydStart}
-    idHydEnd={idHydEnd}
-    setIdHydStart={setIdHydStart}
-    setIdHydEnd={setIdHydEnd}
-    amontAvalResponse={amontAvalResponse}
-    selectedPk={selectedPk}
-    mode={mode}
-    handleSliderChange={handleSliderChange}
-    min={min}
-    max={max}
-    resetSelection={resetSelection}
-    variables={program.variables}
-    selectedVariables={selectedVariables}
-    setSelectedVariables={setSelectedVariables}
-    selectedScenarios={selectedScenarios}
-    setSelectedScenarios={setSelectedScenarios}
-    scenarios={scenarios}
-    setMode={setMode}
-    />
-    </ToggleContainer>
-    {chartData?.length &&
-      <ToggleContainer title="Graphiques temporels" containsTile={true}>
-      {Object.entries(groupedData).map(([variable, chartData], index) => (
-        <VariableChart
-        key={variable}
-        className={`variable_chart chart_${index}`} 
-        variable={variable}
-        decades={decades}
-        data={chartData}
-        />
-      ))}
-      </ToggleContainer>
-    }
-    {coloredMapData &&
-      <ToggleContainer title="Carte des seuils" containsTile={true} secondChild={
-        <DecadeRangeComponent onChange={handleDecadeChange} min={1} max={36} leftLabel={'Première décade'} rightLabel={'dernière décade'} />
-      }
-        children = {
-          Object.entries(coloredMapData.legend).map(([variable, __], index) => (
-            <ColoredMapComponent 
-              key={variable}
-              data={coloredMapData}
-              variable={variable}
-              className={`variable_chart chart_${index}`} 
-              pkData={pkData} 
-              pkStyles={[]} 
-              bassinData={bassinData} 
-              bassinStyle={bassinStyle} 
-              bounds={bounds} 
-              getPkStyles={getPkStyles}          
+      <div className='home_body'>
+        <ToggleContainer title="Carte de sélection" secondChild={sharedSlider}>
+          <MapSelection
+            program={program.name}
+            exutoire_id={program.exutoire_id}
+            idHydStart={idHydStart}
+            idHydEnd={idHydEnd}
+            setIdHydStart={setIdHydStart}
+            setIdHydEnd={setIdHydEnd}
+            amontAvalResponse={amontAvalResponse}
+            selectedPk={selectedPk}
+            mode={mode}
+            resetSelection={resetSelection}
+            variables={program.variables}
+            selectedVariables={selectedVariables}
+            setSelectedVariables={setSelectedVariables}
+            selectedScenarios={selectedScenarios}
+            setSelectedScenarios={setSelectedScenarios}
+            scenarios={scenarios}
+            setMode={setMode}
+          />
+        </ToggleContainer>
+
+        {chartData?.length &&
+          <ToggleContainer title="Graphiques temporels" containsTile={true} secondChild={sharedSlider}>
+          {Object.entries(groupedData).map(([variable, chartData], index) => (
+            <VariableChart
+            key={variable}
+            className={`variable_chart chart_${index}`} 
+            variable={variable}
+            decades={decades}
+            data={chartData}
             />
-          ))
+          ))}
+          </ToggleContainer>
         }
-      >
-      </ToggleContainer>
-    }
-    </div>
+        {coloredMapData &&
+          <ToggleContainer title="Carte des seuils" containsTile={true} secondChild={
+            <DecadeRangeComponent onChange={handleDecadeChange} min={1} max={36} leftLabel={'Première décade'} rightLabel={'dernière décade'} />
+          }
+            children = {
+              Object.entries(coloredMapData.legend).map(([variable, __], index) => (
+                <ColoredMapComponent 
+                  key={variable}
+                  data={coloredMapData}
+                  variable={variable}
+                  className={`variable_chart chart_${index}`} 
+                  pkData={pkData} 
+                  pkStyles={[]} 
+                  bassinData={bassinData} 
+                  bassinStyle={bassinStyle} 
+                  bounds={bounds} 
+                  getPkStyles={getPkStyles}          
+                />
+              ))
+            }
+          >
+          </ToggleContainer>
+        }
+      </div>
     </div>
   );
 };

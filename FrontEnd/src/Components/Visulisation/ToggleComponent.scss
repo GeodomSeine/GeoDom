@@ -32,13 +32,17 @@
             gap: 10px;
             justify-content: center;
             height: calc(100% - 55px);
-            // need to handle this better with typescript
             .variable_chart{
                 width: 100%;
                 max-width: 43vw;
             }
         }
+        .space_body_block{
+            height: calc(100% - 55px);
+        }
         .space_body_footer{
+            display: flex;
+            justify-content: center;
             padding: 8px;
         }
     }
