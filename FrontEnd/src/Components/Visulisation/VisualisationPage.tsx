@@ -335,76 +335,75 @@ const VisualisationPage: React.FC = () => {
   return (
     <div className='home_component_visualisation'>
     
-    {/* Section Paramètrage Général */}
-    <div className='home_body'>
-    <ToggleContainer title="Carte de sélection">
-    <MapSelection
-    program={program.name}
-    exutoire_id={program.exutoire_id}
-    idHydStart={idHydStart}
-    idHydEnd={idHydEnd}
-    setIdHydStart={setIdHydStart}
-    setIdHydEnd={setIdHydEnd}
-    amontAvalResponse={amontAvalResponse}
-    selectedPk={selectedPk}
-    mode={mode}
-    handleSliderChange={handleSliderChange}
-    min={min}
-    max={max}
-    resetSelection={resetSelection}
-    variables={program.variables}
-    selectedVariables={selectedVariables}
-    setSelectedVariables={setSelectedVariables}
-    selectedScenarios={selectedScenarios}
-    setSelectedScenarios={setSelectedScenarios}
-    scenarios={scenarios}
-    setMode={setMode}
-    />
-    </ToggleContainer>
-    {chartData?.length &&
-      <ToggleContainer title="Graphiques temporels" containsTile={true}>
-      {Object.entries(groupedData).map(([variable, chartData], index) => (
-        <VariableChart
-        key={variable}
-        className={`variable_chart chart_${index}`} 
-        variable={variable}
-        decades={decades}
-        data={chartData}
-        />
-      ))}
-      </ToggleContainer>
-    }
-    {coloredMapData &&
-      <ToggleContainer title="Carte des seuils" secondChild={
-        <DecadeRangeComponent onChange={handleDecadeChange} min={1} max={36} leftLabel={'Première décade'} rightLabel={'dernière décade'} />
-      }
-        children = {
-          Object.entries(coloredMapData.legend).map(([variable, __], index) => (
-            <ColoredMapComponent 
-              key={variable}
-              data={coloredMapData}
-              variable={variable}
-              className={`variable_chart chart_${index}`} 
-              pkData={pkData} 
-              pkStyles={[]} 
-              bassinData={bassinData} 
-              bassinStyle={bassinStyle} 
-              bounds={bounds} 
-              getPkStyles={getPkStyles}          
+      <div className='home_body'>
+        <ToggleContainer title="Carte de sélection">
+          <MapSelection
+            program={program.name}
+            exutoire_id={program.exutoire_id}
+            idHydStart={idHydStart}
+            idHydEnd={idHydEnd}
+            setIdHydStart={setIdHydStart}
+            setIdHydEnd={setIdHydEnd}
+            amontAvalResponse={amontAvalResponse}
+            selectedPk={selectedPk}
+            mode={mode}
+            handleSliderChange={handleSliderChange}
+            min={min}
+            max={max}
+            resetSelection={resetSelection}
+            variables={program.variables}
+            selectedVariables={selectedVariables}
+            setSelectedVariables={setSelectedVariables}
+            selectedScenarios={selectedScenarios}
+            setSelectedScenarios={setSelectedScenarios}
+            scenarios={scenarios}
+            setMode={setMode}
+          />
+        </ToggleContainer>
+        {chartData?.length &&
+          <ToggleContainer title="Graphiques temporels" containsTile={true}>
+          {Object.entries(groupedData).map(([variable, chartData], index) => (
+            <VariableChart
+            key={variable}
+            className={`variable_chart chart_${index}`} 
+            variable={variable}
+            decades={decades}
+            data={chartData}
             />
-          ))
+          ))}
+          </ToggleContainer>
         }
-      >
-      </ToggleContainer>
-    }
-    {profileGraphData &&
-      <ToggleContainer title="Profil en long" containsTile={true}>
-        {selectedVariables.map((variable) => (
-          <ProfileGraph key={`profile_${variable}`} variable={variable.toLowerCase()} data={profileGraphData} xKey={mode === "amont-aval" ? "PK" : "Strahler"}/>
-        ))}
-      </ToggleContainer>
-    }
-    </div>
+        {coloredMapData &&
+          <ToggleContainer title="Carte des seuils" containsTile={true} secondChild={
+            <DecadeRangeComponent onChange={handleDecadeChange} min={1} max={36} leftLabel={'Première décade'} rightLabel={'dernière décade'} />
+          }
+            children = {
+              Object.entries(coloredMapData.legend).map(([variable, __], index) => (
+                <ColoredMapComponent 
+                  key={variable}
+                  data={coloredMapData}
+                  variable={variable}
+                  className={`variable_chart chart_${index}`} 
+                  pkData={pkData} 
+                  pkStyles={[]} 
+                  bassinData={bassinData} 
+                  bassinStyle={bassinStyle} 
+                  bounds={bounds} 
+                  getPkStyles={getPkStyles}          
+                />
+              ))
+            }
+          >
+          </ToggleContainer>
+        }
+        {profileGraphData &&
+          <ToggleContainer title="Profil en long" containsTile={true}>
+            {selectedVariables.map((variable, index) => (
+              <ProfileGraph className={`variable_chart chart_${index}`}  key={`profile_${variable}`} variable={variable.toLowerCase()} data={profileGraphData} xKey={mode === "amont-aval" ? "PK" : "Strahler"}/>
+            ))}
+          </ToggleContainer>
+        }
+      </div>
     </div>
   );
 };
