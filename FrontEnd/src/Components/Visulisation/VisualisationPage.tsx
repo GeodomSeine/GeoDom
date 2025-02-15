@@ -386,7 +386,7 @@ const VisualisationPage: React.FC = () => {
           </ToggleContainer>
         }
         {coloredMapData &&
-          <ToggleContainer title="Carte des seuils" containsTile={true} >
+          <ToggleContainer title="Carte des seuils" containsTile={true} secondChild={
             <DecadeRangeComponent onChange={handleDecadeChange} min={1} max={36} leftLabel={'Première décade'} rightLabel={'dernière décade'} />
           }
             children = {
