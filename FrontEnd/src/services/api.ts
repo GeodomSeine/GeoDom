@@ -135,6 +135,18 @@ export interface ColorMapRequest{
   variables: string[]
 }
 
+export interface ProfileGraphPkRequest{
+  program : string, 
+  scenarios : number[], 
+  decades: number[], 
+  variables: string[], 
+  pk: Pk[]
+}
+
+export interface ProfileGraphDataResponse{
+  [strahlerOrObjOrdPk: string]: VariableData;
+}
+
 export const getAval = async (
   program: string,
   id_hyd: number
@@ -417,4 +429,28 @@ export const getColoredMapData = async (request: ColorMapRequest): Promise<Color
 
 export const getVariableSld = async (variable: string): Promise<Blob | null> => {
   return getSld(`/sld/variable/${variable}`);
+};
+
+export const getProfileFullData = async (
+  request: ColorMapRequest
+): Promise<ProfileGraphDataResponse | null> => {
+  try {
+    const response = await api.post<ProfileGraphDataResponse>("/dataprofil/fulldata", request);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    return null;
+  }
+};
+
+export const getProfileData = async (
+  request: ProfileGraphPkRequest
+): Promise<ProfileGraphDataResponse | null> => {
+  try {
+    const response = await api.post<ProfileGraphDataResponse>("/dataprofil/data", request);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    return null;
+  }
 };

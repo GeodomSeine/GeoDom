@@ -8,7 +8,7 @@ import { LatLngBounds, PathOptions } from 'leaflet';
 type Props = {
     data: ColoredMapResponseData | null;
     variable: string;
-    className: string;
+    className?: string;
     pkData: GeoJsonResponse | null;
     pkStyles: any[];
     bassinData: GeoJsonResponse | null;
