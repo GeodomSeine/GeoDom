@@ -11,10 +11,9 @@ import "./MapButtons.scss";
 interface MapControlsProps {
     bounds: LatLngBounds | null;
     children?: ReactNode;
-    hasController?: boolean;
 }
 
-const MapControls: React.FC<MapControlsProps> = ({ bounds, children, hasController = true }) => {
+const MapControls: React.FC<MapControlsProps> = ({ bounds, children }) => {
     const map = useMap();
     useEffect(() => {
         zoomToBounds();
@@ -36,9 +35,9 @@ const MapControls: React.FC<MapControlsProps> = ({ bounds, children, hasControll
                 )}
                 <LogoComponent Icon={Add} size={"35px"} onClick={() => map.setZoom(map.getZoom() + 1)} />
                 <LogoComponent Icon={Minus} size={"35px"} onClick={() => map.setZoom(map.getZoom() - 1)} />
-                {hasController && <LogoComponent Icon={Burger} size={"35px"} onClick={() => setIsVisible((prev) => !prev)}/>}
+                {children && <LogoComponent Icon={Burger} size={"35px"} onClick={() => setIsVisible((prev) => !prev)}/>}
             </div>
-            {hasController && (
+            {children && (
                 <div className={`map_buttons_children ${isVisible ? "" : "hidden"}`}>
                     {children}
                 </div>

@@ -29,7 +29,7 @@ function MapBaseComponent({ /*data, variable,*/pkData, pkStyles, bassinData, bas
                 minZoom={6} 
                 zoomControl={false}
             >
-                <MapControls bounds={bounds} hasController={false}/>
+                <MapControls bounds={bounds}/>
                 <LayersControl>
                     <BaseLayer checked name="BaseLayer">
                         <TileLayer
