@@ -1,17 +1,17 @@
-    import React, { useEffect } from 'react';
-    import { getPrograms, ProgramResponse } from '../../services/api'; 
-    import CardComponent from './CardComponent'; 
-    import "./HomeComponent.scss";
-    import HeaderComponent from './HeaderComponent';
-    import { useProgram } from '../../contexts/ProgramContext';
-    import { Program } from '../../services/api';
-    import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { getPrograms, ProgramResponse } from '../../services/api'; 
+import CardComponent from './CardComponent'; 
+import "./HomeComponent.scss";
+import HeaderComponent from './HeaderComponent';
+import { useProgram } from '../../contexts/ProgramContext';
+import { Program } from '../../services/api';
+import { useNavigate } from 'react-router-dom';
 
     type Props = {}
 
     export default function HomeComponent({}: Props) {
-        const [programs, setPrograms] = React.useState<ProgramResponse | null>(null);
-        const [searchQuery, setSearchQuery] = React.useState(""); 
+        const [programs, setPrograms] = useState<ProgramResponse | null>(null);
+        const [searchQuery, setSearchQuery] = useState(""); 
 
         const { setProgram } = useProgram();
         const navigate = useNavigate();
@@ -33,9 +33,14 @@
             item.title.toLowerCase().includes(searchQuery.toLowerCase())
         ):( [] );
 
+        const visualizationData = Array.isArray(programs) ? programs.map(program => ({
+            name: program.name,
+            variables: program.variables
+        })) : [];
+        
         return (
             <div className='home_component'>
-                <HeaderComponent onSearch={setSearchQuery} actionButton={()=>{}}></HeaderComponent>
+                <HeaderComponent onSearch={setSearchQuery} showImportButton={true} visualizationData={visualizationData}></HeaderComponent>
                 <div className="main_body">
                     <div className='main_scroll_area' >
                         {searchQuery ? (filteredPrograms.length > 0 ? filteredPrograms.map((item: Program) => (
