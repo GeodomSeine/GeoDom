@@ -34,7 +34,7 @@ interface VariableChartProps {
   className?:string | null;
 }
 
-const VariableChart: React.FC<VariableChartProps> = ({ variable, decades, data, className = "variable_chart" }) => {
+const VariableChart: React.FC<VariableChartProps> = ({ variable, decades, data, className = "variable_element" }) => {
   const chartRef = useRef<any>(null);
 
   const chartData = {

@@ -19,13 +19,15 @@
             padding: 8px;
             gap: 8px;
             height: calc(100vh - 20px);
-        }>:nth-child(-n+2){
-            flex: 1 1 calc(50% - 120px);
-            max-width: calc(100% - 60px);
         }
-        > :last-child {
-            flex: 1 1 calc(100% - 120px);
+        > * {
+            flex: 1 1 calc(100% - 190px);
             min-width: fit-content;
         }
+        >:nth-child(-n+2){
+            flex: 1 1 calc(50% - 180px);
+            max-width: calc(100% - 60px);
+        }
+        
     }
 }

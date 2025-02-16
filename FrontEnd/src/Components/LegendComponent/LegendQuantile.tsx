@@ -11,16 +11,16 @@ const LegendQuantile = ({ variable, legendData } : Props) => {
   if (!legendData || legendData.sld || !legendData.colors) return null;
 
   return (
-    <div className="legend-container">
-      <h3 className="legend-title">{variable}</h3>
-      <div className="legend-items">
+    <div className="legend_container">
+      <div className="legend_header">{variable}</div>
+      <div className="legend_body">
         {legendData.colors.map((entry, index) => (
-          <div key={index} className="legend-item">
+          <div key={index} className="legend_item">
             <div
-              className="legend-color-box"
+              className="legend_color_box"
               style={{ backgroundColor: entry.color }}
             ></div>
-            <span className="legend-label">
+            <span className="legend_label">
               {entry.range[0].toFixed(2)} - {entry.range[1].toFixed(2)}
             </span>
           </div>

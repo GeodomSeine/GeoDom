@@ -377,7 +377,7 @@ const VisualisationPage: React.FC = () => {
           {Object.entries(groupedData).map(([variable, chartData], index) => (
             <VariableChart
             key={variable}
-            className={`variable_chart chart_${index}`} 
+            className={`variable_element element_${index}`} 
             variable={variable}
             decades={decades}
             data={chartData}
@@ -395,7 +395,7 @@ const VisualisationPage: React.FC = () => {
                   key={variable}
                   data={coloredMapData}
                   variable={variable}
-                  className={`variable_chart chart_${index}`} 
+                  className={`variable_element element_${index}`} 
                   pkData={pkData} 
                   pkStyles={[]} 
                   bassinData={bassinData} 
@@ -411,7 +411,7 @@ const VisualisationPage: React.FC = () => {
         {profileGraphData &&
           <ToggleContainer title="Profil en long" containsTile={true}>
             {selectedVariables.map((variable, index) => (
-              <ProfileGraph className={`variable_chart chart_${index}`}  key={`profile_${variable}`} variable={variable.toLowerCase()} data={profileGraphData} xKey={mode === "amont-aval" ? "PK" : "Strahler"}/>
+              <ProfileGraph className={`variable_element element_${index}`}  key={`profile_${variable}`} variable={variable.toLowerCase()} data={profileGraphData} xKey={mode === "amont-aval" ? "PK" : "Strahler"}/>
             ))}
           </ToggleContainer>
         }
