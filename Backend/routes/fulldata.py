@@ -78,7 +78,14 @@ async def get_data_order_by_strahler(body: dict):
                 )
             
             return result_data
+    except HTTPException as e:
+        logger.error("Error fetching data: %s", e.detail)
+        raise e
+    except AssertionError as e:
+        logger.error(f"AttributeError: {str(e)}")
+        raise HTTPException(status_code=404, detail=f"No data found : Scenarios '{scenarios}' does not exist in the table.")
     except Exception as e:
         logger.error("Error fetching data: %s", e)
         raise HTTPException(status_code=500, detail=str(e))
+    
     
