@@ -36,3 +36,13 @@
         // }
     }
 }
+
+@media (max-width: 760px) {
+    .map_component{
+        .leaflet-container {
+            .leaflet-control-container{
+                display: none;
+            }
+        }
+    }
+}

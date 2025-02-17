@@ -39,6 +39,7 @@
                 overflow: hidden;
                 display:flex;
                 align-items: center;
+                justify-content: center;
                 gap: 8px;
                 width: clamp(200px, 100%, 45vw);
                 canvas{
@@ -57,10 +58,14 @@
             padding: 8px;
         }
     }
+    .space_body:not(:has(.space_body_footer)){
+        .space_body_tile{
+            height:100%;
+        }
+    }
     .space_body.hidden {
         display: none;  
     }   
-    
 }
 .space_container:has(.space_body.hidden){
     flex: 0 0 50px;
@@ -77,10 +82,19 @@
             width: 100%;
             .space_body_tile{
                 .variable_element{
-                    min-width: 87vw;
+                    min-width: 90vw
                 }
             }
         }
     }
 }
 
+@media (max-width: 760px) {
+    .home_component_visualisation{
+        .home_body{
+            .space_container {
+                height: calc(50vh - 15px);
+            }
+        }
+    }   
+}

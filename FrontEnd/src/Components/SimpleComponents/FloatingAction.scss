@@ -16,3 +16,10 @@
     top: 23px;
     z-index: 10000;
 }
+
+@media (max-width: 1160px) {
+    .floating_card_component{
+        top: inherit;
+        bottom: 23px;      
+    }
+}

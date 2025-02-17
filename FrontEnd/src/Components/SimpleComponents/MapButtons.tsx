@@ -28,7 +28,7 @@ const MapControls: React.FC<MapControlsProps> = ({ bounds, children }) => {
     const [isVisible, setIsVisible] = useState(true);
 
     return (
-        <div className="map_buttons" onClick={(e) => e.stopPropagation()}>
+        <div className="map_buttons" >
             <div className="map_buttons_default">
                 {bounds && (
                     <LogoComponent Icon={Expand} size={"35px"} onClick={zoomToBounds} />
@@ -38,7 +38,7 @@ const MapControls: React.FC<MapControlsProps> = ({ bounds, children }) => {
                 {children && <LogoComponent Icon={Burger} size={"35px"} onClick={() => setIsVisible((prev) => !prev)}/>}
             </div>
             {children && (
-                <div className={`map_buttons_children ${isVisible ? "" : "hidden"}`}>
+                <div onClick={zoomToBounds} className={`map_buttons_children ${isVisible ? "" : "hidden"}`}>
                     {children}
                 </div>
             )}

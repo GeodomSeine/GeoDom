@@ -33,3 +33,13 @@
         
     }
 }
+
+@media (max-width: 760px) {
+    .home_component_visualisation{
+        .home_body{
+            .space_container {
+                height: calc(50vh - 15px);
+            }
+        }
+    }   
+}
