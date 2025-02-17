@@ -29,93 +29,82 @@ const VisualisationPage: React.FC = () => {
   const [data, setData] = useState<DataResponse | null>(null);
   const [coloredMapData, setColoredMapData] = useState<ColoredMapResponseData | null>(null);
   const [profileGraphData, setProfileGraphData] = useState<ProfileGraphDataResponse | null>(null);
-
   const [selectedKey, setSelectedKey] = useState<string | null>(null); 
-  
   const [chartData, setChartData] = useState<ChartData | null>(null);
   const [selectedPk, setSelectedPk] = useState<GeoJsonResponse | undefined>(undefined);
   const [idHydStart, setIdHydStart] = useState<number | null>(null);
   const [idHydEnd, setIdHydEnd] = useState<number | null>(null);
   const [scenarios, setScenarios] = useState<Scenario[]>([]);
-  
-  // Génération dynamique de la requête `request`
   const [mode, setMode] = useState<"complet" | "amont-aval">("complet");
-  
-  
   const [pkData, setPkData] = useState<GeoJsonResponse | null>(null);
   const [pkStyles, setPkStyles] = useState<any[]>([]);
   const [bassinData, setBassinData] = useState<GeoJsonResponse | null>(null);
   const [bassinStyle, setBassinStyle] = useState<PathOptions | null>(null);
   const [bounds, setBounds] = useState<LatLngBounds | null>(null);
-  
+  const [sliderValue, setSliderValue] = useState<number>(1);
+
   useEffect(() => {
-    const fetchData = async () => {
-      if(!program){
-        return;
-      }
+    if (!program) {
+      navigate("/");
+      return;
+    }
+  }, [program, navigate]);
+
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      if (!program) return;
 
       try {
-        const [
-          bassinData,
-          bassinSLDData,
-          pkSLDData,
-        ] = await Promise.all([
+        const [bassinData, bassinSLDData, pkSLDData] = await Promise.all([
           getBassin(program.name),
           getBassinSLD(program.name),
           getPkSld(program.name),
         ]);
-        
+
         if (bassinData) {
           setBassinData(bassinData);
           setBounds(calculateBounds(bassinData));
         }
-        
+
         if (pkSLDData) {
           const pkSLDText = await pkSLDData.text();
           setPkStyles(parseSLDToStyles(pkSLDText));
         }
-        
+
         if (bassinSLDData) {
           const bassinSLDText = await bassinSLDData.text();
           const styles = parseSLDToStyles(bassinSLDText);
           setBassinStyle({ color: styles[0]?.color || "var(--basic-black)", weight: styles[0]?.weight || 3 });
         }
-        
+
         await streamPkData(program.name, setPkData);
       } catch (error) {
         console.error("Erreur lors du chargement des données :", error);
       }
     };
-    
-    fetchData();
+
+    fetchInitialData();
   }, [program]);
-  
-  /*
-  "properties": {"pk": 3, "id_obj": 197, "code_bas": "1", "strahler": 1, "obj_ord_pk": "197_1_3", "catchment_id": 7075}
-  */ 
-  const getPkStyles = (feature: any): PathOptions => {
-    const strahler = feature.properties?.strahler;
-    
-    for (const rule of pkStyles) {
-      if (strahler >= rule.min && strahler <= rule.max){
-        return { color: rule.color, weight: rule.weight };
+
+  useEffect(() => {
+    const fetchScenarios = async () => {
+      const data = await getScenarios();
+      if (data) {
+        setScenarios(data.scenarios);
+        setSelectedScenarios(data.scenarios.slice(0, 3));
       }
-    }
-    
-    return { color: "var(--basic-black)", weight: 1 };
-  };
-  
-  
-  // Sélectionner la première variable par défaut
+    };
+    fetchScenarios();
+  }, []);
+
   useEffect(() => {
     if (program && program.variables && program.variables.length > 0) {
       setSelectedVariables([program.variables[0]]);
     }
   }, [program]);
-  
+
   const request: DataRequest | null = useMemo(() => {
     if (!program || !amontAvalResponse || mode !== "amont-aval") return null;
-    
     return {
       program: program.name,
       scenarios: selectedScenarios.map((scenario) => scenario.id),
@@ -123,27 +112,26 @@ const VisualisationPage: React.FC = () => {
       pk: amontAvalResponse.pk || [],
     };
   }, [program, selectedScenarios, selectedVariables, amontAvalResponse, mode]);
-  
+
   const requestFull: DataRequestFull | null = useMemo(() => {
     if (!program || mode !== "complet") return null;
-    
     return {
       program: program.name,
       scenarios: selectedScenarios.map((scenario) => scenario.id),
       variables: selectedVariables.map((variable) => variable.toLowerCase()),
     };
   }, [program, selectedScenarios, selectedVariables, mode]);
-  
+
   const requestColoredMap: ColorMapRequest | null = useMemo(() => {
     if (!program) return null;
     return {
-      program : program.name,
+      program: program.name,
       scenarios: selectedScenarios.map((scenario) => scenario.id),
       variables: selectedVariables.map((variable) => variable.toLowerCase()),
       decades: selectedDecades
-    }
+    };
   }, [program, selectedScenarios, selectedVariables, selectedDecades]);
-  
+
   const profileDataRequest: ProfileGraphPkRequest | null = useMemo(() => {
     if (!program || !amontAvalResponse || mode !== "amont-aval") return null;
     return {
@@ -152,7 +140,7 @@ const VisualisationPage: React.FC = () => {
       variables: selectedVariables.map((variable) => variable.toLowerCase()),
       pk: amontAvalResponse.pk || [],
       decades: selectedDecades
-    }
+    };
   }, [program, selectedScenarios, selectedVariables, amontAvalResponse, mode, selectedDecades]);
 
   useEffect(() => {
@@ -163,12 +151,12 @@ const VisualisationPage: React.FC = () => {
       setSelectedKey(null);
       return;
     }
-    
-    if(mode == "complet"){
+
+    if (mode === "complet") {
       setAmontAvalResponse(null);
       setSelectedPk(undefined);
     }
-    
+
     const fetchData = async () => {
       try {
         let response: DataResponse | null = null;
@@ -177,7 +165,7 @@ const VisualisationPage: React.FC = () => {
         } else if (mode === "complet" && requestFull) {
           response = await getFullData(requestFull);
         }
-        
+
         if (response) {
           setData(response);
           const keys = Object.keys(response);
@@ -196,15 +184,15 @@ const VisualisationPage: React.FC = () => {
       }
     };
 
-    if(mode === "amont-aval" && profileDataRequest){
-      getProfileData(profileDataRequest)
-      .then((data) => {
+    if (mode === "amont-aval" && profileDataRequest) {
+      getProfileData(profileDataRequest).then((data) => {
         setProfileGraphData(data);
       });
-    } 
+    }
+
     fetchData();
   }, [request, requestFull, mode, profileDataRequest]);
-  
+
   useEffect(() => {
     if (!requestColoredMap) return;
     getColoredMapData(requestColoredMap).then((data) => {
@@ -216,20 +204,20 @@ const VisualisationPage: React.FC = () => {
   }, [requestColoredMap]);
 
   useEffect(() => {
-    if (!data || !selectedKey || program == undefined) return;
+    if (!data || !selectedKey || !program) return;
     setChartData(data[selectedKey].data);
-    
+
     const fetchPk = async () => {
       const response = await getPkGeom(program.name, selectedKey);
       if (response) {
         setSelectedPk(response);
       }
     };
-    if(mode === "amont-aval"){
+    if (mode === "amont-aval") {
       fetchPk();
-    } 
+    }
   }, [selectedKey]);
-  
+
   const keyMapping = useMemo(() => {
     if (!data) return {};
     const keys = Object.keys(data);
@@ -238,24 +226,55 @@ const VisualisationPage: React.FC = () => {
       return map;
     }, {} as Record<number, string>);
   }, [data]);
-  
+
   const min = useMemo(() => {
     const keys = Object.keys(keyMapping).map(Number);
     return keys.length > 0 ? Math.min(...keys) : 1;
   }, [keyMapping]);
-  
+
   const max = useMemo(() => {
     const keys = Object.keys(keyMapping).map(Number);
     return keys.length > 0 ? Math.max(...keys) : 1;
   }, [keyMapping]);
-  
-
-  const [sliderValue, setSliderValue] = useState(min);
 
   const handleSliderChange = (value: number) => {
     setSliderValue(value);
     const newKey = keyMapping[value];
     if (newKey) setSelectedKey(newKey);
+  };
+
+  const handleDecadeChange = (value: number[]) => {
+    setSelectedDecades(value);
+  };
+
+  const fetchResults = async () => {
+    if (idHydStart && idHydEnd) {
+      const data = await getAmontAval(program!.name, idHydStart, idHydEnd);
+      setAmontAvalResponse(data);
+    }
+  };
+
+  useEffect(() => {
+    if (idHydEnd === program?.exutoire_id || (idHydStart && idHydEnd)) {
+      fetchResults();
+    }
+  }, [idHydStart, idHydEnd]);
+
+  const resetSelection = () => {
+    setIdHydStart(null);
+    setIdHydEnd(null);
+    setAmontAvalResponse(null);
+    setSelectedPk(undefined);
+  };
+
+  const getPkStyles = (feature: any): PathOptions => {
+    const strahler = feature.properties?.strahler;
+    for (const rule of pkStyles) {
+      if (strahler >= rule.min && strahler <= rule.max) {
+        return { color: rule.color, weight: rule.weight };
+      }
+    }
+    return { color: "var(--basic-black)", weight: 1 };
   };
 
   const sharedSlider = (
@@ -269,62 +288,14 @@ const VisualisationPage: React.FC = () => {
       rightLabel={mode === "amont-aval" ? "Pk max" : "Strahler max"}
     />
   );
-  
-  const handleDecadeChange = (value : number[]) => {
-    setSelectedDecades(value);
-  }
-  
-  // old S1 code
-  useEffect(() => {
-    const fetchScenarios = async () => {
-      const data = await getScenarios();
-      if (data) {
-        setScenarios(data.scenarios);
-        
-        // Sélectionner les 3 premiers scénarios par défaut
-        if (data.scenarios.length > 0) {
-          const firstThreeScenarios = data.scenarios.slice(0, 3);
-          setSelectedScenarios(firstThreeScenarios);
-        } else {
-          setSelectedScenarios(data.scenarios);
-        }
-      }
-    };
-    fetchScenarios();
-  }, [setSelectedScenarios]);
-  
-  
-  const fetchResults = async () => {
-    if (idHydStart && idHydEnd) {
-      const data = await getAmontAval(program!.name, idHydStart, idHydEnd);
-      setAmontAvalResponse(data);
-    }
-  };
-  
-  useEffect(() => {
-    if(idHydEnd === program?.exutoire_id || (idHydStart && idHydEnd)){
-      fetchResults();
-    }
-  }, [idHydStart, idHydEnd]);
-  
-  const resetSelection = () => {
-    setIdHydStart(null);
-    setIdHydEnd(null);
-    setAmontAvalResponse(null);
-    setSelectedPk(undefined);
-  };
-  
-  // old graph S1 code
+
   const decades = chartData?.length ? chartData.map((entry) => entry.decade) : [];
-  const variablesGraph = chartData?.length 
-  ? Object.keys(chartData[0]).filter((key) => key !== "decade") 
-  : [];
-  
-  const groupedData: Record<
-  string,
-  { p5: number[]; p50: number[]; p90: number[] }
-  > = {};
-  
+  const variablesGraph = chartData?.length
+    ? Object.keys(chartData[0]).filter((key) => key !== "decade")
+    : [];
+
+  const groupedData: Record<string, { p5: number[]; p50: number[]; p90: number[] }> = {};
+
   variablesGraph.forEach((variableKey) => {
     const [baseVariable] = variableKey.split("_");
     if (!groupedData[baseVariable]) {
@@ -332,29 +303,20 @@ const VisualisationPage: React.FC = () => {
     }
     if (chartData?.length) {
       chartData.forEach((entry) => {
-        if (variableKey.endsWith("_p5"))
-          groupedData[baseVariable].p5.push(entry[variableKey]);
-        if (variableKey.endsWith("_p50"))
-          groupedData[baseVariable].p50.push(entry[variableKey]);
-        if (variableKey.endsWith("_p90"))
-          groupedData[baseVariable].p90.push(entry[variableKey]);
+        if (variableKey.endsWith("_p5")) groupedData[baseVariable].p5.push(entry[variableKey]);
+        if (variableKey.endsWith("_p50")) groupedData[baseVariable].p50.push(entry[variableKey]);
+        if (variableKey.endsWith("_p90")) groupedData[baseVariable].p90.push(entry[variableKey]);
       });
     }
   });
-  
-  if (!program) {
-    navigate("/");
-    return null;
-  }
-  
+
   return (
     <div className='home_component_visualisation'>
-    
       <div className='home_body'>
         <ToggleContainer title="Carte de sélection" secondChild={sharedSlider}>
           <MapSelection
-            program={program.name}
-            exutoire_id={program.exutoire_id}
+            program={program!.name}
+            exutoire_id={program!.exutoire_id}
             idHydStart={idHydStart}
             idHydEnd={idHydEnd}
             setIdHydStart={setIdHydStart}
@@ -363,7 +325,7 @@ const VisualisationPage: React.FC = () => {
             selectedPk={selectedPk}
             mode={mode}
             resetSelection={resetSelection}
-            variables={program.variables}
+            variables={program!.variables}
             selectedVariables={selectedVariables}
             setSelectedVariables={setSelectedVariables}
             selectedScenarios={selectedScenarios}
@@ -372,49 +334,62 @@ const VisualisationPage: React.FC = () => {
             setMode={setMode}
           />
         </ToggleContainer>
-        {chartData?.length &&
+        {chartData?.length && (
           <ToggleContainer title="Graphiques temporels" containsTile={true} secondChild={sharedSlider}>
-          {Object.entries(groupedData).map(([variable, chartData], index) => (
-            <VariableChart
-              key={variable}
-              className={`variable_element element_${index}`} 
-              variable={variable}
-              decades={decades}
-              data={chartData}
-            />
-          ))}
-          </ToggleContainer>
-        }
-        {coloredMapData &&
-          <ToggleContainer title="Carte des seuils" containsTile={true} secondChild={
-            <DecadeRangeComponent onChange={handleDecadeChange} min={1} max={36} leftLabel={'Première décade'} rightLabel={'dernière décade'} />
-          }
-            children = {
-              Object.entries(coloredMapData.legend).map(([variable, __], index) => (
-                <ColoredMapComponent 
-                  key={variable}
-                  data={coloredMapData}
-                  variable={variable}
-                  className={`variable_element element_${index}`} 
-                  pkData={pkData} 
-                  pkStyles={[]} 
-                  bassinData={bassinData} 
-                  bassinStyle={bassinStyle} 
-                  bounds={bounds} 
-                  getPkStyles={getPkStyles}          
-                />
-              ))
-            }
-          >
-          </ToggleContainer>
-        }
-        {profileGraphData &&
-          <ToggleContainer title="Profil en long" containsTile={true}>
-            {selectedVariables.map((variable, index) => (
-              <ProfileGraph className={`variable_element element_${index}`}  key={`profile_${variable}`} variable={variable.toLowerCase()} data={profileGraphData} xKey={mode === "amont-aval" ? "PK" : "Strahler"}/>
+            {Object.entries(groupedData).map(([variable, chartData], index) => (
+              <VariableChart
+                key={variable}
+                className={`variable_element element_${index}`}
+                variable={variable}
+                decades={decades}
+                data={chartData}
+              />
             ))}
           </ToggleContainer>
-        }
+        )}
+        {coloredMapData && (
+          <ToggleContainer
+            title="Carte des seuils"
+            containsTile={true}
+            secondChild={
+              <DecadeRangeComponent
+                onChange={handleDecadeChange}
+                min={1}
+                max={36}
+                leftLabel={'Première décade'}
+                rightLabel={'dernière décade'}
+              />
+            }
+          >
+            {Object.entries(coloredMapData.legend).map(([variable, __], index) => (
+              <ColoredMapComponent
+                key={variable}
+                data={coloredMapData}
+                variable={variable}
+                className={`variable_element element_${index}`}
+                pkData={pkData}
+                pkStyles={[]}
+                bassinData={bassinData}
+                bassinStyle={bassinStyle}
+                bounds={bounds}
+                getPkStyles={getPkStyles}
+              />
+            ))}
+          </ToggleContainer>
+        )}
+        {profileGraphData && (
+          <ToggleContainer title="Profil en long" containsTile={true}>
+            {selectedVariables.map((variable, index) => (
+              <ProfileGraph
+                className={`variable_element element_${index}`}
+                key={`profile_${variable}`}
+                variable={variable.toLowerCase()}
+                data={profileGraphData}
+                xKey={mode === "amont-aval" ? "PK" : "Strahler"}
+              />
+            ))}
+          </ToggleContainer>
+        )}
       </div>
     </div>
   );
