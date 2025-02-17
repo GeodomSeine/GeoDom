@@ -15,14 +15,15 @@ const ButtonComponent: FC<ButtonComponentProps> = ({
 	className= "button_container",
 	onDark = false,
 	onClick,
+
 }) => {
     //need to put into a seperate scss file
 	const containerStyle: React.CSSProperties = {
         cursor: "pointer",
 	};
 
-	const appliedClassName = `${className}${onDark ? " button_on_dark" : ""}`;
 
+	const appliedClassName = `${className}${onDark ? " button_on_dark" : ""}`;
 	if (link) {
 		return (
 			<a

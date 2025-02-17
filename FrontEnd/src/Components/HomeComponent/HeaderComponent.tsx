@@ -6,7 +6,7 @@ import "./HeaderComponent.scss";
 import SearchComponent from '../SimpleComponents/SearchComponent';
 import { useNavigate } from 'react-router';
 import Modal from '../Modal/Modal';
-import ImportJsonComponent from '../ImportJsonComponent/ImportJsonComponent';
+import ImportJsonComponent from '../ImportComponents/ImportJsonComponent';
 
 interface HeaderComponentProps {
     onSearch?: (query: string) => void;
@@ -64,7 +64,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
                     <LogoComponent size={"35px"} Icon={Export} onClick={handleExportJson} />
                 )}
             </div>
-            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+            <Modal title='Import Visualisation' isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
                 <ImportJsonComponent visualizationData={visualizationData} />
             </Modal>
         </div>

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import './ImportJsonComponent.scss';
+import React, { useRef, useState } from 'react';
+import './ImportComponent.scss';
+import ButtonComponent from '../SimpleComponents/ButtonComponent';
 
 interface ImportJsonComponentProps {
     visualizationData: { name: string; variables: string[] }[];
@@ -8,6 +9,7 @@ interface ImportJsonComponentProps {
 const ImportJsonComponent: React.FC<ImportJsonComponentProps> = ({ visualizationData }) => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0] || null;
@@ -54,12 +56,34 @@ const ImportJsonComponent: React.FC<ImportJsonComponentProps> = ({ visualization
         }
     };
 
+    const handleButtonClick = () => {
+        fileInputRef.current?.click();
+    };
+
     return (
-        <div className="import-json-popup">
-            <h2>Importer un fichier JSON</h2>
-            <input type="file" accept=".json" onChange={handleFileChange} />
-            <button onClick={handleImport}>Importer JSON</button>
-            {errorMessage && <h2 style={{ color: 'red' }}>{errorMessage}</h2>}
+        <div className="import_container json">
+            {/* need to change this into input*/}
+            <div className='import_body'>
+                <input
+                    type="file"
+                    accept=".json"
+                    ref={fileInputRef}
+                    style={{ display: "none" }}
+                    onChange={handleFileChange}
+                />
+                <ButtonComponent
+                    txt={selectedFile ? selectedFile.name : "Parcourir"}
+                    onClick={handleButtonClick}
+                    className='button_container button_max'
+                />
+                <ButtonComponent
+                    onClick={handleImport}
+                    txt='Importer'
+                />
+            </div>
+            {errorMessage && <div className='import_footer'>
+                <p style={{ color: 'red' }}>{errorMessage}</p>
+            </div>}
         </div>
     );
 };

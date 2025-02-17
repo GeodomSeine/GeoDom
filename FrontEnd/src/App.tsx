@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ProgramProvider } from './contexts/ProgramContext';
 import HomeComponent from './Components/HomeComponent/HomeComponent';
 import VisualisationPage from './Components/Visulisation/VisualisationPage';
-import ImportJsonComponent from './Components/ImportJsonComponent/ImportJsonComponent';
+import ImportJsonComponent from './Components/ImportComponents/ImportJsonComponent';
 import { getPrograms, ProgramResponse } from './services/api';
 
 const App: React.FC = () => {
