@@ -1,5 +1,5 @@
-from sqlalchemy import Integer, String, Numeric, BigInteger, Boolean, Date, JSON, Time, VARCHAR
-from sqlalchemy.orm import Mapped, mapped_column, declarative_base
+from sqlalchemy import Integer, String, Numeric, BigInteger, Boolean, Date, JSON, Time, VARCHAR, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, declarative_base, relationship
 from geoalchemy2 import Geometry
 from geoalchemy2.shape import to_shape
 from sqlalchemy.dialects.postgresql import JSONB
@@ -207,3 +207,65 @@ class Measurement:
 
         Measurement._class_cache[measurement_type] = DynamicMeasurement
         return DynamicMeasurement
+
+class Varcompartment:
+    _class_cache = {}
+    
+    @staticmethod
+    def create(program: str):
+        """
+        Crée une classe Varcompartment dynamique pour un programme donné.
+
+        Args:
+            program (str): Nom du programme (schéma).
+
+        Returns:
+            type: Classe dynamique.
+        """
+        if program in Varcompartment._class_cache:
+            return Varcompartment._class_cache[program]
+
+        class DynamicVarcompartment(Base):
+            __tablename__ = "varcompartment"
+            __table_args__ = {"schema": program}
+
+            id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+            id_defvariable: Mapped[int] = mapped_column(Integer, ForeignKey(f"{program}.def_variable.id"))
+            id_compartment: Mapped[int] = mapped_column(Integer)
+            unit_short: Mapped[str] = mapped_column(String)
+            unit_long: Mapped[str] = mapped_column(String)
+
+            defvariable = relationship("DefVariable", back_populates="varcompartments")
+
+        Varcompartment._class_cache[program] = DynamicVarcompartment
+        return Varcompartment
+
+class DefVariable:
+    _class_cache = {}
+    
+    @staticmethod
+    def create(program: str):
+        """
+        Crée une classe DefVariable dynamique pour un programme donné.
+
+        Args:
+            program (str): Nom du programme (schéma).
+
+        Returns:
+            type: Classe dynamique.
+        """
+        if program in DefVariable._class_cache:
+            return DefVariable._class_cache[program]
+
+        class DynamicDefVariable(Base):
+            __tablename__ = "defvariable"
+            __table_args__ = {"schema": program}
+
+            id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+            code: Mapped[str] = mapped_column(String)
+            name: Mapped[str] = mapped_column(String)
+
+            varcompartments = relationship("Varcompartment", back_populates="defvariable")
+
+        DefVariable._class_cache[program] = DynamicDefVariable
+        return DynamicDefVariable
