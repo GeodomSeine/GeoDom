@@ -19,6 +19,11 @@
         "nb_classes" : 5, 
         "colors": ["#ffd6aa", "#cca381", "#956d56", "#956d56", "#280000"]
     },
+    "phy":{
+        "classification" : "quantile",
+        "nb_classes" : 5,
+        "colors": ["#f7fcb9", "#d9f0a3", "#addd8e", "#41ab5d", "#238443"]
+    },
     "no3":{
         "classification" : "sld"
     }, 
@@ -26,6 +31,9 @@
         "classification" : "sld"
     }, 
     "nh4" : {
+        "classification" : "sld"
+    }, 
+    "oxy" : {
         "classification" : "sld"
     }
 }
