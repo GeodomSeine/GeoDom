@@ -13,6 +13,7 @@ import { calculateBounds } from "../../utils/mapUtils";
 import { parseSLDToStyles } from "../../mapstyles/mapStyles";
 import SliderComponent from "../SimpleComponents/SliderComponent";
 import ProfileGraph from "../SimpleComponents/ProfileGraph";
+import FloatingAction from "../SimpleComponents/FloatingAction";
 
 type ChartData = Array<{
   decade: number;
@@ -312,6 +313,7 @@ const VisualisationPage: React.FC = () => {
 
   return (
     <div className='home_component_visualisation'>
+      <FloatingAction></FloatingAction>
       <div className='home_body'>
         <ToggleContainer title="Carte de sélection" secondChild={sharedSlider}>
           <MapSelection

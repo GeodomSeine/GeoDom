@@ -11,23 +11,12 @@ import ImportJsonComponent from '../ImportComponents/ImportJsonComponent';
 interface HeaderComponentProps {
     onSearch?: (query: string) => void;
     showImportButton?: boolean;
-    showExportButton?: boolean;
-    exportData?: {
-        name: string | undefined;
-        selected: string | null;
-        hydro_id_start: number | null;
-        hydro_id_end: number | null;
-        variables: string[];
-        scenarios: number[];
-    };
     visualizationData?: { name: string; variables: string[] }[];
 }
 
 const HeaderComponent: React.FC<HeaderComponentProps> = ({
     onSearch,
     showImportButton = false,
-    showExportButton = false,
-    exportData,
     visualizationData = [],
 }) => {
     const navigate = useNavigate();
@@ -37,21 +26,6 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
         navigate('/');
     };
 
-    const handleExportJson = () => {
-        if (exportData) {
-            const jsonString = JSON.stringify(exportData, null, 2);
-            const blob = new Blob([jsonString], { type: "application/json" });
-
-            const url = URL.createObjectURL(blob);
-
-            const downloadLink = document.createElement("a");
-            downloadLink.href = url;
-            downloadLink.download = exportData.name + ".json";
-            downloadLink.click();
-            URL.revokeObjectURL(url);
-        }
-    };
-
     return (
         <div className="header_component">
             <LogoComponent size={"50px"} onClick={handleHomeClick} />
@@ -59,9 +33,6 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
                 {onSearch && <SearchComponent onSearch={onSearch} />}
                 {showImportButton && (
                     <LogoComponent size={"35px"} Icon={Import} onClick={() => setIsModalOpen(true)} />
-                )}
-                {showExportButton && exportData && (
-                    <LogoComponent size={"35px"} Icon={Export} onClick={handleExportJson} />
                 )}
             </div>
             <Modal title='Import Visualisation' isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
