@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import LogoComponent from '../SimpleComponents/LogoComponent';
 import Import from "../../assets/import.svg?react";
-import Export from "../../assets/export.svg?react";
 import "./HeaderComponent.scss";
 import SearchComponent from '../SimpleComponents/SearchComponent';
 import { useNavigate } from 'react-router';
