@@ -376,11 +376,11 @@ const VisualisationPage: React.FC = () => {
           <ToggleContainer title="Graphiques temporels" containsTile={true} secondChild={sharedSlider}>
           {Object.entries(groupedData).map(([variable, chartData], index) => (
             <VariableChart
-            key={variable}
-            className={`variable_element element_${index}`} 
-            variable={variable}
-            decades={decades}
-            data={chartData}
+              key={variable}
+              className={`variable_element element_${index}`} 
+              variable={variable}
+              decades={decades}
+              data={chartData}
             />
           ))}
           </ToggleContainer>

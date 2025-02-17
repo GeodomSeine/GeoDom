@@ -39,8 +39,8 @@
                 overflow: hidden;
                 display:flex;
                 align-items: center;
-                min-width: 50%;
                 gap: 8px;
+                width: clamp(200px, 100%, 45vw);
                 canvas{
                     height: 100%;
                     width: 100%;
