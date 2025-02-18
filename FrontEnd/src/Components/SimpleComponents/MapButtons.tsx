@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useRef, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import { useMap } from "react-leaflet";
 import { LatLngBounds } from "leaflet";
 import LogoComponent from "./LogoComponent";
