@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
-import { getPrograms, ProgramResponse } from '../../services/api'; 
+import { getPrograms, ProgramResponse, ProgramVariable } from '../../services/api'; 
 import CardComponent from './CardComponent'; 
 import "./HomeComponent.scss";
 import HeaderComponent from './HeaderComponent';
-import { useProgram } from '../../contexts/ProgramContext';
 import { Program } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 
@@ -12,21 +11,19 @@ import { useNavigate } from 'react-router-dom';
     export default function HomeComponent({}: Props) {
         const [programs, setPrograms] = useState<ProgramResponse | null>(null);
         const [searchQuery, setSearchQuery] = useState(""); 
-
-        const { setProgram } = useProgram();
         const navigate = useNavigate();
 
         useEffect(() => {
             const fetchPrograms = async () => {
                 const data = await getPrograms();
                 setPrograms(data);
+                localStorage.setItem("programs", JSON.stringify(data));
             };
             fetchPrograms();
         }, []);
 
         const handleCardClick = (selectedProgram: Program) => {
-            setProgram(selectedProgram);
-            navigate('/visualisation');
+            navigate(`/${selectedProgram.name}`);
         };
 
         const filteredPrograms = Array.isArray(programs) ? programs.filter((item) =>
@@ -35,7 +32,7 @@ import { useNavigate } from 'react-router-dom';
 
         const visualizationData = Array.isArray(programs) ? programs.map(program => ({
             name: program.name,
-            variables: program.variables
+            variables: program.variables.map((variable:ProgramVariable) => variable.var_code)
         })) : [];
         
         return (
@@ -49,7 +46,7 @@ import { useNavigate } from 'react-router-dom';
                                             key={item.name}
                                             title={item.title}
                                             description={item.description}
-                                            variables={item.variables}
+                                            variables={item.variables.map(variable => variable.var_name)}
                                             background={item.background}
                                             onClick={() => handleCardClick(item)}
                                         />
@@ -63,7 +60,7 @@ import { useNavigate } from 'react-router-dom';
                                         key={item.name}
                                         title={item.title}
                                         description={item.description}
-                                        variables={item.variables}
+                                        variables={item.variables.map(variable => variable.var_name)}
                                         background={item.background}
                                         onClick={() => handleCardClick(item)}
                                     />

@@ -53,9 +53,15 @@ export interface Program {
   name: string;
   title: string;
   description: string;
-  variables: string[];
+  variables: ProgramVariable[];
   exutoire_id: number;
   background: string;
+}
+
+export interface ProgramVariable {
+  var_code: string;
+  var_name: string;
+  unit_short: string;
 }
 
 export interface ProgramResponse {

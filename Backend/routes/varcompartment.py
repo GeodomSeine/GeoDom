@@ -1,15 +1,11 @@
-from fastapi import APIRouter, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import and_, func
-from core.database import async_session_pynuts
 from core.logger import logger
 from models.models import VarCompartment
 
-router = APIRouter(prefix="/varcompartment", tags=["VarCompartment"])
 
-
-async def fetch_varcompartment_from_db(session: AsyncSession, variable: str):
+async def fetch_varcompartment_from_db(session: AsyncSession, variables: list[str])->dict:
     """
     Récupère tous les compartiments pour une variable donnée.
 
@@ -22,20 +18,20 @@ async def fetch_varcompartment_from_db(session: AsyncSession, variable: str):
     """
     try:
         query = select(
+            VarCompartment.var_code,
             VarCompartment.var_name,
             VarCompartment.unit_short
         ).where(
             and_(
                 VarCompartment.comp_name == 'watercolumn',
-                func.lower(VarCompartment.var_code) == func.lower(variable)
+                func.lower(VarCompartment.var_code).in_([func.lower(variable) for variable in variables])
             )
-        )
-        
+        ).order_by(VarCompartment.var_code)
         result = await session.execute(query)
-        varCompartment = result.fetchall()
-
+        varCompartment = result.fetchall()        
         return [
             {
+                "var_code": row.var_code.upper(),
                 "var_name": row.var_name,
                 "unit_short": row.unit_short
             }
@@ -43,24 +39,4 @@ async def fetch_varcompartment_from_db(session: AsyncSession, variable: str):
         ]
     except Exception as e:
         logger.error("Erreur lors de la récupération des compartiments : %s", e)
-        raise HTTPException(status_code=500, detail="Erreur interne du serveur")
-
-
-@router.get("/{variable}")
-async def get_varcompartment(variable: str):
-    """
-    Récupère la liste de tous les compartiments pour une variable donnée.
-
-    Args:
-        variable (str): Nom de la variable.
-
-    Returns:
-        dict: Liste des compartiments.
-    """
-    async with async_session_pynuts() as session:
-        varCompartment = await fetch_varcompartment_from_db(session, variable)
-
-    if not varCompartment:
-        raise HTTPException(status_code=404, detail="Aucun compartiment trouvé.")
-
-    return {"varCompartment": varCompartment}
+    

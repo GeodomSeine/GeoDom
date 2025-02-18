@@ -1,3 +1,4 @@
+from http.client import HTTPException
 import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -9,6 +10,7 @@ from core.config import settings
 from routes import programs, pk, hydro, bassin, scenarios, data, sld, stationsnap, amont_aval, pk_geom, fulldata, data_donuts, profile_en_long, varcompartment
 from core.logger import logger
 from scheduler.scheduler import lifespan
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 
 app = FastAPI(
@@ -36,18 +38,17 @@ app.include_router(pk_geom.router)
 app.include_router(fulldata.router)
 app.include_router(data_donuts.router)
 app.include_router(profile_en_long.router)
-app.include_router(varcompartment.router)
+
 
 # Front
-app.mount("/", StaticFiles(directory="./static", html=True), name="static")
+class SPAStaticFiles(StaticFiles):
+    async def get_response(self, path: str, scope):
+        try:
+            return await super().get_response(path, scope)
+        except (HTTPException, StarletteHTTPException) as ex:
+            if ex.status_code == 404:
+                return await super().get_response("index.html", scope)
+            else:
+                raise ex
 
-@app.get("/{full_path:path}")
-async def serve_spa(full_path: str):
-    """
-    Redirige toutes les routes inconnues vers index.html (SPA handling).
-    """
-    index_path = "./static/index.html"
-    if os.path.exists(index_path):
-        return FileResponse(index_path)
-    else:
-        return RedirectResponse(url="/static/index.html")
+app.mount("/", SPAStaticFiles(directory="./static", html=True), name="spa-static-files")
