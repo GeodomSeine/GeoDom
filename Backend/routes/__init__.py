@@ -11,4 +11,3 @@ from .pk_geom import router as pk_geom_router
 from .fulldata import router as fulldata_router
 from .data_donuts import router as data_donuts_router
 from .profile_en_long import router as profile_en_long_router
-from .varcompartment import router as varcompartment_router
