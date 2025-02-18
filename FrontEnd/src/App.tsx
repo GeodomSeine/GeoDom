@@ -29,7 +29,7 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<HomeComponent />} />
           <Route path="/visualisation" element={<VisualisationPage />} />
-          <Route path="/import-json" element={<ImportJsonComponent visualizationData={visualizationData} />} />
+          <Route path="/import-json" element={<ImportJsonComponent visualizationData={visualizationData} />}/>
         </Routes>
       </ProgramProvider>
     </Router>
