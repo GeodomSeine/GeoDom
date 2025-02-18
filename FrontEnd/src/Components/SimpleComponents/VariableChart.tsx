@@ -13,6 +13,7 @@ import {
   ChartOptions,
 } from "chart.js";
 import zoomPlugin from "chartjs-plugin-zoom";
+import { ProgramVariable } from "../../services/api";
 // import ButtonComponent from "./ButtonComponent";
 
 ChartJS.register(
@@ -28,7 +29,7 @@ ChartJS.register(
 );
 
 interface VariableChartProps {
-  variable: string; // Nom de la variable (e.g., no3, oxy)
+  variable: ProgramVariable; // Nom de la variable (e.g., no3, oxy)
   decades: number[]; // Décennies
   data: { p5: number[]; p50: number[]; p90: number[] }; // Données pour p5, p50, p90
   className?:string | null;
@@ -41,19 +42,19 @@ const VariableChart: React.FC<VariableChartProps> = ({ variable, decades, data, 
     labels: decades,
     datasets: [
       {
-        label: `${variable} (P5)`,
+        label: `${variable.var_name} (P5)`,
         data: data.p5,
         borderColor: "rgba(255, 99, 132, 1)",
         fill: false,
       },
       {
-        label: `${variable} (P50)`,
+        label: `${variable.var_name} (P50)`,
         data: data.p50,
         borderColor: "rgba(54, 162, 235, 1)",
         fill: false,
       },
       {
-        label: `${variable} (P90)`,
+        label: `${variable.var_name} (P90)`,
         data: data.p90,
         borderColor: "rgba(75, 192, 192, 1)",
         fill: false,
@@ -61,45 +62,26 @@ const VariableChart: React.FC<VariableChartProps> = ({ variable, decades, data, 
     ],
   };
 
-  const options : ChartOptions<"line"> = {
+  const options: ChartOptions<"line"> = {
     responsive: true,
-    // plugins: {
-    //   zoom: {
-    //     zoom: {
-    //       wheel: {
-    //         enabled: true,
-    //       },
-    //       pinch: {
-    //         enabled: true,
-    //       },
-    //       //mode: 'xy',
-    //     },
-    //     limits: {
-    //       x: { min: 0, max: decades.length - 1 }, // Limite pour les labels
-    //       y: { min: Math.min(...data.p5), max: Math.max(...data.p90) }, // Limites dynamiques selon les données
-    //     },
-    //   },
-    // },
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: "Décade",
+        },
+      },
+      y: {
+        title: {
+          display: true,
+          text: variable.unit_short,
+        },
+      },
+    },
   };
-  // const resetZoom = () => {
-  //   if (chartRef.current) {
-  //     chartRef.current.resetZoom();
-  //   }
-  // };
-
-  // const style: React.CSSProperties = {
-  //     display: "flex",
-  //     alignItems: "center",
-  //     flexDirection: "row",
-  //     justifyContent: "space-between",
-  //     fontSize: "0.6rem"
-  // };
 
   return (
     <div className={`${className}`}>
-      {/* <div style={style}>
-        <ButtonComponent txt={"Reset Zoom"}></ButtonComponent>
-      </div> */}
       <Line ref={chartRef} data={chartData} options={options}/>
     </div>
   );
