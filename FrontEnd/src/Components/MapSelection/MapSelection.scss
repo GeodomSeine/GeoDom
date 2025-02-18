@@ -10,6 +10,13 @@
         height: 100%;
         width: 100%;
         @include card;
+        .leaflet-control-container{
+            .leaflet-top{
+                .leaflet-control-layers{
+                    display: none;
+                }
+            }
+        }
         .custom_buttons {
             position: absolute;
             top: 65px;
@@ -37,12 +44,3 @@
     }
 }
 
-@media (max-width: 760px) {
-    .map_component{
-        .leaflet-container {
-            .leaflet-control-container{
-                display: none;
-            }
-        }
-    }
-}
