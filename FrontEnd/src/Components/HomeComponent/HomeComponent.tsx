@@ -46,7 +46,7 @@ import { useNavigate } from 'react-router-dom';
                                             key={item.name}
                                             title={item.title}
                                             description={item.description}
-                                            variables={item.variables.map(variable => variable.var_name)}
+                                            variables={item.variables.map(variable => variable.var_code.toUpperCase())}
                                             background={item.background}
                                             onClick={() => handleCardClick(item)}
                                         />
@@ -60,7 +60,7 @@ import { useNavigate } from 'react-router-dom';
                                         key={item.name}
                                         title={item.title}
                                         description={item.description}
-                                        variables={item.variables.map(variable => variable.var_name)}
+                                        variables={item.variables.map(variable => variable.var_code.toUpperCase())}
                                         background={item.background}
                                         onClick={() => handleCardClick(item)}
                                     />

@@ -74,7 +74,7 @@ interface ControlComponentProps {
           <h3>Indicateurs</h3>
           {variables.map((variable) => (
             <InputComponent disabled ={selectedVariables.length == 4 && !selectedVariables.includes(variable)} // limité à 4
-              label={variable.var_name}
+              label={variable.var_code.toUpperCase()}
               type={"checkbox"}
               checked={selectedVariables.includes(variable)}
               onChange={(e) => {
