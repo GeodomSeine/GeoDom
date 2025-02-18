@@ -11,6 +11,7 @@ interface ExportJsonComponentProps {
         variables: string[]; 
         scenarios: number[];
         decades: number[]
+        selectedSliderValue: number;
     }
 }
 

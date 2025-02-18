@@ -1,28 +1,34 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import './DecadeRangeComponent.scss';
 
 type DecadeRangeProps = {
   min: number;
   max: number;
+  value: number[]; // Ajoutez cette ligne pour accepter la prop value
   onChange: (value: number[]) => void;
   leftLabel: string;
   rightLabel: string;
 };
 
-const DecadeRangeComponent: React.FC<DecadeRangeProps> = ({ min, max, onChange, leftLabel, rightLabel }) => {
-  const [begin, setBegin] = useState<number>(min);
-  const [end, setEnd] = useState<number>(max);
+const DecadeRangeComponent: React.FC<DecadeRangeProps> = ({ min, max, value, onChange, leftLabel, rightLabel }) => {
+  const [begin, setBegin] = useState<number>(value[0]);
+  const [end, setEnd] = useState<number>(value[1]);
+
+  useEffect(() => {
+    setBegin(value[0]);
+    setEnd(value[1]);
+  }, [value]);
 
   const handleBeginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = Math.max(min, Math.min(Number(e.target.value), end));
-    setBegin(value);
-    onChange([value, end]);
+    const newValue = Math.max(min, Math.min(Number(e.target.value), end));
+    setBegin(newValue);
+    onChange([newValue, end]);
   };
 
   const handleEndChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = Math.min(max, Math.max(Number(e.target.value), begin));
-    setEnd(value);
-    onChange([begin, value]);
+    const newValue = Math.min(max, Math.max(Number(e.target.value), begin));
+    setEnd(newValue);
+    onChange([begin, newValue]);
   };
 
   return (

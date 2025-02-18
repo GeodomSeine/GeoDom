@@ -27,7 +27,7 @@ const VisualisationPage: React.FC = () => {
   const [selectedVariables, setSelectedVariables] = useState<ProgramVariable[]>([]);
   const [selectedScenarios, setSelectedScenarios] = useState<Scenario[]>([]);
   const [amontAvalResponse, setAmontAvalResponse] = useState<AmontAvalResponse | null>(null);
-  const [selectedDecades, setSelectedDecades] = useState<number[]>([1, 2, 3]);
+  const [selectedDecades, setSelectedDecades] = useState<number[]>([1, 36]);
   const [data, setData] = useState<DataResponse | null>(null);
   const [coloredMapData, setColoredMapData] = useState<ColoredMapResponseData | null>(null);
   const [profileGraphData, setProfileGraphData] = useState<ProfileGraphDataResponse | null>(null);
@@ -99,19 +99,14 @@ const VisualisationPage: React.FC = () => {
         }
         setSelectedKey(jsonData.selected);
         setSelectedDecades(jsonData.decades);
-        setSliderValue(Number(Object.entries(keyMapping).find(([_, value]) => value === jsonData.selected)?.[0]) || 1);
-        
-        console.log(selectedKey);
-        console.log(selectedDecades);
-        console.log(sliderValue);
-
+        setSliderValue(jsonData.selectedSliderValue);
         localStorage.removeItem("confImportation");
       } catch (error) {
         console.error('Error parsing JSON:', error);
       }
     }
   }, [conf, program, scenarios]);
-
+  
   useEffect(() => {
     const fetchInitialData = async () => {
       if (!program) return;
@@ -361,6 +356,7 @@ const VisualisationPage: React.FC = () => {
   const exportConf = {
     name: program.name,
     selected: selectedKey,
+    selectedSliderValue: sliderValue,
     hydro_id_start: idHydStart,
     hydro_id_end: idHydEnd,
     variables: selectedVariables.map((variable) => variable.var_code),
@@ -414,6 +410,7 @@ const VisualisationPage: React.FC = () => {
             containsTile={true}
             secondChild={
               <DecadeRangeComponent
+              value={selectedDecades}
                 onChange={handleDecadeChange}
                 min={1}
                 max={36}
