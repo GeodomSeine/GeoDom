@@ -82,7 +82,7 @@ const ImportJsonComponent: React.FC<ImportJsonComponentProps> = ({ visualization
                 />
             </div>
             {errorMessage && <div className='import_footer'>
-                <p style={{ color: 'red' }}>{errorMessage}</p>
+                <p style={{ color: 'var(--danger-color)' }}>{errorMessage}</p>
             </div>}
         </div>
     );

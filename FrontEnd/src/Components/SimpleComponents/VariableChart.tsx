@@ -14,6 +14,7 @@ import {
 } from "chart.js";
 import zoomPlugin from "chartjs-plugin-zoom";
 import { ProgramVariable } from "../../services/api";
+
 // import ButtonComponent from "./ButtonComponent";
 
 ChartJS.register(

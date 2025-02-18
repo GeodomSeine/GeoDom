@@ -21,6 +21,7 @@
         gap: 8px;
         flex-direction: column;
         .space_body_tile {
+            background-color: $shade-ligthest-grey;
             @include reverseCard;
             padding: 8px;
             box-sizing: border-box;

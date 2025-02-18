@@ -27,8 +27,7 @@ const DecadeRangeComponent: React.FC<DecadeRangeProps> = ({ min, max, onChange, 
 
   return (
     <div className="range_container">
-      <div className="range_text">
-        <label>{leftLabel}</label>
+        <div>{leftLabel}</div>
         <input
           type="number"
           value={begin}
@@ -44,8 +43,7 @@ const DecadeRangeComponent: React.FC<DecadeRangeProps> = ({ min, max, onChange, 
           max={max}
           onChange={handleEndChange}
         />
-        <label>{rightLabel}</label>
-      </div>
+        <div>{rightLabel}</div>
     </div>
   );
 };
