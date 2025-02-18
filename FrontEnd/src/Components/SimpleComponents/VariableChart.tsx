@@ -46,25 +46,34 @@ const VariableChart: React.FC<VariableChartProps> = ({ variable, decades, data, 
         label: `${variable.var_code.toUpperCase()} (P5)`,
         data: data.p5,
         borderColor: "rgba(255, 99, 132, 1)",
-        fill: false,
+        backgroundColor: "rgba(220, 220, 220, 0.7)",
+        fill: +2,
       },
       {
         label: `${variable.var_code.toUpperCase()} (P50)`,
         data: data.p50,
         borderColor: "rgba(54, 162, 235, 1)",
-        fill: false,
+        //backgroundColor: "rgba(220, 220, 220, 0.7)",
+        //fill: false,
+        
       },
       {
         label: `${variable.var_code.toUpperCase()} (P90)`,
         data: data.p90,
         borderColor: "rgba(75, 192, 192, 1)",
-        fill: false,
+        //backgroundColor: "rgba(220, 220, 220, 0.7)",
+        //fill: +1,
       },
     ],
   };
 
   const options: ChartOptions<"line"> = {
     responsive: true,
+    plugins: {
+      filler: {
+          propagate: false
+      }
+    },
     scales: {
       x: {
         title: {
