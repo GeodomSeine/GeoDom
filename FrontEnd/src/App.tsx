@@ -5,7 +5,7 @@ import { ProgramProvider } from './contexts/ProgramContext';
 import HomeComponent from './Components/HomeComponent/HomeComponent';
 import VisualisationPage from './Components/Visulisation/VisualisationPage';
 import ImportJsonComponent from './Components/ImportComponents/ImportJsonComponent';
-import { getPrograms, ProgramResponse } from './services/api';
+import { getPrograms, ProgramResponse, ProgramVariable } from './services/api';
 
 const App: React.FC = () => {
   const [programs, setPrograms] = useState<ProgramResponse | null>(null);
@@ -20,7 +20,7 @@ const App: React.FC = () => {
 
   const visualizationData = Array.isArray(programs) ? programs.map(program => ({
     name: program.name,
-    variables: program.variables
+    variables: program.variables.map((variable:ProgramVariable) => variable.var_code)
   })) : [];
 
   return (

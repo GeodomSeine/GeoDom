@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getPrograms, ProgramResponse } from '../../services/api'; 
+import { getPrograms, ProgramResponse, ProgramVariable } from '../../services/api'; 
 import CardComponent from './CardComponent'; 
 import "./HomeComponent.scss";
 import HeaderComponent from './HeaderComponent';
@@ -35,7 +35,7 @@ import { useNavigate } from 'react-router-dom';
 
         const visualizationData = Array.isArray(programs) ? programs.map(program => ({
             name: program.name,
-            variables: program.variables
+            variables: program.variables.map((variable:ProgramVariable) => variable.var_code)
         })) : [];
         
         return (
@@ -49,7 +49,7 @@ import { useNavigate } from 'react-router-dom';
                                             key={item.name}
                                             title={item.title}
                                             description={item.description}
-                                            variables={item.variables}
+                                            variables={item.variables.map(variable => variable.var_name)}
                                             background={item.background}
                                             onClick={() => handleCardClick(item)}
                                         />
@@ -63,7 +63,7 @@ import { useNavigate } from 'react-router-dom';
                                         key={item.name}
                                         title={item.title}
                                         description={item.description}
-                                        variables={item.variables}
+                                        variables={item.variables.map(variable => variable.var_name)}
                                         background={item.background}
                                         onClick={() => handleCardClick(item)}
                                     />

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ColoredMapResponseData, GeoJsonResponse } from '../../services/api';
+import { ColoredMapResponseData, GeoJsonResponse, ProgramVariable } from '../../services/api';
 import LegendSld from '../LegendComponent/LegendSld';
 import LegendQuantile from '../LegendComponent/LegendQuantile';
 import MapBaseComponent from './MapBaseComponent';
@@ -7,7 +7,7 @@ import { LatLngBounds, PathOptions } from 'leaflet';
 
 type Props = {
     data: ColoredMapResponseData | null;
-    variable: string;
+    variable: ProgramVariable;
     className?: string;
     pkData: GeoJsonResponse | null;
     pkStyles: any[];
@@ -21,7 +21,7 @@ const ColoredMapComponent: React.FC<Props> = ({ data, variable, className, pkDat
   return (
     <div className={className}>
       {data && 
-        (data.legend[variable].sld ? <LegendSld variable={variable}/> : <LegendQuantile variable={variable} legendData={data.legend[variable]}/>)
+        (data.legend[variable.var_code.toLowerCase()].sld ? <LegendSld variable={variable}/> : <LegendQuantile variable={variable} legendData={data.legend[variable.var_code.toLowerCase()]}/>)
       }
       {data && 
         <MapBaseComponent 

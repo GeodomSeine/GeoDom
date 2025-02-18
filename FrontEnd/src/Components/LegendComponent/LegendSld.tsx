@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { getVariableSld } from "../../services/api";
+import { getVariableSld, ProgramVariable } from "../../services/api";
 import "./Legend.scss";
 
 type Props = {
-  variable: string;
+  variable: ProgramVariable;
 };
 
 interface SldLegendEntry {
@@ -54,7 +54,7 @@ const LegendSld = ({ variable }: Props) => {
 
   useEffect(() => {
     const fetchSld = async () => {
-      const sldBlob = await getVariableSld(variable);
+      const sldBlob = await getVariableSld(variable.var_code.toLowerCase());
       if (sldBlob) {
         const parsedLegend = await parseSld(sldBlob);
         setLegendEntries(parsedLegend);
@@ -67,7 +67,7 @@ const LegendSld = ({ variable }: Props) => {
 
   return (
     <div className="legend_container">
-      <div className="legend_header">{variable}</div>
+      <div className="legend_header">{`${variable.var_name} (${variable.unit_short})`}</div>
       <div className="legend_body">
         {legendEntries.map((entry, index) => (
           <div key={index} className="legend_item">

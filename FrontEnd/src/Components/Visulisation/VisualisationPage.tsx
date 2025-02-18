@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useProgram } from "../../contexts/ProgramContext";
 import './VisualisationPage.scss';
-import { getScenarios, getAmontAval, Scenario, AmontAvalResponse, DataRequest, DataResponse, getData, getFullData, DataRequestFull, GeoJsonResponse, getPkGeom, ColoredMapResponseData, ColorMapRequest, getColoredMapData, getBassin, getBassinSLD, getPkSld, streamPkData, ProfileGraphDataResponse, ProfileGraphPkRequest, getProfileData, getProfileFullData } from "../../services/api";
+import { getScenarios, getAmontAval, Scenario, AmontAvalResponse, DataRequest, DataResponse, getData, getFullData, DataRequestFull, GeoJsonResponse, getPkGeom, ColoredMapResponseData, ColorMapRequest, getColoredMapData, getBassin, getBassinSLD, getPkSld, streamPkData, ProfileGraphDataResponse, ProfileGraphPkRequest, getProfileData, getProfileFullData, ProgramVariable } from "../../services/api";
 import { useNavigate } from "react-router";
 import ToggleContainer from "./ToggleComponent";
 import VariableChart from "../SimpleComponents/VariableChart";
@@ -23,7 +23,7 @@ type ChartData = Array<{
 const VisualisationPage: React.FC = () => {
   const { program } = useProgram();
   const navigate = useNavigate();
-  const [selectedVariables, setSelectedVariables] = useState<string[]>([]);
+  const [selectedVariables, setSelectedVariables] = useState<ProgramVariable[]>([]);
   const [selectedScenarios, setSelectedScenarios] = useState<Scenario[]>([]);
   const [amontAvalResponse, setAmontAvalResponse] = useState<AmontAvalResponse | null>(null);
   const [selectedDecades, setSelectedDecades] = useState<number[]>([1, 2, 3]);
@@ -109,7 +109,7 @@ const VisualisationPage: React.FC = () => {
     return {
       program: program.name,
       scenarios: selectedScenarios.map((scenario) => scenario.id),
-      variables: selectedVariables.map((variable) => variable.toLowerCase()),
+      variables: selectedVariables.map((variable) => variable.var_code.toLowerCase()),
       pk: amontAvalResponse.pk || [],
     };
   }, [program, selectedScenarios, selectedVariables, amontAvalResponse, mode]);
@@ -119,7 +119,7 @@ const VisualisationPage: React.FC = () => {
     return {
       program: program.name,
       scenarios: selectedScenarios.map((scenario) => scenario.id),
-      variables: selectedVariables.map((variable) => variable.toLowerCase()),
+      variables: selectedVariables.map((variable) => variable.var_code.toLowerCase()),
     };
   }, [program, selectedScenarios, selectedVariables, mode]);
 
@@ -128,7 +128,7 @@ const VisualisationPage: React.FC = () => {
     return {
       program: program.name,
       scenarios: selectedScenarios.map((scenario) => scenario.id),
-      variables: selectedVariables.map((variable) => variable.toLowerCase()),
+      variables: selectedVariables.map((variable) => variable.var_code.toLowerCase()),
       decades: selectedDecades
     };
   }, [program, selectedScenarios, selectedVariables, selectedDecades]);
@@ -138,7 +138,7 @@ const VisualisationPage: React.FC = () => {
     return {
       program: program.name,
       scenarios: selectedScenarios.map((scenario) => scenario.id),
-      variables: selectedVariables.map((variable) => variable.toLowerCase()),
+      variables: selectedVariables.map((variable) => variable.var_code.toLowerCase()),
       pk: amontAvalResponse.pk || [],
       decades: selectedDecades
     };
@@ -190,7 +190,6 @@ const VisualisationPage: React.FC = () => {
         setProfileGraphData(data);
       });
     }
-
     fetchData();
   }, [request, requestFull, mode, profileDataRequest]);
 
@@ -342,7 +341,7 @@ const VisualisationPage: React.FC = () => {
               <VariableChart
                 key={variable}
                 className={`variable_element element_${index}`}
-                variable={variable}
+                variable={program!.variables.find((v) => v.var_code.toLowerCase() === variable.toLowerCase()) || { var_code: variable, var_name: variable, unit_short: "" }}
                 decades={decades}
                 data={chartData}
               />
@@ -367,7 +366,7 @@ const VisualisationPage: React.FC = () => {
               <ColoredMapComponent
                 key={variable}
                 data={coloredMapData}
-                variable={variable}
+                variable={program!.variables.find((v) => v.var_code.toLowerCase() === variable.toLowerCase()) || { var_code: variable, var_name: variable, unit_short: "" }}
                 className={`variable_element element_${index}`}
                 pkData={pkData}
                 pkStyles={[]}
@@ -385,7 +384,7 @@ const VisualisationPage: React.FC = () => {
               <ProfileGraph
                 className={`variable_element element_${index}`}
                 key={`profile_${variable}`}
-                variable={variable.toLowerCase()}
+                variable={variable}
                 data={profileGraphData}
                 xKey={mode === "amont-aval" ? "PK" : "Strahler"}
               />
