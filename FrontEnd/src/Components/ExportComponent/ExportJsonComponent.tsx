@@ -10,6 +10,7 @@ interface ExportJsonComponentProps {
         hydro_id_end : number | null;
         variables: string[]; 
         scenarios: number[];
+        decades: number[]
     }
 }
 

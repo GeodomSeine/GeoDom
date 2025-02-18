@@ -46,50 +46,71 @@ const VisualisationPage: React.FC = () => {
   const [sliderValue, setSliderValue] = useState<number>(1);
   const conf = localStorage.getItem("confImportation");
 
-  if(conf){
-    try {
-      const jsonData = JSON.parse(conf);
-      console.log(jsonData);
-      setSelectedScenarios(scenarios.filter((scenario) => jsonData.scenarios.includes(scenario.id)));
-      setSelectedVariables(program?.variables.filter((variable) => jsonData.variables.includes(variable.var_code)) || []);
-      setIdHydStart(jsonData.hydro_id_start);
-      setIdHydEnd(jsonData.hydro_id_end);
-
-      console.log(jsonData.name);
-      console.log(selectedVariables);
-
-
-      if(jsonData.hydro_id_start && jsonData.hydro_id_end){
-        setMode("amont-aval");
-      }else{
-        setMode("complet");
-      }
-      setSelectedKey(jsonData.selected);
-      localStorage.removeItem("confImportation");
-    } catch (error) {
-      console.error('Error parsing JSON:', error);
-    }
-  }
-
   useEffect(() => {
     if (!program_name) {
-        navigate("/");
-        return;
+      navigate("/");
+      return;
     }
     const storedPrograms = localStorage.getItem("programs");
     if (storedPrograms) {
-        const programs: Program[] = JSON.parse(storedPrograms);
-        const foundProgram = programs.find(prog => prog.name === program_name);
+      const programs: Program[] = JSON.parse(storedPrograms);
+      const foundProgram = programs.find(prog => prog.name === program_name);
 
-        if (foundProgram) {
-            setProgram(foundProgram);
-        } else {
-            navigate("/"); 
-        }
-    } else {
+      if (foundProgram) {
+        setProgram(foundProgram);
+      } else {
         navigate("/");
+      }
+    } else {
+      navigate("/");
     }
   }, [program_name, navigate]);
+
+  useEffect(() => {
+    const fetchScenarios = async () => {
+      const data = await getScenarios();
+      if (data) {
+        setScenarios(data.scenarios);
+        setSelectedScenarios(data.scenarios.slice(0, 3));
+      }
+    };
+    fetchScenarios();
+  }, []);
+
+  useEffect(() => {
+    if (program && program.variables && program.variables.length > 0) {
+      setSelectedVariables([program.variables[0]]);
+    }
+  }, [program]);
+
+  useEffect(() => {
+    if (conf && program && scenarios.length > 0) {
+      try {
+        const jsonData = JSON.parse(conf);
+        setSelectedVariables(program.variables.filter((variable) => jsonData.variables.includes(variable.var_code)) || []);
+        setSelectedScenarios(scenarios.filter((scenario) => jsonData.scenarios.includes(scenario.id)));
+        setIdHydStart(jsonData.hydro_id_start);
+        setIdHydEnd(jsonData.hydro_id_end);
+        if (jsonData.hydro_id_start && jsonData.hydro_id_end) {
+          setMode("amont-aval");
+          setSelectedPk(jsonData.selected);
+        } else {
+          setMode("complet");
+        }
+        setSelectedKey(jsonData.selected);
+        setSelectedDecades(jsonData.decades);
+        setSliderValue(Number(Object.entries(keyMapping).find(([_, value]) => value === jsonData.selected)?.[0]) || 1);
+        
+        console.log(selectedKey);
+        console.log(selectedDecades);
+        console.log(sliderValue);
+
+        localStorage.removeItem("confImportation");
+      } catch (error) {
+        console.error('Error parsing JSON:', error);
+      }
+    }
+  }, [conf, program, scenarios]);
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -125,23 +146,6 @@ const VisualisationPage: React.FC = () => {
     };
 
     fetchInitialData();
-  }, [program]);
-
-  useEffect(() => {
-    const fetchScenarios = async () => {
-      const data = await getScenarios();
-      if (data) {
-        setScenarios(data.scenarios);
-        setSelectedScenarios(data.scenarios.slice(0, 3));
-      }
-    };
-    fetchScenarios();
-  }, []);
-
-  useEffect(() => {
-    if (program && program.variables && program.variables.length > 0) {
-      setSelectedVariables([program.variables[0]]);
-    }
   }, [program]);
 
   const request: DataRequest | null = useMemo(() => {
@@ -350,7 +354,7 @@ const VisualisationPage: React.FC = () => {
     }
   });
 
-  if(!program){
+  if (!program) {
     return null;
   }
 
@@ -361,12 +365,13 @@ const VisualisationPage: React.FC = () => {
     hydro_id_end: idHydEnd,
     variables: selectedVariables.map((variable) => variable.var_code),
     scenarios: selectedScenarios.map((scenario) => scenario.id),
+    decades: selectedDecades
   };
 
   return (
     <div className='home_component_visualisation'>
       <FloatingAction>
-        <ExportJsonComponent exportConf={exportConf}/>
+        <ExportJsonComponent exportConf={exportConf} />
       </FloatingAction>
       <div className='home_body'>
         <ToggleContainer title="Carte de sélection" secondChild={sharedSlider}>

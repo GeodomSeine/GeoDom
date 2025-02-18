@@ -24,7 +24,7 @@ const ImportJsonComponent: React.FC<ImportJsonComponentProps> = ({ visualization
             reader.onload = (event) => {
                 try {
                     const jsonData = JSON.parse(event.target?.result as string);
-                    const requiredKeys = ["name", "selected", "hydro_id_start", "hydro_id_end", "variables", "scenarios"];
+                    const requiredKeys = ["name", "selected", "hydro_id_start", "hydro_id_end", "variables", "scenarios","decades"];
                     const missingKeys = requiredKeys.filter(key => !(key in jsonData));
                     if (missingKeys.length > 0) {
                         setErrorMessage(`Erreur: Les clés suivantes sont manquantes dans le fichier JSON: ${missingKeys.join(", ")}`);
@@ -48,6 +48,12 @@ const ImportJsonComponent: React.FC<ImportJsonComponentProps> = ({ visualization
                         setErrorMessage(`Erreur: Les scenarios suivants sont incorrects pour la visualisation '${jsonData.name}': ${jsonData.scenarios.filter((scenario: number) => scenario < 0).join(", ")}`);
                         return;
                     }
+
+                    if(jsonData.decades.filter((decade: number) => decade < 0).length > 0){
+                        setErrorMessage(`Erreur: Les décennies suivantes sont incorrectes pour la visualisation '${jsonData.name}': ${jsonData.decades.filter((decade: number) => decade < 0).join(", ")}`);   
+                        return;
+                    }
+
                     localStorage.setItem("confImportation", JSON.stringify(jsonData));
                     navigate(`/${jsonData.name}`);
                 } catch (error) {
