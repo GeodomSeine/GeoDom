@@ -67,7 +67,7 @@ async def get_data_order_by_strahler(body: dict):
                 )
 
         scenario_list = [int(s) for s in scenarios]
-        decade_list = [int(d) for d in decades]
+        decade_list = list(range(int(decades[0]), int(decades[1]) + 1))
         
         async with async_session_pynuts() as session:
             result_data = {}
@@ -194,7 +194,6 @@ async def get_data(body: dict):
                 # Exécuter la requête
                 result = await session.execute(query)
                 data = result.fetchall()
-                logger.info(f"Data for {obj_ord_pk} : {data}")
 
                 for row in data:
                     obj_ord_pk = f"{row.obj}_{row.ord}_{row.pk}"
