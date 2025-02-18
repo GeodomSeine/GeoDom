@@ -15,9 +15,10 @@ type Props = {
     bassinStyle: PathOptions | null;
     bounds: LatLngBounds | null;
     getPkStyles: any;
+    percentile: "p5" | "p50" | "p90";
 };
 
-const ColoredMapComponent: React.FC<Props> = ({ data, variable, className, pkData, pkStyles, bassinData, bassinStyle, bounds, getPkStyles }) => {
+const ColoredMapComponent: React.FC<Props> = ({ data, variable, className, pkData, pkStyles, bassinData, bassinStyle, bounds, getPkStyles, percentile }) => {
   return (
     <div className={className+" body"}>
       
@@ -31,6 +32,7 @@ const ColoredMapComponent: React.FC<Props> = ({ data, variable, className, pkDat
           bassinStyle={bassinStyle} 
           bounds={bounds} 
           getPkStyles={getPkStyles}
+          percentile={percentile}
         />
       }
       {data && 

@@ -18,6 +18,7 @@ type Props = {
   bassinStyle: PathOptions | null;
   bounds: LatLngBounds | null;
   getPkStyles: any;
+  percentile: "p5" | "p50" | "p90";
 };
 
 interface SLDColorRule {
@@ -68,6 +69,7 @@ function MapBaseComponent({
   bassinStyle,
   bounds,
   getPkStyles,
+  percentile,
 }: Props) {
   const [sldRules, setSldRules] = useState<SLDColorRule[] | null>(null);
 
@@ -90,7 +92,7 @@ function MapBaseComponent({
     if (!data || !data.data) return baseStyle;
 
     const objOrdPk = feature.properties.obj_ord_pk;
-    const value = data.data[objOrdPk]?.[`${variable.var_code.toLowerCase()}_p50`]; // Utilisation de p50
+    const value = data.data[objOrdPk]?.[`${variable.var_code.toLowerCase()}_${percentile}`];
 
     if (value === undefined) return baseStyle;
 

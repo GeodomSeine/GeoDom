@@ -14,6 +14,7 @@ import SliderComponent from "../SimpleComponents/SliderComponent";
 import ProfileGraph from "../SimpleComponents/ProfileGraph";
 import FloatingAction from "../SimpleComponents/FloatingAction";
 import ExportJsonComponent from "../ExportComponent/ExportJsonComponent";
+import PercentileSelector from "../SimpleComponents/PercentileSelector";
 
 type ChartData = Array<{
   decade: number;
@@ -31,6 +32,7 @@ const VisualisationPage: React.FC = () => {
   const [data, setData] = useState<DataResponse | null>(null);
   const [coloredMapData, setColoredMapData] = useState<ColoredMapResponseData | null>(null);
   const [profileGraphData, setProfileGraphData] = useState<ProfileGraphDataResponse | null>(null);
+  const [selectedPercentile, setSelectedPercentile] = useState<"p5" | "p50" | "p90">("p50");
   const [selectedKey, setSelectedKey] = useState<string | null>(null); 
   const [chartData, setChartData] = useState<ChartData | null>(null);
   const [selectedPk, setSelectedPk] = useState<GeoJsonResponse | undefined>(undefined);
@@ -409,14 +411,17 @@ const VisualisationPage: React.FC = () => {
             title="Carte des seuils"
             containsTile={true}
             secondChild={
-              <DecadeRangeComponent
-              value={selectedDecades}
-                onChange={handleDecadeChange}
-                min={1}
-                max={36}
-                leftLabel={'Première décade'}
-                rightLabel={'dernière décade'}
-              />
+              <div className='decade_percentile_selection'>
+                <DecadeRangeComponent
+                  value={selectedDecades}
+                  onChange={handleDecadeChange}
+                  min={1}
+                  max={36}
+                  leftLabel={'Première décade'}
+                  rightLabel={'dernière décade'}
+                />
+                <PercentileSelector selectedPercentile={selectedPercentile} onChange={setSelectedPercentile} />
+              </div>
             }
           >
             {Object.entries(coloredMapData.legend).map(([variable, __], index) => (
@@ -431,6 +436,7 @@ const VisualisationPage: React.FC = () => {
                 bassinStyle={bassinStyle}
                 bounds={bounds}
                 getPkStyles={getPkStyles}
+                percentile={selectedPercentile}
               />
             ))}
           </ToggleContainer>
