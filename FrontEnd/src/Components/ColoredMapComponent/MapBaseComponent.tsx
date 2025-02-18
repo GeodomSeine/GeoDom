@@ -90,7 +90,7 @@ function MapBaseComponent({
     if (!data || !data.data) return baseStyle;
 
     const objOrdPk = feature.properties.obj_ord_pk;
-    const value = data.data[objOrdPk]?.[`${variable}_p50`]; // Utilisation de p50
+    const value = data.data[objOrdPk]?.[`${variable.var_code.toLowerCase()}_p50`]; // Utilisation de p50
 
     if (value === undefined) return baseStyle;
 
