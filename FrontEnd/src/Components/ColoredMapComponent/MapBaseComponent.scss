@@ -1,16 +1,20 @@
 @use "../../styles/main.scss" as *;
 
-.map_base {
-    height: 100%;
-    width: 75%;
-    .leaflet-container {
+.variable_element.body{
+    display: flex;
+    flex-direction: column;
+    .map_base {
         height: 100%;
         width: 100%;
-        @include card;
-        .leaflet-control-container{
-            .leaflet-top{
-                .leaflet-control-layers{
-                    display: none;
+        .leaflet-container {
+            height: 100%;
+            width: 100%;
+            @include card;
+            .leaflet-control-container{
+                .leaflet-top{
+                    .leaflet-control-layers{
+                        display: none;
+                    }
                 }
             }
         }

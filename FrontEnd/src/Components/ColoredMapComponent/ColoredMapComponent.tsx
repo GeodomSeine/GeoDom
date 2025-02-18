@@ -19,10 +19,8 @@ type Props = {
 
 const ColoredMapComponent: React.FC<Props> = ({ data, variable, className, pkData, pkStyles, bassinData, bassinStyle, bounds, getPkStyles }) => {
   return (
-    <div className={className}>
-      {data && 
-        (data.legend[variable.var_code.toLowerCase()].sld ? <LegendSld variable={variable}/> : <LegendQuantile variable={variable} legendData={data.legend[variable.var_code.toLowerCase()]}/>)
-      }
+    <div className={className+" body"}>
+      
       {data && 
         <MapBaseComponent 
           variable={variable} 
@@ -34,6 +32,9 @@ const ColoredMapComponent: React.FC<Props> = ({ data, variable, className, pkDat
           bounds={bounds} 
           getPkStyles={getPkStyles}
         />
+      }
+      {data && 
+        (data.legend[variable.var_code.toLowerCase()].sld ? <LegendSld variable={variable}/> : <LegendQuantile variable={variable} legendData={data.legend[variable.var_code.toLowerCase()]}/>)
       }
     </div>
   );
