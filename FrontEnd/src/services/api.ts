@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://127.0.0.1:8000/api", //dev env http://127.0.0.1:8000
+  baseURL: "/api", //dev env http://127.0.0.1:8000
   headers: {
     "Content-Type": "application/json",
   },
@@ -53,9 +53,15 @@ export interface Program {
   name: string;
   title: string;
   description: string;
-  variables: string[];
+  variables: ProgramVariable[];
   exutoire_id: number;
   background: string;
+}
+
+export interface ProgramVariable {
+  var_code: string;
+  var_name: string;
+  unit_short: string;
 }
 
 export interface ProgramResponse {

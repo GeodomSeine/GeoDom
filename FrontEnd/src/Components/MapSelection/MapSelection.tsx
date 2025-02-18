@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, GeoJSON, LayersControl } from 'react-leaflet';
 import { CircleMarker, LatLngBounds, PathOptions } from 'leaflet';
 import { GeoJsonObject } from 'geojson';
 import 'leaflet/dist/leaflet.css';
-import {streamHydroData, getBassin, getStationSnap, getStationSnapSld, getHydroSLD, getBassinSLD, GeoJsonResponse, AmontAvalResponse, Scenario } from '../../services/api';
+import {streamHydroData, getBassin, getStationSnap, getStationSnapSld, getHydroSLD, getBassinSLD, GeoJsonResponse, AmontAvalResponse, Scenario, ProgramVariable } from '../../services/api';
 import { parseSLDToStyles } from '../../mapstyles/mapStyles';
 import "leaflet/dist/leaflet.css";
 import "./MapSelection.scss";
@@ -16,6 +16,7 @@ import { calculateBounds } from '../../utils/mapUtils';
 
 const { BaseLayer, Overlay } = LayersControl;
 
+
 interface MapSelectionProps {
   program: string;
   exutoire_id: number;
@@ -26,10 +27,10 @@ interface MapSelectionProps {
   setIdHydEnd: (id: number | null) => void;
   selectedPk?: GeoJsonResponse;
   resetSelection: () => void;
-  variables: string[];
+  variables: ProgramVariable[];
   scenarios: Scenario[];
-  selectedVariables: string[];
-  setSelectedVariables: (variables: string[]) => void;
+  selectedVariables: ProgramVariable[];
+  setSelectedVariables: (variables: ProgramVariable[]) => void;
   selectedScenarios: Scenario[];
   setSelectedScenarios: (scenarios: Scenario[]) => void;
   mode: "complet" | "amont-aval";
@@ -69,9 +70,7 @@ const MapSelection: React.FC<MapSelectionProps> = ({
     idHydStartRef.current = idHydStart;
     idHydEndRef.current = idHydEnd;
   }, [idHydStart, idHydEnd]);
-
-
-
+  
   useEffect(() => {
     const fetchData = async () => {
         try {
@@ -126,6 +125,14 @@ const MapSelection: React.FC<MapSelectionProps> = ({
 
     fetchData();
   }, [program]);
+
+const [layerVisibility, setLayerVisibility] = useState<Record<string, boolean>>({
+  baseLayer: true,
+  hydrographie: true,
+  bassin: true, 
+  stations: false,
+  pk: true,
+});
 
 const getHydroStyle = (feature: any): PathOptions => {
 const strahler = feature.properties?.strahler;
@@ -185,6 +192,7 @@ return (
       zoom={6} 
       minZoom={6} 
       zoomControl={false}
+      
   >
     <MapButtons bounds={bounds}>
         <ControlComponent
@@ -199,18 +207,20 @@ return (
           scenarios={scenarios}
           mode={mode}
           setMode={setMode}
+          layerVisibility={layerVisibility}
+          setLayerVisibility={setLayerVisibility}
         />
     </MapButtons>
     <LayersControl>
-      <BaseLayer checked name="BaseLayer">
+      <BaseLayer {...(layerVisibility.baseLayer ? { checked: true } : { checked: false })} name="BaseLayer">
         <TileLayer
           url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
           attribution='&copy; <a href="https://carto.com/">CARTO</a>'
         />
       </BaseLayer>
 
-      {stationSnap && stationSnapStyles && (
-        <Overlay name="Stations d'observation">
+      {stationSnap && stationSnapStyles && (  
+        <Overlay {...(layerVisibility.stations ? { checked: true } : { checked: false })} name="Stations d'observation">
           <GeoJSON
             data={stationSnap as GeoJsonObject}
             pointToLayer={(_, latlng) => {
@@ -225,7 +235,7 @@ return (
       )}
 
       {hydroData && hydroStyles && (
-          <Overlay checked name="Hydrographie">
+          <Overlay {...(layerVisibility.hydrographie ? { checked: true } : { checked: false })} name="Hydrographie">
               <GeoJSON
                   key={`hydro-${mode}-${hydroData.features.length}`} // 🟢 Forçage de mise à jour
                   data={hydroData as GeoJsonObject}
@@ -242,7 +252,7 @@ return (
       )}
 
       {bassinData && bassinStyle && (
-        <Overlay checked name="Bassin">
+        <Overlay {...(layerVisibility.bassin ? { checked: true } : { checked: false })} name="Bassin">
           <GeoJSON
             data={bassinData as GeoJsonObject}
             style={() => bassinStyle}
@@ -252,7 +262,7 @@ return (
       )}
 
       {selectedPk && (
-        <Overlay checked name="PK">
+        <Overlay {...(layerVisibility.pk ? { checked: true } : { checked: false })} name="PK">
           <GeoJSON
             key={JSON.stringify(selectedPk)}
             data={selectedPk as GeoJsonObject}

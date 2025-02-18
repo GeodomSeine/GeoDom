@@ -292,18 +292,23 @@ async def get_data_formap(body: dict):
 
             for variable in variables:
                 var_config = variable_config.get(variable, {})
+                default_config = variable_config.get("default", {})
+                default_classification = default_config.get("classification", "quantile")
+                default_nb_classes = default_config.get("nb_classes", 5)
+                default_colors = default_config.get("colors", [])
+
                 if var_config.get("classification") == "sld":
                     legend_data[variable] = {"sld": True}
                 else:
                     if value_dict[variable]:
                         legend_data[variable] = {
                             "sld": False,
-                            "classification": var_config.get("classification"),
-                            "nb_classes": var_config.get("nb_classes"),
+                            "classification": var_config.get("classification", default_classification),
+                            "nb_classes": var_config.get("nb_classes", default_nb_classes),
                             "colors": generate_class_intervals(
                                 value_dict[variable], 
-                                var_config.get("nb_classes", 5), 
-                                var_config.get("colors", [])
+                                var_config.get("nb_classes", default_nb_classes), 
+                                var_config.get("colors", default_colors)
                             )
                         }
 

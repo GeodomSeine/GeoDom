@@ -15,6 +15,9 @@ interface MapControlsProps {
 
 const MapControls: React.FC<MapControlsProps> = ({ bounds, children }) => {
     const map = useMap();
+    const [isVisible, setIsVisible] = useState(true);
+    // const container = useRef<HTMLDivElement>(null);
+
     useEffect(() => {
         zoomToBounds();
     }, [bounds])
@@ -25,10 +28,31 @@ const MapControls: React.FC<MapControlsProps> = ({ bounds, children }) => {
         }
     };
 
-    const [isVisible, setIsVisible] = useState(true);
+    // need to be fixed
+    // useEffect(() => {
+    //     if (container.current) {
+    //         const stopPropagation = (e: Event) => e.stopPropagation();
+    //         const current = container.current;
 
+    //         current.addEventListener('click', stopPropagation);
+    //         current.addEventListener('mousedown', stopPropagation);
+    //         current.addEventListener('dblclick', stopPropagation);
+    //         current.addEventListener('wheel', stopPropagation);
+    //         current.addEventListener('touchstart', stopPropagation);
+
+    //         return () => {
+    //             current.removeEventListener('click', stopPropagation);
+    //             current.removeEventListener('mousedown', stopPropagation);
+    //             current.removeEventListener('dblclick', stopPropagation);
+    //             current.removeEventListener('wheel', stopPropagation);
+    //             current.removeEventListener('touchstart', stopPropagation);
+    //         };
+    //     }
+    // }, []);
+
+    //ref={container}
     return (
-        <div className="map_buttons" onClick={(e) => e.stopPropagation()}>
+        <div className="map_buttons" >
             <div className="map_buttons_default">
                 {bounds && (
                     <LogoComponent Icon={Expand} size={"35px"} onClick={zoomToBounds} />
@@ -38,7 +62,7 @@ const MapControls: React.FC<MapControlsProps> = ({ bounds, children }) => {
                 {children && <LogoComponent Icon={Burger} size={"35px"} onClick={() => setIsVisible((prev) => !prev)}/>}
             </div>
             {children && (
-                <div className={`map_buttons_children ${isVisible ? "" : "hidden"}`}>
+                <div onClick={zoomToBounds} className={`map_buttons_children ${isVisible ? "" : "hidden"}`}>
                     {children}
                 </div>
             )}

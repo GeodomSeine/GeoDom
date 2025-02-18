@@ -10,7 +10,20 @@ const viteConfig = defineConfig({
   build: {
     outDir: path.resolve(__dirname, '../Backend/static'), 
     emptyOutDir: true, 
-  }
+  },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        api: 'modern-compiler', 
+      },
+    },
+  },
+  resolve: {
+    alias: {
+      '@fonts': path.resolve(__dirname, 'src/fonts/'),
+    },
+  },
+  assetsInclude: ['**/*.woff', '**/*.woff2'],
 });
 
 const vitestConfig = defineTestConfig({

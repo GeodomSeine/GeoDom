@@ -1,9 +1,9 @@
-import { LegendData } from "../../services/api";
+import { LegendData, ProgramVariable } from "../../services/api";
 import "./Legend.scss";
 
 
 type Props = {
-    variable : string;
+    variable : ProgramVariable;
     legendData : LegendData
 }
 
@@ -12,7 +12,7 @@ const LegendQuantile = ({ variable, legendData } : Props) => {
 
   return (
     <div className="legend_container">
-      <div className="legend_header">{variable}</div>
+      <div className="legend_header">{`${variable.var_code.toUpperCase()} (${variable.unit_short})`}</div>
       <div className="legend_body">
         {legendData.colors.map((entry, index) => (
           <div key={index} className="legend_item">

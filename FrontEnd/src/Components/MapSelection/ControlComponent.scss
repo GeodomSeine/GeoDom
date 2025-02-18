@@ -24,11 +24,10 @@
   }
 }
 
-@media (max-width: 960px) {
-    .control_component{
-        display: flex;
-        flex-direction: row;
-        gap: 10px;
-      }
+@media (max-width: 760px) {
+  .control_component{
+    flex-direction: row;
+    gap: 8px;
+  }
 }
 

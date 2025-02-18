@@ -10,6 +10,13 @@
         height: 100%;
         width: 100%;
         @include card;
+        .leaflet-control-container{
+            .leaflet-top{
+                .leaflet-control-layers{
+                    display: none;
+                }
+            }
+        }
         .custom_buttons {
             position: absolute;
             top: 65px;
@@ -36,3 +43,4 @@
         // }
     }
 }
+

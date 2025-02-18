@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Scenario } from '../../services/api';
+import { ProgramVariable, Scenario } from '../../services/api';
 import './ControlComponent.scss';
 import ButtonComponent from '../SimpleComponents/ButtonComponent';
 import InputComponent from '../SimpleComponents/InputComponent';
@@ -8,14 +8,16 @@ interface ControlComponentProps {
     idHydStart: number | null;
     idHydEnd: number | null;
     resetSelection: () => void;
-    variables: string[];
+    variables: ProgramVariable[];
     scenarios: Scenario[];
-    selectedVariables: string[];
-    setSelectedVariables: (variables: string[]) => void;
+    selectedVariables: ProgramVariable[];
+    setSelectedVariables: (variables: ProgramVariable[]) => void;
     selectedScenarios: Scenario[];
     setSelectedScenarios: (scenarios: Scenario[]) => void;
     mode: "complet" | "amont-aval";
     setMode: (mode: "complet" | "amont-aval") => void;
+    layerVisibility?: Record<string, boolean>,
+    setLayerVisibility?: React.Dispatch<React.SetStateAction<Record<string, boolean>>>,
   }
 
   const ControlComponent: React.FC<ControlComponentProps> = ({
@@ -30,6 +32,8 @@ interface ControlComponentProps {
     setSelectedScenarios,
     mode,
     setMode,
+    layerVisibility,
+    setLayerVisibility,
   }) => {
 
     useEffect(() => {
@@ -70,7 +74,7 @@ interface ControlComponentProps {
           <h3>Indicateurs</h3>
           {variables.map((variable) => (
             <InputComponent disabled ={selectedVariables.length == 4 && !selectedVariables.includes(variable)} // limité à 4
-              label={variable}
+              label={variable.var_code.toUpperCase()}
               type={"checkbox"}
               checked={selectedVariables.includes(variable)}
               onChange={(e) => {
@@ -103,6 +107,24 @@ interface ControlComponentProps {
             </InputComponent>
           ))}
         </div>
+        {layerVisibility && setLayerVisibility && 
+          <div className="selected_layer">
+            <h3>Couches</h3>
+            {Object.entries(layerVisibility).map(([layer, isVisible]) => (
+              <InputComponent 
+                key={layer}
+                label={layer}
+                type={"checkbox"}
+                checked={isVisible}
+                onChange={() => {
+                  setLayerVisibility(prev => ({
+                    ...prev,
+                    [layer]: !isVisible
+                  }));
+                }}
+              />
+            ))}
+          </div>}
       </div>
     );
   };

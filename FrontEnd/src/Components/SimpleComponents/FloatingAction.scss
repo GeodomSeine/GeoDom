@@ -1,0 +1,25 @@
+@use "../../styles/main.scss" as *;
+
+.floating_card_component{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    @include card;
+    position: fixed;
+    width: fit-content;
+    height: fit-content;
+    z-index: 1000;
+    padding: 8px;
+    background-color: white;
+    right: 25px;
+    top: 23px;
+    z-index: 10000;
+}
+
+@media (max-width: 1160px) {
+    .floating_card_component{
+        top: inherit;
+        bottom: 23px;      
+    }
+}

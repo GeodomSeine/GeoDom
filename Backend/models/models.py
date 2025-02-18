@@ -1,5 +1,5 @@
-from sqlalchemy import Integer, String, Numeric, BigInteger, Boolean, Date, JSON, Time, VARCHAR
-from sqlalchemy.orm import Mapped, mapped_column, declarative_base
+from sqlalchemy import Integer, String, Numeric, BigInteger, Boolean, Date, JSON, Time, VARCHAR, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, declarative_base, relationship
 from geoalchemy2 import Geometry
 from geoalchemy2.shape import to_shape
 from sqlalchemy.dialects.postgresql import JSONB
@@ -207,3 +207,12 @@ class Measurement:
 
         Measurement._class_cache[measurement_type] = DynamicMeasurement
         return DynamicMeasurement
+
+class VarCompartment(Base):
+    __tablename__ = "varcompartment_full_view"
+    __table_args__ = {"schema": "zone_aesn_seneque_aesn_me_edl2025_qgis"}
+    
+    var_code: Mapped[str] = mapped_column(String, primary_key=True)
+    var_name: Mapped[str] = mapped_column(String)
+    unit_short: Mapped[str] = mapped_column(String)
+    comp_name: Mapped[str] = mapped_column(String)

@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
-import { ColoredMapResponseData, GeoJsonResponse } from "../../services/api";
+import { ColoredMapResponseData, GeoJsonResponse, ProgramVariable } from "../../services/api";
 import { LayersControl, MapContainer, TileLayer, GeoJSON } from "react-leaflet";
 import { LatLngBounds, PathOptions } from "leaflet";
 import { GeoJsonObject } from "geojson";
 import "./MapBaseComponent.scss";
-import MapControls from "../SimpleComponents/MapButtons";
+import MapButtons from "../SimpleComponents/MapButtons";
 import { getVariableSld } from "../../services/api";
 
 const { BaseLayer, Overlay } = LayersControl;
 
 type Props = {
   data: ColoredMapResponseData | null;
-  variable: string;
+  variable: ProgramVariable;
   pkData: GeoJsonResponse | null;
   pkStyles: any[];
   bassinData: GeoJsonResponse | null;
@@ -72,8 +72,8 @@ function MapBaseComponent({
   const [sldRules, setSldRules] = useState<SLDColorRule[] | null>(null);
 
   useEffect(() => {
-    if (data?.legend[variable]?.sld) {
-      getVariableSld(variable)
+    if (data?.legend[variable.var_code.toLowerCase()]?.sld) {
+      getVariableSld(variable.var_code.toLowerCase())
         .then((blob) => blob?.text())
         .then((sldText) => {
           if (sldText) {
@@ -90,7 +90,7 @@ function MapBaseComponent({
     if (!data || !data.data) return baseStyle;
 
     const objOrdPk = feature.properties.obj_ord_pk;
-    const value = data.data[objOrdPk]?.[`${variable}_p50`]; // Utilisation de p50
+    const value = data.data[objOrdPk]?.[`${variable.var_code.toLowerCase()}_p50`]; // Utilisation de p50
 
     if (value === undefined) return baseStyle;
 
@@ -99,10 +99,11 @@ function MapBaseComponent({
         ...baseStyle,
         color: getColorFromSLD(value, sldRules),
       };
-    } else if (data.legend[variable]?.colors) {
-      const colorRule = data.legend[variable].colors.find(
-        (rule) => value >= rule.range[0] && value <= rule.range[1]
-      );
+    } else if (data.legend[variable.var_code.toLowerCase()]?.colors) {
+      const legend = data.legend[variable.var_code.toLowerCase()];
+      const colorRule = legend && legend.colors
+        ? legend.colors.find((rule) => value >= rule.range[0] && value <= rule.range[1])
+        : null;
       return {
         ...baseStyle,
         color: colorRule ? colorRule.color : "#000000",
@@ -124,7 +125,7 @@ function MapBaseComponent({
         minZoom={6}
         zoomControl={false}
       >
-        <MapControls bounds={bounds} />
+        <MapButtons bounds={bounds} />
         <LayersControl>
           <BaseLayer checked name="BaseLayer">
             <TileLayer
