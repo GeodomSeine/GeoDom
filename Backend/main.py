@@ -36,7 +36,6 @@ app.include_router(pk_geom.router)
 app.include_router(fulldata.router)
 app.include_router(data_donuts.router)
 app.include_router(profile_en_long.router)
-app.include_router(varcompartment.router)
 
 # Front
 app.mount("/", StaticFiles(directory="./static", html=True), name="static")

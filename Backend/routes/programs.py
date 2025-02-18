@@ -3,6 +3,8 @@ import json
 from fastapi import APIRouter, Request, HTTPException
 from fastapi.responses import JSONResponse, FileResponse
 from core.logger import logger
+from core.database import async_session_pynuts
+from routes.varcompartment import fetch_varcompartment_from_db
 
 router = APIRouter(prefix="/programs", tags=["Programs"])
 DATAVIZ_FOLDER = os.path.join("dataviz")
@@ -56,8 +58,11 @@ async def get_programs(request: Request):
             metadata = json.load(metadata_file)
 
         metadata["background"] = f"{base_url}programs/{program}/background.png" if os.path.exists(background_path) else None
-        programs.append(metadata)
 
+        async with async_session_pynuts() as session:
+            variables = metadata.get("variables", [])
+            metadata["variables"] = await fetch_varcompartment_from_db(session, variables)            
+        programs.append(metadata)
     return JSONResponse(content=programs)
 
 
