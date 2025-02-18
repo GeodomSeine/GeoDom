@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { useProgram } from "../../contexts/ProgramContext";
 import './VisualisationPage.scss';
-import { getScenarios, getAmontAval, Scenario, AmontAvalResponse, DataRequest, DataResponse, getData, getFullData, DataRequestFull, GeoJsonResponse, getPkGeom, ColoredMapResponseData, ColorMapRequest, getColoredMapData, getBassin, getBassinSLD, getPkSld, streamPkData, ProfileGraphDataResponse, ProfileGraphPkRequest, getProfileData, getProfileFullData, ProgramVariable } from "../../services/api";
-import { useNavigate } from "react-router";
+import { getScenarios, getAmontAval, Scenario, AmontAvalResponse, DataRequest, DataResponse, getData, getFullData, DataRequestFull, GeoJsonResponse, getPkGeom, ColoredMapResponseData, ColorMapRequest, getColoredMapData, getBassin, getBassinSLD, getPkSld, streamPkData, ProfileGraphDataResponse, ProfileGraphPkRequest, getProfileData, getProfileFullData, ProgramVariable, Program } from "../../services/api";
+import { useNavigate, useParams } from "react-router";
 import ToggleContainer from "./ToggleComponent";
 import VariableChart from "../SimpleComponents/VariableChart";
 import MapSelection from "../MapSelection/MapSelection";
@@ -21,8 +20,9 @@ type ChartData = Array<{
 }>;
 
 const VisualisationPage: React.FC = () => {
-  const { program } = useProgram();
+  const { program_name } = useParams();
   const navigate = useNavigate();
+  const [program, setProgram] = useState<Program | null>(null);
   const [selectedVariables, setSelectedVariables] = useState<ProgramVariable[]>([]);
   const [selectedScenarios, setSelectedScenarios] = useState<Scenario[]>([]);
   const [amontAvalResponse, setAmontAvalResponse] = useState<AmontAvalResponse | null>(null);
@@ -44,12 +44,26 @@ const VisualisationPage: React.FC = () => {
   const [bounds, setBounds] = useState<LatLngBounds | null>(null);
   const [sliderValue, setSliderValue] = useState<number>(1);
 
+
   useEffect(() => {
-    if (!program) {
-      navigate("/");
-      return;
+    if (!program_name) {
+        navigate("/");
+        return;
     }
-  }, [program, navigate]);
+    const storedPrograms = localStorage.getItem("programs");
+    if (storedPrograms) {
+        const programs: Program[] = JSON.parse(storedPrograms);
+        const foundProgram = programs.find(prog => prog.name === program_name);
+
+        if (foundProgram) {
+            setProgram(foundProgram);
+        } else {
+            navigate("/"); 
+        }
+    } else {
+        navigate("/");
+    }
+  }, [program_name, navigate]);
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -309,6 +323,10 @@ const VisualisationPage: React.FC = () => {
       });
     }
   });
+
+  if(!program){
+    return null;
+  }
 
   return (
     <div className='home_component_visualisation'>

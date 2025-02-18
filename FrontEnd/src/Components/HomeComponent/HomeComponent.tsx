@@ -3,7 +3,6 @@ import { getPrograms, ProgramResponse, ProgramVariable } from '../../services/ap
 import CardComponent from './CardComponent'; 
 import "./HomeComponent.scss";
 import HeaderComponent from './HeaderComponent';
-import { useProgram } from '../../contexts/ProgramContext';
 import { Program } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 
@@ -12,21 +11,19 @@ import { useNavigate } from 'react-router-dom';
     export default function HomeComponent({}: Props) {
         const [programs, setPrograms] = useState<ProgramResponse | null>(null);
         const [searchQuery, setSearchQuery] = useState(""); 
-
-        const { setProgram } = useProgram();
         const navigate = useNavigate();
 
         useEffect(() => {
             const fetchPrograms = async () => {
                 const data = await getPrograms();
                 setPrograms(data);
+                localStorage.setItem("programs", JSON.stringify(data));
             };
             fetchPrograms();
         }, []);
 
         const handleCardClick = (selectedProgram: Program) => {
-            setProgram(selectedProgram);
-            navigate('/visualisation');
+            navigate(`/${selectedProgram.name}`);
         };
 
         const filteredPrograms = Array.isArray(programs) ? programs.filter((item) =>
