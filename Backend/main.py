@@ -11,6 +11,7 @@ from routes import programs, pk, hydro, bassin, scenarios, data, sld, stationsna
 from core.logger import logger
 from scheduler.scheduler import lifespan
 from starlette.exceptions import HTTPException as StarletteHTTPException
+import uvicorn
 
 
 app = FastAPI(
@@ -52,3 +53,7 @@ class SPAStaticFiles(StaticFiles):
                 raise ex
 
 app.mount("/", SPAStaticFiles(directory="./static", html=True), name="spa-static-files")
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="localhost", port=8080)

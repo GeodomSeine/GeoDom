@@ -13,6 +13,7 @@ import { parseSLDToStyles } from "../../mapstyles/mapStyles";
 import SliderComponent from "../SimpleComponents/SliderComponent";
 import ProfileGraph from "../SimpleComponents/ProfileGraph";
 import FloatingAction from "../SimpleComponents/FloatingAction";
+import ExportJsonComponent from "../ExportComponent/ExportJsonComponent";
 
 type ChartData = Array<{
   decade: number;
@@ -43,7 +44,32 @@ const VisualisationPage: React.FC = () => {
   const [bassinStyle, setBassinStyle] = useState<PathOptions | null>(null);
   const [bounds, setBounds] = useState<LatLngBounds | null>(null);
   const [sliderValue, setSliderValue] = useState<number>(1);
+  const conf = localStorage.getItem("confImportation");
 
+  if(conf){
+    try {
+      const jsonData = JSON.parse(conf);
+      console.log(jsonData);
+      setSelectedScenarios(scenarios.filter((scenario) => jsonData.scenarios.includes(scenario.id)));
+      setSelectedVariables(program?.variables.filter((variable) => jsonData.variables.includes(variable.var_code)) || []);
+      setIdHydStart(jsonData.hydro_id_start);
+      setIdHydEnd(jsonData.hydro_id_end);
+
+      console.log(jsonData.name);
+      console.log(selectedVariables);
+
+
+      if(jsonData.hydro_id_start && jsonData.hydro_id_end){
+        setMode("amont-aval");
+      }else{
+        setMode("complet");
+      }
+      setSelectedKey(jsonData.selected);
+      localStorage.removeItem("confImportation");
+    } catch (error) {
+      console.error('Error parsing JSON:', error);
+    }
+  }
 
   useEffect(() => {
     if (!program_name) {
@@ -328,9 +354,20 @@ const VisualisationPage: React.FC = () => {
     return null;
   }
 
+  const exportConf = {
+    name: program.name,
+    selected: selectedKey,
+    hydro_id_start: idHydStart,
+    hydro_id_end: idHydEnd,
+    variables: selectedVariables.map((variable) => variable.var_code),
+    scenarios: selectedScenarios.map((scenario) => scenario.id),
+  };
+
   return (
     <div className='home_component_visualisation'>
-      <FloatingAction></FloatingAction>
+      <FloatingAction>
+        <ExportJsonComponent exportConf={exportConf}/>
+      </FloatingAction>
       <div className='home_body'>
         <ToggleContainer title="Carte de sélection" secondChild={sharedSlider}>
           <MapSelection

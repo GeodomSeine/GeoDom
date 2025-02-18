@@ -67,7 +67,7 @@ const LegendSld = ({ variable }: Props) => {
 
   return (
     <div className="legend_container">
-      <div className="legend_header">{`${variable.var_name} (${variable.unit_short})`}</div>
+      <div className="legend_header">{`${variable.var_code.toUpperCase()} (${variable.unit_short})`}</div>
       <div className="legend_body">
         {legendEntries.map((entry, index) => (
           <div key={index} className="legend_item">

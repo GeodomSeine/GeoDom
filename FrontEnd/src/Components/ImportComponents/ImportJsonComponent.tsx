@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import './ImportComponent.scss';
 import ButtonComponent from '../SimpleComponents/ButtonComponent';
+import { useNavigate } from 'react-router';
 
 interface ImportJsonComponentProps {
     visualizationData: { name: string; variables: string[] }[];
@@ -10,7 +11,7 @@ const ImportJsonComponent: React.FC<ImportJsonComponentProps> = ({ visualization
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
-
+    const navigate = useNavigate();
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0] || null;
         setSelectedFile(file);
@@ -47,6 +48,8 @@ const ImportJsonComponent: React.FC<ImportJsonComponentProps> = ({ visualization
                         setErrorMessage(`Erreur: Les scenarios suivants sont incorrects pour la visualisation '${jsonData.name}': ${jsonData.scenarios.filter((scenario: number) => scenario < 0).join(", ")}`);
                         return;
                     }
+                    localStorage.setItem("confImportation", JSON.stringify(jsonData));
+                    navigate(`/${jsonData.name}`);
                 } catch (error) {
                     setErrorMessage('Erreur lors de l\'importation du fichier JSON');
                     console.error('Error parsing JSON:', error);

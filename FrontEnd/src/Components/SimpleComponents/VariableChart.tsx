@@ -43,19 +43,19 @@ const VariableChart: React.FC<VariableChartProps> = ({ variable, decades, data, 
     labels: decades,
     datasets: [
       {
-        label: `${variable.var_name} (P5)`,
+        label: `${variable.var_code.toUpperCase()} (P5)`,
         data: data.p5,
         borderColor: "rgba(255, 99, 132, 1)",
         fill: false,
       },
       {
-        label: `${variable.var_name} (P50)`,
+        label: `${variable.var_code.toUpperCase()} (P50)`,
         data: data.p50,
         borderColor: "rgba(54, 162, 235, 1)",
         fill: false,
       },
       {
-        label: `${variable.var_name} (P90)`,
+        label: `${variable.var_code.toUpperCase()} (P90)`,
         data: data.p90,
         borderColor: "rgba(75, 192, 192, 1)",
         fill: false,
