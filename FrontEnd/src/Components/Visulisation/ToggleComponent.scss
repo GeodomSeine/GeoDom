@@ -53,15 +53,16 @@
         .space_body_block{
             height: calc(100% - 55px);
         }
+        // change
         .space_body_footer{
             display: flex;
             justify-content: center;
             padding: 8px;
-        }
-    }
-    .space_body:not(:has(.space_body_footer)){
-        .space_body_tile{
-            height:100%;
+            .decade_percentile_selection{
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
         }
     }
     .space_body.hidden {

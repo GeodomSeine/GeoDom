@@ -20,13 +20,17 @@ const InputComponent: FC<InputComponentProps> = ({
 }) => {
   return (
     <div className={`input_component type_${className}`}>
-      <input
-        type={type}
-        disabled={disabled}
-        checked={checked}
-        onChange={onChange}
-      />
-      <label>{label}</label>
+      <label>
+        <input
+          type={type}
+          disabled={disabled}
+          checked={checked}
+          onChange={onChange}
+        />
+        <span>
+          {label}
+        </span>
+      </label>
     </div>
   );
 };

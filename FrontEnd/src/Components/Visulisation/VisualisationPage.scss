@@ -12,12 +12,6 @@
         gap: 10px;
         min-height: calc(100vh - 20px);
         max-height: fit-content;
-        .decade_percentile_selection{
-            display: flex;
-            flex-direction: column;
-            padding: 8px;
-            gap: 8px;
-        }
         .space_container {
             @include card;
             display: flex;
