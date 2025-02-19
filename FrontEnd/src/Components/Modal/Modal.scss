@@ -45,10 +45,16 @@ animation: overlay-fade-in 0.3s ease-out;
     animation: modal-fade-in 0.3s ease-out;
 
     .modal_action_header {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .modal_action_body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
     }
 }
 }

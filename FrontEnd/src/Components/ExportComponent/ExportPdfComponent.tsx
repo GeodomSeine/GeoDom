@@ -1,32 +1,39 @@
 import React from 'react';
 import html2canvas from 'html2canvas';
-import L, { Map } from 'leaflet';
+import L, { map, Map } from 'leaflet';
+import "leaflet-simple-map-screenshoter";
 import jsPDF from 'jspdf';
+import './ExportComponent.scss';
+import ButtonComponent from '../SimpleComponents/ButtonComponent';
 
 interface ExportPdfComponentProps {
-    mapRef: React.RefObject<Map>; // Référence vers le MapContainer
-    chartRef: React.RefObject<HTMLDivElement>; // Référence vers le graphique
+    exportPdfInfo : any;
 }
 
-const ExportPdfComponent: React.FC<ExportPdfComponentProps> = ({ mapRef, chartRef }) => {
+const ExportPdfComponent: React.FC<ExportPdfComponentProps> = ({ exportPdfInfo }) => {
+    const chartRef = React.useRef<HTMLCanvasElement>(null);
+
     const handleExportPDF = async () => {
         const pdf = new jsPDF('p', 'mm', 'a4');
         const elements = [];
+        const selectionMapElements = exportPdfInfo.selectionMapElements;
+        
 
         // Capturer la carte Leaflet
-        if (mapRef.current) {
+        if (selectionMapElements.ref.current) {
             const plugin = (L as any).simpleMapScreenshoter({
                 cropImageByInnerWH: true,
-                hidden: true,
+                hidden: false,
                 preventDownload: true,
                 mimeType: "image/png",
                 hideElementsWithSelectors: [".leaflet-control-container"],
-            }).addTo(mapRef.current);
+            }).addTo(selectionMapElements.ref.current);
 
             try {
                 const blob = await plugin.takeScreen("blob", { mimeType: "image/png" });
                 const imgUrl = URL.createObjectURL(blob); // Crée une URL temporaire
-                pdf.addImage(imgUrl, "PNG", 0, 0, 297, 210);
+                pdf.text(selectionMapElements.title, 10, 10);
+                pdf.addImage(imgUrl, "PNG", 10, 20, 180, 160);
                 URL.revokeObjectURL(imgUrl); // Libère la mémoire
 
             } catch (e) {
@@ -55,8 +62,8 @@ const ExportPdfComponent: React.FC<ExportPdfComponentProps> = ({ mapRef, chartRe
     };
 
     return (
-        <div>
-            <button onClick={handleExportPDF}>Exporter en PDF</button>
+        <div className="export_container">
+            <ButtonComponent onClick={handleExportPDF}  txt='Exporter en PDF'/>
         </div>
     );
 };

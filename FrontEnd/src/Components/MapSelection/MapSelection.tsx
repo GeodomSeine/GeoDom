@@ -13,6 +13,7 @@ import PopupContent from './PopupContent';
 import MapButtons from '../SimpleComponents/MapButtons';
 import ControlComponent from './ControlComponent';
 import { calculateBounds } from '../../utils/mapUtils';
+import ExportPdfComponent from '../ExportComponent/ExportPdfComponent';
 
 const { BaseLayer, Overlay } = LayersControl;
 
@@ -184,9 +185,20 @@ root.render(
 layer.bindPopup(popupContent).openPopup();
 };
 
+
+const mapRef = useRef<null>(null);
+const exportPdfInfo = {
+  selectionMapElements: { title: 'Carte de sélection', ref: mapRef },
+  mapElements: [],
+  chartElements: [],
+};
+
+
 return (
 <div className="map_component">
+  <ExportPdfComponent exportPdfInfo={exportPdfInfo} />
   <MapContainer
+      ref={mapRef}
       attributionControl={false}
       bounds={bounds || [[50.9, -1.5], [46.5, 8.5]]}
       zoom={6} 
@@ -194,6 +206,8 @@ return (
       zoomControl={false}
       
   >
+    {/* className pour cacher les controles pour l'export  */}
+    <div className="leaflet-control-container"> 
     <MapButtons bounds={bounds}>
         <ControlComponent
           idHydStart={idHydStart}
@@ -211,6 +225,7 @@ return (
           setLayerVisibility={setLayerVisibility}
         />
     </MapButtons>
+    </div>
     <LayersControl>
       <BaseLayer {...(layerVisibility.baseLayer ? { checked: true } : { checked: false })} name="BaseLayer">
         <TileLayer
