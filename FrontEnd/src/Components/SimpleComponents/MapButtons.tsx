@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useState } from "react";
+import React, { ReactNode, useEffect, useRef, useState } from "react";
 import { useMap } from "react-leaflet";
 import { LatLngBounds } from "leaflet";
 import LogoComponent from "./LogoComponent";
@@ -7,6 +7,7 @@ import Minus from "../../assets/minus.svg?react";
 import Expand from "../../assets/expand.svg?react";
 import Burger from "../../assets/burger.svg?react";
 import "./MapButtons.scss";
+import L from 'leaflet';
 
 interface MapControlsProps {
     bounds: LatLngBounds | null;
@@ -16,11 +17,13 @@ interface MapControlsProps {
 const MapControls: React.FC<MapControlsProps> = ({ bounds, children }) => {
     const map = useMap();
     const [isVisible, setIsVisible] = useState(true);
-    // const container = useRef<HTMLDivElement>(null);
+
+    const fixedControls = useRef<HTMLDivElement | null>(null);
+    const dynamicsControls = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
         zoomToBounds();
-    }, [bounds])
+    }, [bounds]);
 
     const zoomToBounds = () => {
         if (bounds) {
@@ -28,41 +31,31 @@ const MapControls: React.FC<MapControlsProps> = ({ bounds, children }) => {
         }
     };
 
-    // need to be fixed
-    // useEffect(() => {
-    //     if (container.current) {
-    //         const stopPropagation = (e: Event) => e.stopPropagation();
-    //         const current = container.current;
+    useEffect(() => {
+        // stop click propagation
+        if (fixedControls.current) {
+            L.DomEvent.disableClickPropagation(fixedControls.current);
+            L.DomEvent.disableScrollPropagation(fixedControls.current);
+        }
+        if (dynamicsControls.current) {
+            L.DomEvent.disableClickPropagation(dynamicsControls.current);
+            L.DomEvent.disableScrollPropagation(dynamicsControls.current);
+        }
+    }, []);
 
-    //         current.addEventListener('click', stopPropagation);
-    //         current.addEventListener('mousedown', stopPropagation);
-    //         current.addEventListener('dblclick', stopPropagation);
-    //         current.addEventListener('wheel', stopPropagation);
-    //         current.addEventListener('touchstart', stopPropagation);
-
-    //         return () => {
-    //             current.removeEventListener('click', stopPropagation);
-    //             current.removeEventListener('mousedown', stopPropagation);
-    //             current.removeEventListener('dblclick', stopPropagation);
-    //             current.removeEventListener('wheel', stopPropagation);
-    //             current.removeEventListener('touchstart', stopPropagation);
-    //         };
-    //     }
-    // }, []);
-
-    //ref={container}
     return (
-        <div className="map_buttons" >
-            <div className="map_buttons_default">
+        <div className="map_buttons">
+            <div className="map_buttons_default" ref={fixedControls}>
                 {bounds && (
                     <LogoComponent Icon={Expand} size={"35px"} onClick={zoomToBounds} />
                 )}
                 <LogoComponent Icon={Add} size={"35px"} onClick={() => map.setZoom(map.getZoom() + 1)} />
                 <LogoComponent Icon={Minus} size={"35px"} onClick={() => map.setZoom(map.getZoom() - 1)} />
-                {children && <LogoComponent Icon={Burger} size={"35px"} onClick={() => setIsVisible((prev) => !prev)}/>}
+                {children && <LogoComponent Icon={Burger} size={"35px"} onClick={() => setIsVisible((prev) => !prev)} />}
             </div>
+
             {children && (
-                <div onClick={zoomToBounds} className={`map_buttons_children ${isVisible ? "" : "hidden"}`}>
+                <div ref={dynamicsControls} onClick={zoomToBounds} className={`map_buttons_children ${isVisible ? "" : "hidden"}`}>
                     {children}
                 </div>
             )}
