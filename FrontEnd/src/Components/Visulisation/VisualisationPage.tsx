@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import './VisualisationPage.scss';
 import { getScenarios, getAmontAval, Scenario, AmontAvalResponse, DataRequest, DataResponse, getData, getFullData, DataRequestFull, GeoJsonResponse, getPkGeom, ColoredMapResponseData, ColorMapRequest, getColoredMapData, getBassin, getBassinSLD, getPkSld, streamPkData, ProfileGraphDataResponse, ProfileGraphPkRequest, getProfileData, getProfileFullData, ProgramVariable, Program } from "../../services/api";
 import { useNavigate, useParams } from "react-router";
@@ -14,6 +14,7 @@ import SliderComponent from "../SimpleComponents/SliderComponent";
 import ProfileGraph from "../SimpleComponents/ProfileGraph";
 import FloatingAction from "../SimpleComponents/FloatingAction";
 import ExportJsonComponent from "../ExportComponent/ExportJsonComponent";
+import ExportPdfComponent from "../ExportComponent/ExportPdfComponent";
 
 type ChartData = Array<{
   decade: number;
@@ -350,6 +351,15 @@ const VisualisationPage: React.FC = () => {
     }
   });
 
+  const selectionMapRef = useRef<null>(null);
+  const testRef = useRef<null>(null);
+  const exportPdfInfo = {
+    selectionMapElements: { mapRef: selectionMapRef, program_name: program_name, selectedVariables: selectedVariables, selectedScenarios: selectedScenarios },
+    mapElements: [],
+    chartElements: {testRef: testRef},
+  };
+
+
   if(!program){
     return null;
   }
@@ -367,10 +377,12 @@ const VisualisationPage: React.FC = () => {
     <div className='home_component_visualisation'>
       <FloatingAction>
         <ExportJsonComponent exportConf={exportConf}/>
+        <ExportPdfComponent exportPdfInfo={exportPdfInfo} />
       </FloatingAction>
       <div className='home_body'>
         <ToggleContainer title="Carte de sélection" secondChild={sharedSlider}>
           <MapSelection
+            mapRef={selectionMapRef}
             program={program!.name}
             exutoire_id={program!.exutoire_id}
             idHydStart={idHydStart}
@@ -391,7 +403,9 @@ const VisualisationPage: React.FC = () => {
           />
         </ToggleContainer>
         {chartData?.length && (
+          
           <ToggleContainer title="Graphiques temporels" containsTile={true} secondChild={sharedSlider}>
+            
             {Object.entries(groupedData).map(([variable, chartData], index) => (
               <VariableChart
                 key={variable}
@@ -401,7 +415,9 @@ const VisualisationPage: React.FC = () => {
                 data={chartData}
               />
             ))}
+            
           </ToggleContainer>
+          
         )}
         {coloredMapData && (
           <ToggleContainer

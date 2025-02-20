@@ -13,12 +13,12 @@ import PopupContent from './PopupContent';
 import MapButtons from '../SimpleComponents/MapButtons';
 import ControlComponent from './ControlComponent';
 import { calculateBounds } from '../../utils/mapUtils';
-import ExportPdfComponent from '../ExportComponent/ExportPdfComponent';
 
 const { BaseLayer, Overlay } = LayersControl;
 
 
 interface MapSelectionProps {
+  mapRef: any;
   program: string;
   exutoire_id: number;
   idHydStart: number | null;
@@ -39,6 +39,7 @@ interface MapSelectionProps {
 }
 
 const MapSelection: React.FC<MapSelectionProps> = ({
+  mapRef,
   program,
   exutoire_id,
   idHydStart,
@@ -185,18 +186,9 @@ root.render(
 layer.bindPopup(popupContent).openPopup();
 };
 
-
-const mapRef = useRef<null>(null);
-const exportPdfInfo = {
-  selectionMapElements: { title: 'Carte de sélection', ref: mapRef },
-  mapElements: [],
-  chartElements: [],
-};
-
-
 return (
 <div className="map_component">
-  <ExportPdfComponent exportPdfInfo={exportPdfInfo} />
+  
   <MapContainer
       ref={mapRef}
       attributionControl={false}
