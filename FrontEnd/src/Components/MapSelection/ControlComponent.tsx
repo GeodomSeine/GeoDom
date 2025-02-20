@@ -59,14 +59,7 @@ interface ControlComponentProps {
         </div>
 
         {mode === "amont-aval" && (
-          <div className='selected_pks'>
-            {/* Logique amont-aval ici */}
-            <h3><>ID Start :</> {idHydStart || 'Non sélectionné'}</h3>
-            <h3><>ID End :</> {idHydEnd || 'Non sélectionné'}</h3>
-            <div style={{ display: "flex", flexDirection: 'column', gap: "5px" }}>
-              <ButtonComponent txt={"Réinitialiser"} onClick={resetSelection}></ButtonComponent>
-            </div>
-          </div>
+          <ButtonComponent txt={"Réinitialiser"} onClick={resetSelection}></ButtonComponent>
         )}
 
         {/* Sélection des variables */}

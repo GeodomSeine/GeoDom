@@ -13,6 +13,7 @@ import {
   ChartOptions,
 } from "chart.js";
 import { ProfileGraphDataResponse, ProgramVariable } from "../../services/api";
+import { getColor } from "../../utils/mapUtils";
 
 ChartJS.register(
   CategoryScale,
@@ -47,20 +48,23 @@ const ProfileGraph: React.FC<ProfileGraphProps> = ({ variable, data, xKey, class
       {
         label: `${variable.var_code.toUpperCase()} (P5)`,
         data: p5,
-        borderColor: "rgba(255, 99, 132, 1)",
-        backgroundColor: "rgba(220, 220, 220, 0.7)",
+        borderColor: getColor("--danger-color"),
+        backgroundColor:  getColor("--basic-grey"),
         fill: +2,
       },
       {
         label: `${variable.var_code.toUpperCase()} (P50)`,
         data: p50,
-        borderColor: "rgba(54, 162, 235, 1)",
+        borderColor: getColor("--warning-color"),
+        order:-1,
       },
       {
         label: `${variable.var_code.toUpperCase()} (P90)`,
         data: p90,
-        borderColor: "rgba(75, 192, 192, 1)",
+        borderColor: getColor("--secondary-blue"),
+        order:-1,
       },
+      
     ],
   };
 

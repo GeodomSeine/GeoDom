@@ -14,6 +14,7 @@ import {
 } from "chart.js";
 import zoomPlugin from "chartjs-plugin-zoom";
 import { ProgramVariable } from "../../services/api";
+import { getColor } from "../../utils/mapUtils";
 
 // import ButtonComponent from "./ButtonComponent";
 
@@ -45,22 +46,26 @@ const VariableChart: React.FC<VariableChartProps> = ({ variable, decades, data, 
       {
         label: `${variable.var_code.toUpperCase()} (P5)`,
         data: data.p5,
-        borderColor: "rgba(255, 99, 132, 1)",
-        backgroundColor: "rgba(220, 220, 220, 0.7)",
+        borderColor: getColor("--danger-color"),
+        backgroundColor: getColor("--basic-grey"),
         fill: +2,
       },
       {
         label: `${variable.var_code.toUpperCase()} (P50)`,
         data: data.p50,
-        borderColor: "rgba(54, 162, 235, 1)",
+        borderColor: getColor("--warning-color"),
+        order:-1,
       },
       {
         label: `${variable.var_code.toUpperCase()} (P90)`,
         data: data.p90,
-        borderColor: "rgba(75, 192, 192, 1)",
+        borderColor: getColor("--secondary-blue"),
+        order:-1,
       },
     ],
   };
+
+  
 
   const options: ChartOptions<"line"> = {
     responsive: true,
