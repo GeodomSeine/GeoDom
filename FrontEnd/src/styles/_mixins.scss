@@ -29,18 +29,3 @@
 @mixin headerSpace{
     padding: 75px 10px 10px 10px;
 }
-
-@mixin textTruncate {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    overflow: hidden;
-    white-space: nowrap;
-    flex-shrink: 1;
-    text-overflow: ellipsis;
-    min-width: 0; 
-}
-
-
-
-// add more

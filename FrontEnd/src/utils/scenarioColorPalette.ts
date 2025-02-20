@@ -1,4 +1,3 @@
-export const scenarioColorPalette = [
-  "#FF5733", "#33FF57", "#3357FF", "#FF33A8", "#A833FF",
-  "#FF8C33", "#33FFD5", "#D533FF", "#33A8FF", "#FF3333"
-];
+import { getColor } from "./mapUtils";
+
+export const scenarioColorPalette = Array.from({ length: 8 }, (_, i) => getColor(`--scenario-${i + 1}`));

@@ -427,6 +427,7 @@ const VisualisationPage: React.FC = () => {
       <div className='home_body'>
         <ToggleContainer title="Carte de sélection" secondChild={sharedSlider}>
           <MapSelection
+            scenarioColors={scenarioColors}
             program={program!.name}
             exutoire_id={program!.exutoire_id}
             idHydStart={idHydStart}
@@ -450,6 +451,7 @@ const VisualisationPage: React.FC = () => {
           <ToggleContainer title="Graphiques temporels" containsTile={true} secondChild={sharedSlider}>
             {Object.entries(groupedData).map(([variable, chartData], index) => (
               <VariableChart
+                scenarios={scenarios}
                 scenarioColors={scenarioColors}
                 donutsData={selectedKey && donutsData && donutsData[selectedKey]? donutsData[selectedKey][variable]: {}}
                 key={variable}

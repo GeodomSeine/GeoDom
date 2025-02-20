@@ -13,7 +13,8 @@ import {
   ChartOptions,
 } from "chart.js";
 import zoomPlugin from "chartjs-plugin-zoom";
-import { DecadeScenarioValue, ProgramVariable } from "../../services/api";
+import { DecadeScenarioValue, ProgramVariable, Scenario } from "../../services/api";
+import { getColor } from "../../utils/mapUtils";
 
 ChartJS.register(
   CategoryScale,
@@ -34,6 +35,7 @@ interface VariableChartProps {
   className?: string | null;
   donutsData: DecadeScenarioValue;
   scenarioColors: Record<number, string>;
+  scenarios: Scenario[];
 }
 
 const VariableChart: React.FC<VariableChartProps> = ({ 
@@ -42,47 +44,51 @@ const VariableChart: React.FC<VariableChartProps> = ({
   data, 
   className = "variable_element", 
   donutsData, 
-  scenarioColors 
+  scenarioColors, 
+  scenarios
 }) => {
   const chartRef = useRef<any>(null);
 
   // Générer les datasets des scénarios dans donutsData
   const scenarioDatasets = Object.entries(donutsData ?? {}).flatMap(([decade, values]) => {
     return values.map(({ scenario, value }) => ({
-      label : "donuts",
+      label : "Observation (" + scenarios.find(s => s.id === scenario)?.year + ")",
       data: decades.map((d) => (d.toString() === decade ? value : null)), 
-      borderColor: scenarioColors[scenario] || "rgba(0, 0, 0, 1)", 
-      backgroundColor: scenarioColors[scenario] || "rgba(0, 0, 0, 0.2)", 
+      borderColor: scenarioColors[scenario] || getColor("--basic-black"), 
+      backgroundColor: scenarioColors[scenario] || getColor("--basic-grey"), 
       pointRadius: 5, 
       pointHoverRadius: 7,
-      showLine: false, // Ne pas dessiner de ligne entre les points
+      showLine: false,
     }));
   });  
 
-  // Données pour le graphique
   const chartData = {
     labels: decades,
     datasets: [
       {
         label: `${variable.var_code.toUpperCase()} (P5)`,
         data: data.p5,
-        borderColor: "rgba(255, 99, 132, 1)",
-        backgroundColor: "rgba(220, 220, 220, 0.7)",
+        borderColor: getColor("--danger-color"),
+        backgroundColor: getColor("--basic-grey"),
         fill: +2,
       },
       {
         label: `${variable.var_code.toUpperCase()} (P50)`,
         data: data.p50,
-        borderColor: "rgba(54, 162, 235, 1)",
+        borderColor: getColor("--warning-color"),
+        order:-1,
       },
       {
         label: `${variable.var_code.toUpperCase()} (P90)`,
         data: data.p90,
-        borderColor: "rgba(75, 192, 192, 1)",
+        borderColor: getColor("--secondary-blue"),
+        order:-1,
       },
       ...scenarioDatasets, // Ajout des datasets des scénarios
     ],
   };
+
+  
 
   const options: ChartOptions<"line"> = {
     responsive: true,
@@ -104,27 +110,12 @@ const VariableChart: React.FC<VariableChartProps> = ({
       legend: {
         labels: {
             filter: function(item, __) {
-                return !item.text.includes('donuts');
+                return !item.text.includes('Observation');
             }
         }
       },
       tooltip: {
         enabled: true,
-      },
-      zoom: {
-        pan: {
-          enabled: true,
-          mode: "xy",
-        },
-        zoom: {
-          wheel: {
-            enabled: true,
-          },
-          pinch: {
-            enabled: true,
-          },
-          mode: "xy",
-        },
       },
     },
   };

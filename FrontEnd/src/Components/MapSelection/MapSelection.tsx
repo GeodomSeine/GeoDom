@@ -35,6 +35,7 @@ interface MapSelectionProps {
   setSelectedScenarios: (scenarios: Scenario[]) => void;
   mode: "complet" | "amont-aval";
   setMode: (mode: "complet" | "amont-aval") => void;
+  scenarioColors: Record<number, string>;
 }
 
 const MapSelection: React.FC<MapSelectionProps> = ({
@@ -55,6 +56,7 @@ const MapSelection: React.FC<MapSelectionProps> = ({
   setSelectedScenarios,
   mode,
   setMode,
+  scenarioColors
 }) => {
   const [hydroData, setHydroData] = useState<GeoJsonResponse | null>(null);
   const [bassinData, setBassinData] = useState<GeoJsonResponse | null>(null);
@@ -196,8 +198,7 @@ return (
   >
     <MapButtons bounds={bounds}>
         <ControlComponent
-          idHydStart={idHydStart}
-          idHydEnd={idHydEnd}
+          scenarioColors={scenarioColors}
           resetSelection={resetSelection}
           variables={variables}
           selectedVariables={selectedVariables}

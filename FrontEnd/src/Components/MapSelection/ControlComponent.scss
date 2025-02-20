@@ -7,21 +7,11 @@
   width: max-content;
   flex: 1;
 }
+
 .control_component {
   display: flex;
   flex-direction: column;
   gap: 3px;
-  .selected_pks{
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    .control_button_container{
-      display: flex;
-      flex-direction: row;
-      gap: 5px;
-      font-size: 0.7rem;
-    }
-  }
 }
 
 @media (max-width: 760px) {
@@ -31,3 +21,14 @@
   }
 }
 
+.scenario-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.scenario-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+}
