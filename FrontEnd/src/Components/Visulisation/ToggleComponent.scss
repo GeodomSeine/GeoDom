@@ -33,7 +33,6 @@
             overflow-y: auto;
             align-items: center;
             .variable_element {
-                padding: 6px;
                 flex: 0 1;  
                 min-height: 50%; 
                 box-sizing: border-box;
@@ -84,7 +83,8 @@
             width: 100%;
             .space_body_tile{
                 .variable_element{
-                    min-width: 90vw
+                    padding: 6px;
+                    min-width: 90vw;
                 }
             }
         }
@@ -92,11 +92,18 @@
 }
 
 @media (max-width: 760px) {
-    .home_component_visualisation{
-        .home_body{
-            .space_container {
-                height: calc(50vh - 15px);
+    .space_container {
+        height: calc(50vh - 15px);
+        .space_body{
+            .space_body_tile{
+                gap: 6px;
+                .variable_element{
+                    padding: 0;
+                    min-height: 100%;
+                    width: calc(100% - 5px);
+                }
             }
         }
-    }   
+        
+    }
 }
