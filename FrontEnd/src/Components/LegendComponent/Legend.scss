@@ -33,6 +33,14 @@
     }
 }
 
+@media (max-width: 760px) {
+    .legend_container {
+        .legend_header {
+            display: none;
+        }
+    }    
+}
+
 
 
 

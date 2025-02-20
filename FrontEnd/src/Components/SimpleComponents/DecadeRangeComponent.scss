@@ -14,19 +14,19 @@
         display: flex;
         background-color: rgb(231, 231, 231);
         box-shadow: inset rgba(9, 30, 66, 0.25) 0px 1px 1px, inset rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;
-      }
-  
-      input[type=number]::-webkit-inner-spin-button,
-      input[type=number]::-webkit-outer-spin-button {
+    }
+
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
         -webkit-appearance: none;
         margin: 0;
-      }
-  
-      input[type=number] {
+    }
+
+    input[type=number] {
         -moz-appearance: textfield;
-      }
-  
-      input:focus {
+    }
+
+    input:focus {
         outline: none; 
-      }
+    }
 }
