@@ -84,7 +84,10 @@ const VariableChart: React.FC<VariableChartProps> = ({
         borderColor: getColor("--secondary-blue"),
         order:-1,
       },
-      ...scenarioDatasets, // Ajout des datasets des scénarios
+      ...scenarioDatasets.map((dataset) => ({
+        ...dataset,
+        order: -2,
+      })),
     ],
   };
 
