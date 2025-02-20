@@ -13,9 +13,7 @@ import {
   ChartOptions,
 } from "chart.js";
 import zoomPlugin from "chartjs-plugin-zoom";
-import { ProgramVariable } from "../../services/api";
-
-// import ButtonComponent from "./ButtonComponent";
+import { DecadeScenarioValue, ProgramVariable } from "../../services/api";
 
 ChartJS.register(
   CategoryScale,
@@ -30,15 +28,38 @@ ChartJS.register(
 );
 
 interface VariableChartProps {
-  variable: ProgramVariable; // Nom de la variable (e.g., no3, oxy)
-  decades: number[]; // Décennies
-  data: { p5: number[]; p50: number[]; p90: number[] }; // Données pour p5, p50, p90
-  className?:string | null;
+  variable: ProgramVariable;
+  decades: number[];
+  data: { p5: number[]; p50: number[]; p90: number[] };
+  className?: string | null;
+  donutsData: DecadeScenarioValue;
+  scenarioColors: Record<number, string>;
 }
 
-const VariableChart: React.FC<VariableChartProps> = ({ variable, decades, data, className = "variable_element" }) => {
+const VariableChart: React.FC<VariableChartProps> = ({ 
+  variable, 
+  decades, 
+  data, 
+  className = "variable_element", 
+  donutsData, 
+  scenarioColors 
+}) => {
   const chartRef = useRef<any>(null);
 
+  // Générer les datasets des scénarios dans donutsData
+  const scenarioDatasets = Object.entries(donutsData ?? {}).flatMap(([decade, values]) => {
+    return values.map(({ scenario, value }) => ({
+      label : "donuts",
+      data: decades.map((d) => (d.toString() === decade ? value : null)), 
+      borderColor: scenarioColors[scenario] || "rgba(0, 0, 0, 1)", 
+      backgroundColor: scenarioColors[scenario] || "rgba(0, 0, 0, 0.2)", 
+      pointRadius: 5, 
+      pointHoverRadius: 7,
+      showLine: false, // Ne pas dessiner de ligne entre les points
+    }));
+  });  
+
+  // Données pour le graphique
   const chartData = {
     labels: decades,
     datasets: [
@@ -59,6 +80,7 @@ const VariableChart: React.FC<VariableChartProps> = ({ variable, decades, data, 
         data: data.p90,
         borderColor: "rgba(75, 192, 192, 1)",
       },
+      ...scenarioDatasets, // Ajout des datasets des scénarios
     ],
   };
 
@@ -78,11 +100,38 @@ const VariableChart: React.FC<VariableChartProps> = ({ variable, decades, data, 
         },
       },
     },
+    plugins: {
+      legend: {
+        labels: {
+            filter: function(item, __) {
+                return !item.text.includes('donuts');
+            }
+        }
+      },
+      tooltip: {
+        enabled: true,
+      },
+      zoom: {
+        pan: {
+          enabled: true,
+          mode: "xy",
+        },
+        zoom: {
+          wheel: {
+            enabled: true,
+          },
+          pinch: {
+            enabled: true,
+          },
+          mode: "xy",
+        },
+      },
+    },
   };
 
   return (
     <div className={`${className}`}>
-      <Line ref={chartRef} data={chartData} options={options}/>
+      <Line ref={chartRef} data={chartData} options={options} />
     </div>
   );
 };

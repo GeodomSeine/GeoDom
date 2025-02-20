@@ -1,6 +1,16 @@
 import React, { useState, useEffect, useMemo } from "react";
 import './VisualisationPage.scss';
-import { getScenarios, getAmontAval, Scenario, AmontAvalResponse, DataRequest, DataResponse, getData, getFullData, DataRequestFull, GeoJsonResponse, getPkGeom, ColoredMapResponseData, ColorMapRequest, getColoredMapData, getBassin, getBassinSLD, getPkSld, streamPkData, ProfileGraphDataResponse, ProfileGraphPkRequest, getProfileData, getProfileFullData, ProgramVariable, Program } from "../../services/api";
+import { 
+  getScenarios, getAmontAval, Scenario, 
+  AmontAvalResponse, DataRequest, DataResponse, 
+  getData, getFullData, DataRequestFull, GeoJsonResponse, 
+  getPkGeom, ColoredMapResponseData, ColorMapRequest, 
+  getColoredMapData, getBassin, getBassinSLD, getPkSld, 
+  streamPkData, ProfileGraphDataResponse, 
+  ProfileGraphPkRequest, getProfileData, getProfileFullData, 
+  ProgramVariable, Program,getDonutsData, getDonutsFullData, 
+  DonutsDataResponse
+} from "../../services/api";
 import { useNavigate, useParams } from "react-router";
 import ToggleContainer from "./ToggleComponent";
 import VariableChart from "../SimpleComponents/VariableChart";
@@ -15,6 +25,9 @@ import ProfileGraph from "../SimpleComponents/ProfileGraph";
 import FloatingAction from "../SimpleComponents/FloatingAction";
 import ExportJsonComponent from "../ExportComponent/ExportJsonComponent";
 import PercentileSelector from "../SimpleComponents/PercentileSelector";
+import { scenarioColorPalette } from "../../utils/scenarioColorPalette";
+
+const scenarioColors: Record<number, string>= {}
 
 type ChartData = Array<{
   decade: number;
@@ -30,6 +43,8 @@ const VisualisationPage: React.FC = () => {
   const [amontAvalResponse, setAmontAvalResponse] = useState<AmontAvalResponse | null>(null);
   const [selectedDecades, setSelectedDecades] = useState<number[]>([1, 36]);
   const [data, setData] = useState<DataResponse | null>(null);
+  const [donutsData, setDonutsData] = useState<DonutsDataResponse | null>(null);
+
   const [coloredMapData, setColoredMapData] = useState<ColoredMapResponseData | null>(null);
   const [profileGraphData, setProfileGraphData] = useState<ProfileGraphDataResponse | null>(null);
   const [selectedPercentile, setSelectedPercentile] = useState<"p5" | "p50" | "p90">("p50");
@@ -72,10 +87,19 @@ const VisualisationPage: React.FC = () => {
     const fetchScenarios = async () => {
       const data = await getScenarios();
       if (data) {
-        setScenarios(data.scenarios);
-        setSelectedScenarios(data.scenarios.slice(0, 3));
+
+        const scenariosWithColors = data.scenarios.map((scenario, index) => {
+          if (!scenarioColors[scenario.id]) { 
+            scenarioColors[scenario.id] = scenarioColorPalette[index % scenarioColorPalette.length];
+          }
+          return { ...scenario, color: scenarioColors[scenario.id] };
+        });
+
+        setScenarios(scenariosWithColors);
+        setSelectedScenarios(scenariosWithColors.slice(0, 3));
       }
     };
+
     fetchScenarios();
   }, []);
 
@@ -188,6 +212,7 @@ const VisualisationPage: React.FC = () => {
   useEffect(() => {
     if (!selectedVariables.length || !selectedScenarios.length) {
       setData(null);
+      setDonutsData(null);
       setChartData(null);
       setSelectedPk(undefined);
       setSelectedKey(null);
@@ -202,12 +227,25 @@ const VisualisationPage: React.FC = () => {
     const fetchData = async () => {
       try {
         let response: DataResponse | null = null;
-        if (mode === "amont-aval" && request) {
-          response = await getData(request);
-        } else if (mode === "complet" && requestFull) {
-          response = await getFullData(requestFull);
-        }
+        let donutsResponse: DonutsDataResponse | null = null;
 
+        if (mode === "amont-aval" && request) {
+          [response, donutsResponse] = await Promise.all([
+            getData(request), 
+            getDonutsData(request)
+          ]);
+
+        } else if (mode === "complet" && requestFull) {
+          [response, donutsResponse] = await Promise.all([
+            getFullData(requestFull), 
+            getDonutsFullData(requestFull)
+          ]);
+        }
+        if(donutsResponse){
+          setDonutsData(donutsResponse);
+        }else{
+          setDonutsData(null);
+        }
         if (response) {
           setData(response);
           const keys = Object.keys(response);
@@ -223,6 +261,7 @@ const VisualisationPage: React.FC = () => {
         console.error("Erreur lors de la récupération des données :", err);
         setData(null);
         setChartData(null);
+        setDonutsData(null);
       }
     };
 
@@ -411,6 +450,8 @@ const VisualisationPage: React.FC = () => {
           <ToggleContainer title="Graphiques temporels" containsTile={true} secondChild={sharedSlider}>
             {Object.entries(groupedData).map(([variable, chartData], index) => (
               <VariableChart
+                scenarioColors={scenarioColors}
+                donutsData={selectedKey && donutsData && donutsData[selectedKey]? donutsData[selectedKey][variable]: {}}
                 key={variable}
                 className={`variable_element element_${index}`}
                 variable={program!.variables.find((v) => v.var_code.toLowerCase() === variable.toLowerCase()) || { var_code: variable, var_name: variable, unit_short: "" }}
