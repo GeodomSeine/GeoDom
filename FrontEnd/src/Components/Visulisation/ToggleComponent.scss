@@ -41,6 +41,7 @@
                 align-items: center;
                 justify-content: center;
                 gap: 8px;
+                padding: 5px;
                 width: clamp(200px, 100%, 45vw);
                 canvas{
                     height: 100%;
@@ -83,7 +84,6 @@
             width: 100%;
             .space_body_tile{
                 .variable_element{
-                    padding: 6px;
                     min-width: 90vw;
                 }
             }

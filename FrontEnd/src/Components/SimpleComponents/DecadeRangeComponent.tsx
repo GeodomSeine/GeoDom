@@ -40,6 +40,8 @@ const DecadeRangeComponent: React.FC<DecadeRangeProps> = ({ min, max, value, onC
           min={min}
           max={max}
           onChange={handleBeginChange}
+          onFocus={(e) => e.target.select()}
+          onMouseUp={(e) => { e.preventDefault(); return false; }}
         />
         <span> - </span>
         <input
@@ -48,6 +50,8 @@ const DecadeRangeComponent: React.FC<DecadeRangeProps> = ({ min, max, value, onC
           min={min}
           max={max}
           onChange={handleEndChange}
+          onFocus={(e) => e.target.select()}
+          onMouseUp={(e) => { e.preventDefault(); return false; }}
         />
         <div>{rightLabel}</div>
     </div>
