@@ -84,7 +84,7 @@ const ControlComponent: React.FC<ControlComponentProps> = ({
         <div>
           <h3>Scénarios</h3>
           {scenarios.map((scenario) => (
-            <div key={scenario.id} className="scenario-container">
+            <div key={scenario.id} className="scenario_container">
               <InputComponent  
                 label={scenario.year.toString()}
                 type={"checkbox"}
@@ -97,7 +97,7 @@ const ControlComponent: React.FC<ControlComponentProps> = ({
                   }
                 }}>
               </InputComponent>
-              <div className="scenario-color" style={{ backgroundColor: scenarioColors[scenario.id] }}></div>
+              <div className="scenario_color" style={{ backgroundColor: scenarioColors[scenario.id] }}></div>
             </div>
           ))}
         </div>

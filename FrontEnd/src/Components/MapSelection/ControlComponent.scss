@@ -21,14 +21,14 @@
   }
 }
 
-.scenario-container {
+.scenario_container {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 10px;
 }
 
-.scenario-color {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
+.scenario_color {
+  width: 14px;
+  height: 14px;
+  border-radius: 5px;
 }
