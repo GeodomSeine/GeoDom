@@ -2,7 +2,8 @@
 .home_component{
     .main_body{
         @include headerSpace;
-        height: 100vh;
+        height: fit-content;
+        min-height: 100vh;
         .main_scroll_area{
             display: flex;
             flex-flow: row wrap;
