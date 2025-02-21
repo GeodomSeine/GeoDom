@@ -7,6 +7,8 @@ from sqlalchemy.future import select
 from core.database import async_session_pynuts
 from models.models import SenequeAesnHydro
 import os
+import geopandas as gpd
+from fastapi.responses import FileResponse
 
 router = APIRouter(prefix="/hydro", tags=["Hydrographie"])
 redis_url = os.getenv("REDIS_URL", "redis://redis:6379")
@@ -19,7 +21,6 @@ async def fetch_hydro_from_db(program: str, session: AsyncSession):
     try:
         query = select(DynamicHydro.geojson_feature)
         result = await session.stream(query)
-
         first = True
         async for batch in result.partitions(7000):
             for row in batch:
@@ -71,3 +72,27 @@ async def get_hydro(program: str):
         geojson_stream(program),
         media_type="application/json"
     )
+
+@router.get("/export/{program}")
+async def export_geopackage(program: str):
+    """Exporte les données hydrographiques d'un programme sous forme de GeoPackage."""
+    
+    async with async_session_pynuts() as session:
+        DynamicHydro = SenequeAesnHydro.create(program)
+        try:
+            query = select(DynamicHydro.geojson_feature)
+            result = await session.execute(query)
+            geo_features = result.fetchall()
+            if not geo_features:
+                raise HTTPException(status_code=404, detail="Aucune donnée trouvée pour ce programme")
+        except Exception:
+            raise HTTPException(status_code=500, detail="Erreur interne du serveur")
+
+        gdf = gpd.GeoDataFrame.from_features([feature.geojson_feature for feature in geo_features])
+        file_path = f"/tmp/{program}_hydro.gpkg"
+        if(os.path.exists(file_path)):
+            os.remove(file_path)
+        gdf.to_file(file_path, driver="GPKG")
+        
+        return FileResponse(file_path, media_type='application/geopackage+sqlite3', filename=f"{program}_hydro.gpkg")
+    

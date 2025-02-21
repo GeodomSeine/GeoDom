@@ -30,6 +30,7 @@ import { scenarioColorPalette } from "../../utils/scenarioColorPalette";
 
 const scenarioColors: Record<number, string> = {}
 import ExportCsvComponent from "../ExportComponent/ExportCsvComponent";
+import ExportGeoPackageComponent from "../ExportComponent/ExportGeoPackageComponent";
 
 type ChartData = Array<{
   decade: number;
@@ -442,6 +443,7 @@ const VisualisationPage: React.FC = () => {
         <ExportJsonComponent exportConf={exportConf} />
         <ExportPdfComponent exportPdfInfo={exportPdfInfo} />
         {data && <ExportCsvComponent exportCsvData={exportData} />}
+        <ExportGeoPackageComponent program={program!.name} />
       </FloatingAction>
       <div className='home_body'>
         <ToggleContainer title="Carte de sélection" secondChild={sharedSlider}>
