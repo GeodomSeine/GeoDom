@@ -17,5 +17,6 @@ orjson
 redis
 pandas
 passlib
-jwt
+PyJWT
+bcrypt
 geopandas
