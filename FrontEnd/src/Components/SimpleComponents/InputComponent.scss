@@ -1,17 +1,20 @@
 @use "../../styles/main.scss" as *;
 
-.input_component{
+.input_component {
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 5px;
     width: fit-content;
-    input{
-        border: solid 1 px $primary-blue;
+    label {
+        display: flex;
+        gap: 4px;
+        input:checked + span {
+            color: $primary_blue;
+        }
+    }
+    * {
         cursor: pointer;
-    }  
-    input:checked + label{
-        color: $primary-blue;
     }
 }
 

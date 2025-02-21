@@ -12,7 +12,8 @@ import {
   Filler,
   ChartOptions,
 } from "chart.js";
-import { ProfileGraphDataResponse, ProgramVariable } from "../../services/api";
+import { DonutsDataResponse, ProfileGraphDataResponse, ProgramVariable, Scenario } from "../../services/api";
+import { getColor } from "../../utils/mapUtils";
 
 ChartJS.register(
   CategoryScale,
@@ -30,9 +31,13 @@ interface ProfileGraphProps {
   data: ProfileGraphDataResponse;
   xKey: "PK" | "Strahler";
   className?: string;
+  donutsData: DonutsDataResponse;
+  scenarioColors: Record<number, string>;
+  scenarios: Scenario[];
+  decades: [number, number]
 }
 
-const ProfileGraph: React.FC<ProfileGraphProps> = ({ variable, data, xKey, className = "profile_graph" }) => {
+const ProfileGraph: React.FC<ProfileGraphProps> = ({ variable, data, xKey, className = "profile_graph" , donutsData, scenarioColors, scenarios, decades}) => {
   const chartRef = useRef<any>(null);
 
   const xLabels = Object.keys(data).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
@@ -41,27 +46,66 @@ const ProfileGraph: React.FC<ProfileGraphProps> = ({ variable, data, xKey, class
   const p50 = xLabels.map((x) => data[x]?.[`${variable.var_code.toLowerCase()}_p50`] || null);
   const p90 = xLabels.map((x) => data[x]?.[`${variable.var_code.toLowerCase()}_p90`] || null);
   
+  const donutsDatasets: Array<{
+    label: string;
+    data: (number | null)[];
+    borderColor: string;
+    backgroundColor: string;
+    pointStyle: 'circle';
+    pointRadius: number;
+    pointBackgroundColor: string;
+    order: number;
+  }> = [];  
+  
+  Object.keys(donutsData ?? {}).forEach((x) => {
+    const variableData = donutsData[x]?.[variable.var_code.toLowerCase()];
+    if (!variableData) return;
+
+    Object.keys(variableData ?? {}).forEach((decade) => {
+      const decadeNumber = parseInt(decade, 10);
+      if (decadeNumber < decades[0] || decadeNumber > decades[1]) return;
+
+      variableData[decade].forEach(({ scenario, value }) => {
+        donutsDatasets.push({
+          label: `Observation (Scenario ${scenarios.find(s => s.id === scenario)?.year}, Décade ${decade})`,
+          data: xLabels.map((label) => (label === x ? value : null)),
+          borderColor: scenarioColors[scenario] || getColor("--success-color"),
+          backgroundColor: scenarioColors[scenario] || getColor("--success-light"),
+          pointStyle: 'circle',
+          pointRadius: 4,
+          pointBackgroundColor: scenarioColors[scenario] || getColor("--success-color"),
+          order: 0,
+        });
+      });
+    });
+  });
+
   const chartData = {
     labels: xLabels,
     datasets: [
       {
         label: `${variable.var_code.toUpperCase()} (P5)`,
         data: p5,
-        borderColor: "rgba(255, 99, 132, 1)",
-        fill: false,
+        borderColor: getColor("--danger-color"),
+        backgroundColor:  getColor("--basic-grey"),
+        fill: +2,
       },
       {
         label: `${variable.var_code.toUpperCase()} (P50)`,
         data: p50,
-        borderColor: "rgba(54, 162, 235, 1)",
-        fill: false,
+        borderColor: getColor("--warning-color"),
+        order:-1,
       },
       {
         label: `${variable.var_code.toUpperCase()} (P90)`,
         data: p90,
-        borderColor: "rgba(75, 192, 192, 1)",
-        fill: false,
+        borderColor: getColor("--secondary-blue"),
+        order:-1,
       },
+      ...donutsDatasets.map((dataset) => ({
+        ...dataset,
+        order: -2,
+      })),
     ],
   };
 
@@ -79,6 +123,18 @@ const ProfileGraph: React.FC<ProfileGraphProps> = ({ variable, data, xKey, class
           display: true,
           text: variable.unit_short,
         },
+      },
+    },
+    plugins: {
+      legend: {
+        labels: {
+            filter: function(item, __) {
+                return !item.text.includes('Observation');
+            }
+        }
+      },
+      tooltip: {
+        enabled: true,
       },
     },
   };

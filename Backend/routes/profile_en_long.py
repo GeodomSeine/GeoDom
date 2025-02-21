@@ -67,7 +67,7 @@ async def get_data_order_by_strahler(body: dict):
                 )
 
         scenario_list = [int(s) for s in scenarios]
-        decade_list = [int(d) for d in decades]
+        decade_list = list(range(int(decades[0]), int(decades[1]) + 1))
         
         async with async_session_pynuts() as session:
             result_data = {}
@@ -194,7 +194,6 @@ async def get_data(body: dict):
                 # Exécuter la requête
                 result = await session.execute(query)
                 data = result.fetchall()
-                logger.info(f"Data for {obj_ord_pk} : {data}")
 
                 for row in data:
                     obj_ord_pk = f"{row.obj}_{row.ord}_{row.pk}"
@@ -284,11 +283,21 @@ async def get_data_formap(body: dict):
                 obj_ord_pk = f"{row.obj}_{row.ord}_{row.pk}"
                 result_data[obj_ord_pk] = {}
                 for variable in variables:
-                    result_data[obj_ord_pk][f"{variable}_p5"] = getattr(row, f"{variable}_p5")
-                    result_data[obj_ord_pk][f"{variable}_p50"] = getattr(row, f"{variable}_p50")
-                    result_data[obj_ord_pk][f"{variable}_p90"] = getattr(row, f"{variable}_p90")
-                    if getattr(row, f"{variable}_p50") is not None:
-                        value_dict[variable].append(getattr(row, f"{variable}_p50"))
+                    p5 = getattr(row, f"{variable}_p5")
+                    p50 = getattr(row, f"{variable}_p50")
+                    p90 = getattr(row, f"{variable}_p90")
+
+                    result_data[obj_ord_pk][f"{variable}_p5"] = p5
+                    result_data[obj_ord_pk][f"{variable}_p50"] = p50
+                    result_data[obj_ord_pk][f"{variable}_p90"] = p90
+
+                    if p5 is not None:
+                        value_dict[variable].append(p5)
+                    if p50 is not None:
+                        value_dict[variable].append(p50)
+                    if p90 is not None:
+                        value_dict[variable].append(p90)
+
 
             for variable in variables:
                 var_config = variable_config.get(variable, {})

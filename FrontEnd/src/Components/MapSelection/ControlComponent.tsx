@@ -5,8 +5,6 @@ import ButtonComponent from '../SimpleComponents/ButtonComponent';
 import InputComponent from '../SimpleComponents/InputComponent';
 
 interface ControlComponentProps {
-    idHydStart: number | null;
-    idHydEnd: number | null;
     resetSelection: () => void;
     variables: ProgramVariable[];
     scenarios: Scenario[];
@@ -16,13 +14,12 @@ interface ControlComponentProps {
     setSelectedScenarios: (scenarios: Scenario[]) => void;
     mode: "complet" | "amont-aval";
     setMode: (mode: "complet" | "amont-aval") => void;
-    layerVisibility?: Record<string, boolean>,
-    setLayerVisibility?: React.Dispatch<React.SetStateAction<Record<string, boolean>>>,
-  }
+    layerVisibility?: Record<string, boolean>;
+    setLayerVisibility?: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+    scenarioColors: Record<number, string>;
+}
 
-  const ControlComponent: React.FC<ControlComponentProps> = ({
-    idHydStart,
-    idHydEnd,
+const ControlComponent: React.FC<ControlComponentProps> = ({
     resetSelection,
     variables,
     scenarios,
@@ -34,7 +31,8 @@ interface ControlComponentProps {
     setMode,
     layerVisibility,
     setLayerVisibility,
-  }) => {
+    scenarioColors
+}) => {
 
     useEffect(() => {
         resetSelection();
@@ -59,21 +57,15 @@ interface ControlComponentProps {
         </div>
 
         {mode === "amont-aval" && (
-          <div className='selected_pks'>
-            {/* Logique amont-aval ici */}
-            <h3><>ID Start :</> {idHydStart || 'Non sélectionné'}</h3>
-            <h3><>ID End :</> {idHydEnd || 'Non sélectionné'}</h3>
-            <div style={{ display: "flex", flexDirection: 'column', gap: "5px" }}>
-              <ButtonComponent txt={"Réinitialiser"} onClick={resetSelection}></ButtonComponent>
-            </div>
-          </div>
+          <ButtonComponent txt={"Réinitialiser"} onClick={resetSelection}></ButtonComponent>
         )}
 
         {/* Sélection des variables */}
         <div className='selected_indicators'>
           <h3>Indicateurs</h3>
           {variables.map((variable) => (
-            <InputComponent disabled ={selectedVariables.length == 4 && !selectedVariables.includes(variable)} // limité à 4
+            <InputComponent key={variable.var_code}
+              disabled={selectedVariables.length == 4 && !selectedVariables.includes(variable)}
               label={variable.var_code.toUpperCase()}
               type={"checkbox"}
               checked={selectedVariables.includes(variable)}
@@ -86,27 +78,30 @@ interface ControlComponentProps {
               }}>
             </InputComponent>
           ))}
-          
         </div>
   
         {/* Sélection des scénarios */}
         <div>
           <h3>Scénarios</h3>
           {scenarios.map((scenario) => (
-            <InputComponent  key={scenario.id} 
-              label={scenario.year.toString()}
-              type={"checkbox"}
-              checked={selectedScenarios.includes(scenario)}
-              onChange={(e) => {
-                if (e.target.checked) {
-                  setSelectedScenarios([...selectedScenarios, scenario]);
-                } else {
-                  setSelectedScenarios(selectedScenarios.filter((s) => s !== scenario));
-                }
-              }}>
-            </InputComponent>
+            <div key={scenario.id} className="scenario_container">
+              <InputComponent  
+                label={scenario.year.toString()}
+                type={"checkbox"}
+                checked={selectedScenarios.includes(scenario)}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setSelectedScenarios([...selectedScenarios, scenario]);
+                  } else {
+                    setSelectedScenarios(selectedScenarios.filter((s) => s !== scenario));
+                  }
+                }}>
+              </InputComponent>
+              <div className="scenario_color" style={{ backgroundColor: scenarioColors[scenario.id] }}></div>
+            </div>
           ))}
         </div>
+
         {layerVisibility && setLayerVisibility && 
           <div className="selected_layer">
             <h3>Couches</h3>
@@ -127,6 +122,6 @@ interface ControlComponentProps {
           </div>}
       </div>
     );
-  };
-  
+};
+
 export default ControlComponent;

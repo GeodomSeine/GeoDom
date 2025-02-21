@@ -41,13 +41,6 @@ export interface AmontAvalResponse {
   pk: Pk[];
 }
 
-export interface DataRequest {
-  program: string;
-  scenarios: number[];
-  variables: string[];
-  pk: Pk[];
-}
-
 /*Program (home) types and interfaces */
 export interface Program {
   name: string;
@@ -151,6 +144,47 @@ export interface ProfileGraphPkRequest{
 
 export interface ProfileGraphDataResponse{
   [strahlerOrObjOrdPk: string]: VariableData;
+}
+
+// Donuts data interfaces and types
+interface ScenarioAndValue {
+  scenario: number;
+  value: number;
+}
+
+export interface DecadeScenarioValue {
+  [decade: string]: ScenarioAndValue[];
+}
+
+interface VariableDecadeScenarioValue {
+  [variable: string]: DecadeScenarioValue;
+}
+
+export interface DonutsDataResponse {
+  [key: string]: VariableDecadeScenarioValue;
+}
+
+// get donuts data function
+
+export const getDonutsData = async (request: DataRequest) : Promise<DonutsDataResponse | null> => {
+  try{
+    const response = await api.post<DonutsDataResponse>("/data_donuts/data", request);
+    return response.data;
+  }catch(error){
+    console.error("Error fetching donuts data:", error);
+    return null;
+  }
+}
+
+
+export const getDonutsFullData = async (request: DataRequestFull) : Promise<DonutsDataResponse | null> => {
+  try{
+    const response = await api.post<DonutsDataResponse>("/data_donuts/fulldata", request);
+    return response.data;
+  }catch(error){
+    console.error("Error fetching donuts data:", error);
+    return null;
+  }
 }
 
 export const getAval = async (

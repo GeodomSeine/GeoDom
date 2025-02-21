@@ -15,14 +15,13 @@ type Props = {
     bassinStyle: PathOptions | null;
     bounds: LatLngBounds | null;
     getPkStyles: any;
+    percentile: "p5" | "p50" | "p90";
 };
 
-const ColoredMapComponent: React.FC<Props> = ({ data, variable, className, pkData, pkStyles, bassinData, bassinStyle, bounds, getPkStyles }) => {
+const ColoredMapComponent: React.FC<Props> = ({ data, variable, className, pkData, pkStyles, bassinData, bassinStyle, bounds, getPkStyles, percentile }) => {
   return (
-    <div className={className}>
-      {data && 
-        (data.legend[variable.var_code.toLowerCase()].sld ? <LegendSld variable={variable}/> : <LegendQuantile variable={variable} legendData={data.legend[variable.var_code.toLowerCase()]}/>)
-      }
+    <div className={className+" body"}>
+      
       {data && 
         <MapBaseComponent 
           variable={variable} 
@@ -33,7 +32,11 @@ const ColoredMapComponent: React.FC<Props> = ({ data, variable, className, pkDat
           bassinStyle={bassinStyle} 
           bounds={bounds} 
           getPkStyles={getPkStyles}
+          percentile={percentile}
         />
+      }
+      {data && 
+        (data.legend[variable.var_code.toLowerCase()].sld ? <LegendSld variable={variable}/> : <LegendQuantile variable={variable} legendData={data.legend[variable.var_code.toLowerCase()]}/>)
       }
     </div>
   );

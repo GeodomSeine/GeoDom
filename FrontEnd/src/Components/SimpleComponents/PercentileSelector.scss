@@ -1,0 +1,9 @@
+@use "../../styles/main.scss" as *;
+
+.percentile_selector {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  justify-content: space-evenly;
+}
+

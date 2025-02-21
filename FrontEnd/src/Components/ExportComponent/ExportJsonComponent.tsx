@@ -10,6 +10,8 @@ interface ExportJsonComponentProps {
         hydro_id_end : number | null;
         variables: string[]; 
         scenarios: number[];
+        decades: number[]
+        selectedSliderValue: number;
     }
 }
 
@@ -28,11 +30,10 @@ const ExportJsonComponent: React.FC<ExportJsonComponentProps> = ({ exportConf })
     };
     return (
         <div className="export_container json">
-            {/* need to change this into input*/}
             <div className='export_body'>
                 <ButtonComponent
                 onClick={handleExport}
-                txt='Exporter en JSON'
+                txt='La session de visualisation'
                 className='button_container'
                 />
             </div>

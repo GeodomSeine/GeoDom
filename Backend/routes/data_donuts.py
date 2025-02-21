@@ -175,13 +175,13 @@ async def get_data_strahler(session_donuts: AsyncSession, station_data: dict[int
 
             query = select(
                 MeasurementModel.station_id,
-                ((func.extract('month', MeasurementModel.update_date) - 1) * 3 + func.floor((func.extract('day', MeasurementModel.update_date) - 1) / 10) + 1).label("decade"),
-                func.extract('year', MeasurementModel.update_date).label("year"),
+                (func.least(36, func.floor((func.extract('doy', MeasurementModel.meas_date) + 9) / 10))).label("decade"),
+                func.extract('year', MeasurementModel.meas_date).label("year"),
                 func.avg(MeasurementModel.value).label("value")
             ).where(
                 MeasurementModel.station_id.in_(station_data.keys()),
                 MeasurementModel.co_varfracom_id == co_varfracom_id,
-                func.extract('year', MeasurementModel.update_date).in_(scenario_years.values())
+                func.extract('year', MeasurementModel.meas_date).in_(scenario_years.values())
             ).group_by(
                 MeasurementModel.station_id,
                 "decade",
@@ -198,7 +198,6 @@ async def get_data_strahler(session_donuts: AsyncSession, station_data: dict[int
                 decade = int(row["decade"])
                 year = int(row["year"])
                 value = row["value"]
-                scenario = next((sc for sc, yr in scenario_years.items() if yr == year), None)
 
                 station_info = station_data.get(station_id)
                 if station_info:
@@ -206,24 +205,29 @@ async def get_data_strahler(session_donuts: AsyncSession, station_data: dict[int
 
                     if strahler not in aggregated_values:
                         aggregated_values[strahler] = {}
+                    
                     if var not in aggregated_values[strahler]:
-                        aggregated_values[strahler][var] = {i: {"sum": 0, "count": 0} for i in range(1, 37)}
+                        aggregated_values[strahler][var] = {}
+                    
+                    if year not in aggregated_values[strahler][var]:
+                        aggregated_values[strahler][var][year] = {i: {"sum": 0, "count": 0} for i in range(1, 37)}
 
-                    aggregated_values[strahler][var][decade]["sum"] += value
-                    aggregated_values[strahler][var][decade]["count"] += 1
+                    aggregated_values[strahler][var][year][decade]["sum"] += value
+                    aggregated_values[strahler][var][year][decade]["count"] += 1
 
             for strahler, vars_data in aggregated_values.items():
                 if strahler not in measurements:
                     measurements[strahler] = {}
 
-                for var, decades in vars_data.items():
-                    if var not in measurements[strahler]:
-                        measurements[strahler][var] = {i: [] for i in range(1, 37)}
-
-                    for decade, values in decades.items():
-                        if values["count"] > 0:
-                            mean_value = values["sum"] / values["count"]
-                            measurements[strahler][var][decade].append({"scenario": scenario, "value": mean_value})
+                for var, years_data in vars_data.items():
+                    for year, decades in years_data.items():
+                        scenario = next((sc for sc, yr in scenario_years.items() if yr == year), None)
+                        for decade, values in decades.items():
+                            if var not in measurements[strahler]:
+                                measurements[strahler][var] = {i: [] for i in range(1, 37)}
+                            if values["count"] > 0:
+                                mean_value = values["sum"] / values["count"]
+                                measurements[strahler][var][decade].append({"scenario": scenario, "value": mean_value})
 
         return measurements 
     except Exception as e:
@@ -244,19 +248,18 @@ async def get_data(session_donuts: AsyncSession, station_data: dict[str, int], s
 
             query = select(
                 MeasurementModel.station_id,
-                ((func.extract('month', MeasurementModel.update_date) - 1) * 3 + func.floor((func.extract('day', MeasurementModel.update_date) - 1) / 10) + 1).label("decade"),
-                func.extract('year', MeasurementModel.update_date).label("year"),
-                func.avg(MeasurementModel.value).label("value") 
+                (func.least(36, func.floor((func.extract('doy', MeasurementModel.meas_date) + 9) / 10))).label("decade"),
+                func.extract('year', MeasurementModel.meas_date).label("year"),
+                func.avg(MeasurementModel.value).label("value")
             ).where(
                 MeasurementModel.station_id.in_(station_data.values()),
                 MeasurementModel.co_varfracom_id == co_varfracom_id,
-                func.extract('year', MeasurementModel.update_date).in_(scenario_years.values())
+                func.extract('year', MeasurementModel.meas_date).in_(scenario_years.values())
             ).group_by(
                 MeasurementModel.station_id,
                 "decade",
                 "year"
             )
-            
             result = await session_donuts.execute(query)            
             mapped_result = result.mappings().all()
             for row in mapped_result:
@@ -271,8 +274,9 @@ async def get_data(session_donuts: AsyncSession, station_data: dict[str, int], s
                 if obj_ord_pk:
                     if var not in measurements[obj_ord_pk]:
                         measurements[obj_ord_pk][var] = {i: [] for i in range(1, 37)}
-                    
-                    measurements[obj_ord_pk][var][decade] = [{"scenario": scenario, "value": value}]
+                    if decade not in measurements[obj_ord_pk][var]:
+                        measurements[obj_ord_pk][var][decade] = []
+                    measurements[obj_ord_pk][var][decade].append({"scenario": scenario, "value": value})
         
         return measurements 
     except Exception as e:

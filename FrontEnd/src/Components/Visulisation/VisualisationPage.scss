@@ -2,6 +2,7 @@
 
 .home_component_visualisation{
     display:flex; 
+    flex-direction: column;
     height: fit-content;
     padding: 10px;
     gap:10px;
@@ -30,7 +31,6 @@
         //     flex: 1 1 calc(50% - 180px);
         //     max-width: calc(100% - 60px);
         // }
-        
     }
 }
 

@@ -21,40 +21,34 @@ to {
 }
 
 .modal_overlay {
-position: fixed;
-inset: 0;
-background-color: rgba($shade-light-grey, 0.5);
-display: flex;
-align-items: center;
-justify-content: center;
-z-index: 10000;
-
-// Animation overlay
-animation: overlay-fade-in 0.3s ease-out;
-
-.modal_action {
-    background: white;
-    padding: 8px;
-    @include card;
+    position: fixed;
+    inset: 0;
+    background-color: rgba($shade-grey, 0.5);
     display: flex;
-    flex-flow: column;
-    gap: 8px;
-    width: 300px;
-
-    // Animation modal
-    animation: modal-fade-in 0.3s ease-out;
-
-    .modal_action_header {
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: overlay-fade-in 0.3s ease-out;
+    .modal_action {
+        background: white;
+        padding: 8px;
+        @include card;
         display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-    }
-    .modal_action_body {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+        flex-flow: column;
         gap: 8px;
+        width: 300px;
+        animation: modal-fade-in 0.3s ease-out;
+        .modal_action_header {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal_action_body{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
     }
-}
 }

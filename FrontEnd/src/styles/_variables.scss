@@ -1,25 +1,24 @@
 // main colors
-$primary-blue: rgb(0, 143, 157);
-$secondary-blue: rgb(123, 193, 191);
+$primary-blue: rgb(0, 162, 176);
+$secondary-blue: rgba(75, 192, 192);
 $secondary-green: rgb(207, 224, 175);
-$secondary-pink: rgb(236, 138, 178);
+$secondary-pink: rgb(255, 92, 157);
 $secondary-light-pink: rgb(205, 135, 166);
 
-// color for differences between graphs
-$shade-darker-grey: rgb(0, 0, 0);
-$shade-dark-grey: rgb(31, 31, 31);
-$shade-light-grey: rgb(64, 64, 64);
-$shade-lighter-grey: rgb(102, 102, 102);
+// shades of grey
+$shade-grey: rgb(64, 64, 64);
+$shade-mid-grey: rgb(102, 102, 102);
+$shade-light-grey:rgba(251, 251, 251);
 
 // color for text, logo
 $basic-black: rgb(46, 46, 46);
 $basic-grey: rgb(231, 231, 231);
-$basic-white: rgb(245, 245, 245);
+$basic-white: rgb(255, 255, 255);
 
 // pop-up and signal colors
-$danger-color: rgb(211, 47, 47);
-$warning-color: rgb(251, 192, 45);
-$success-color: rgb(18, 212, 0); 
+$danger-color: rgb(255, 99, 132);
+$warning-color: rgb(54, 162, 235);
+$success-color: rgb(18, 212, 0);
 
 :root {
   --primary-blue: #{$primary-blue};
@@ -28,10 +27,9 @@ $success-color: rgb(18, 212, 0);
   --secondary-pink: #{$secondary-pink};
   --secondary-light-pink: #{$secondary-light-pink};
 
-  --shade-darker-grey: #{$shade-darker-grey};
-  --shade-dark-grey: #{$shade-dark-grey};
+  --shade-grey: #{$shade-grey};
+  --shade-mid-grey: #{$shade-mid-grey};
   --shade-light-grey: #{$shade-light-grey};
-  --shade-lighter-grey: #{$shade-lighter-grey};
 
   --basic-black: #{$basic-black};
   --basic-grey: #{$basic-grey};
@@ -40,4 +38,14 @@ $success-color: rgb(18, 212, 0);
   --danger-color: #{$danger-color};
   --warning-color: #{$warning-color};
   --success-color: #{$success-color};
+
+  // scenario palette colors
+  --scenario-1: #{$primary-blue};
+  --scenario-2: #{$secondary-green};
+  --scenario-3: #{$secondary-pink};
+  --scenario-4: #{$warning-color};
+  --scenario-5: #{$success-color};
+  --scenario-6: #{$secondary-light-pink};
+  --scenario-7: #{$secondary-blue};
+  --scenario-8: #{$shade-grey};
 }

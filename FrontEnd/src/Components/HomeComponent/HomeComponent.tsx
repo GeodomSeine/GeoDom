@@ -5,6 +5,7 @@ import "./HomeComponent.scss";
 import HeaderComponent from './HeaderComponent';
 import { Program } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
+import FooterComponent from '../SimpleComponents/FooterComponent';
 
     type Props = {}
 
@@ -69,6 +70,7 @@ import { useNavigate } from 'react-router-dom';
                         }
                     </div>
                 </div>
+                <FooterComponent names={["Ahmed","Brice","Corentin","Marius"]}></FooterComponent>
             </div>
         );
     }

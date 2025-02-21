@@ -21,16 +21,21 @@
         }
         .logo_container:hover{
             background-color: $basic-grey;
-        }:last-child:hover{
+        }:last-child{
             border-radius: 0 0 5px 5px; 
-        }:first-child:hover{
+        }:first-child{
             border-radius: 5px 5px 0 0;
         }
+
     }
     .map_buttons_children {
         @include card;
         background-color: white;
         padding: 8px;
+        cursor: default;
+        .input_component{
+            cursor: pointer;
+        }
     }
     .map_buttons_children.hidden {
         display: none;

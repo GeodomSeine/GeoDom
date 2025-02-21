@@ -13,8 +13,8 @@ import {
   ChartOptions,
 } from "chart.js";
 import zoomPlugin from "chartjs-plugin-zoom";
-import { ProgramVariable } from "../../services/api";
-// import ButtonComponent from "./ButtonComponent";
+import { DecadeScenarioValue, ProgramVariable, Scenario } from "../../services/api";
+import { getColor } from "../../utils/mapUtils";
 
 ChartJS.register(
   CategoryScale,
@@ -29,14 +29,38 @@ ChartJS.register(
 );
 
 interface VariableChartProps {
-  variable: ProgramVariable; // Nom de la variable (e.g., no3, oxy)
-  decades: number[]; // Décennies
-  data: { p5: number[]; p50: number[]; p90: number[] }; // Données pour p5, p50, p90
-  className?:string | null;
+  variable: ProgramVariable;
+  decades: number[];
+  data: { p5: number[]; p50: number[]; p90: number[] };
+  className?: string | null;
+  donutsData: DecadeScenarioValue;
+  scenarioColors: Record<number, string>;
+  scenarios: Scenario[];
 }
 
-const VariableChart: React.FC<VariableChartProps> = ({ variable, decades, data, className = "variable_element" }) => {
+const VariableChart: React.FC<VariableChartProps> = ({ 
+  variable, 
+  decades, 
+  data, 
+  className = "variable_element", 
+  donutsData, 
+  scenarioColors, 
+  scenarios
+}) => {
   const chartRef = useRef<any>(null);
+
+  // Générer les datasets des scénarios dans donutsData
+  const scenarioDatasets = Object.entries(donutsData ?? {}).flatMap(([decade, values]) => {
+    return values.map(({ scenario, value }) => ({
+      label : "Observation (" + scenarios.find(s => s.id === scenario)?.year + ")",
+      data: decades.map((d) => (d.toString() === decade ? value : null)), 
+      borderColor: scenarioColors[scenario] || getColor("--basic-black"), 
+      backgroundColor: scenarioColors[scenario] || getColor("--basic-grey"), 
+      pointRadius: 5, 
+      pointHoverRadius: 7,
+      showLine: false,
+    }));
+  });  
 
   const chartData = {
     labels: decades,
@@ -44,23 +68,30 @@ const VariableChart: React.FC<VariableChartProps> = ({ variable, decades, data, 
       {
         label: `${variable.var_code.toUpperCase()} (P5)`,
         data: data.p5,
-        borderColor: "rgba(255, 99, 132, 1)",
-        fill: false,
+        borderColor: getColor("--danger-color"),
+        backgroundColor: getColor("--basic-grey"),
+        fill: +2,
       },
       {
         label: `${variable.var_code.toUpperCase()} (P50)`,
         data: data.p50,
-        borderColor: "rgba(54, 162, 235, 1)",
-        fill: false,
+        borderColor: getColor("--warning-color"),
+        order:-1,
       },
       {
         label: `${variable.var_code.toUpperCase()} (P90)`,
         data: data.p90,
-        borderColor: "rgba(75, 192, 192, 1)",
-        fill: false,
+        borderColor: getColor("--secondary-blue"),
+        order:-1,
       },
+      ...scenarioDatasets.map((dataset) => ({
+        ...dataset,
+        order: -2,
+      })),
     ],
   };
+
+  
 
   const options: ChartOptions<"line"> = {
     responsive: true,
@@ -78,11 +109,23 @@ const VariableChart: React.FC<VariableChartProps> = ({ variable, decades, data, 
         },
       },
     },
+    plugins: {
+      legend: {
+        labels: {
+            filter: function(item, __) {
+                return !item.text.includes('Observation');
+            }
+        }
+      },
+      tooltip: {
+        enabled: true,
+      },
+    },
   };
 
   return (
     <div className={`${className}`}>
-      <Line ref={chartRef} data={chartData} options={options}/>
+      <Line ref={chartRef} data={chartData} options={options} />
     </div>
   );
 };

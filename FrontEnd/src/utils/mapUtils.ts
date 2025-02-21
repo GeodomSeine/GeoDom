@@ -15,7 +15,7 @@ export const calculateBounds = (bassin: GeoJsonResponse): LatLngBounds => {
     let minLat = 90,
         maxLat = -90,
         minLng = 180,
-        maxLng = -180;
+        maxLng = -180;  
 
     coordinates.forEach(([lng, lat]: number[]) => {
         if (lat < minLat) minLat = lat;
@@ -25,4 +25,8 @@ export const calculateBounds = (bassin: GeoJsonResponse): LatLngBounds => {
     });
 
     return new LatLngBounds([minLat, minLng], [maxLat, maxLng]);
+};
+
+export const getColor = (name: string) =>{
+    return getComputedStyle(document.documentElement).getPropertyValue(name);
 };

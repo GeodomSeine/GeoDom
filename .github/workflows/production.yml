@@ -30,9 +30,13 @@ jobs:
           MAJOR=${VERSION_PARTS[0]//[!0-9]/}
           MINOR=${VERSION_PARTS[1]}
           PATCH=${VERSION_PARTS[2]}
-          NEW_TAG="v$MAJOR.$MINOR.$((PATCH + 1))"
-          echo "NEW_TAG=$NEW_TAG"
-          echo "::set-output name=new_tag::$NEW_TAG"  # Définir NEW_TAG comme output
+          if [ "$PATCH" == "0" ]; then
+            PATCH=1
+          else
+            PATCH=$((PATCH + 1))
+          fi         
+          NEW_TAG="v$MAJOR.$MINOR.$PATCH"
+          echo "new_tag=$NEW_TAG" >> $GITHUB_ENV
 
       - name: Create Release
         uses: softprops/action-gh-release@v1

@@ -21,6 +21,7 @@
         gap: 8px;
         flex-direction: column;
         .space_body_tile {
+            background-color: $shade-light-grey;
             @include reverseCard;
             padding: 8px;
             box-sizing: border-box;
@@ -32,7 +33,6 @@
             overflow-y: auto;
             align-items: center;
             .variable_element {
-                padding: 6px;
                 flex: 0 1;  
                 min-height: 50%; 
                 box-sizing: border-box;
@@ -41,6 +41,7 @@
                 align-items: center;
                 justify-content: center;
                 gap: 8px;
+                padding: 5px;
                 width: clamp(200px, 100%, 45vw);
                 canvas{
                     height: 100%;
@@ -52,15 +53,16 @@
         .space_body_block{
             height: calc(100% - 55px);
         }
+        // change
         .space_body_footer{
             display: flex;
             justify-content: center;
             padding: 8px;
-        }
-    }
-    .space_body:not(:has(.space_body_footer)){
-        .space_body_tile{
-            height:100%;
+            .decade_percentile_selection{
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
         }
     }
     .space_body.hidden {
@@ -82,7 +84,7 @@
             width: 100%;
             .space_body_tile{
                 .variable_element{
-                    min-width: 90vw
+                    min-width: 90vw;
                 }
             }
         }
@@ -90,11 +92,18 @@
 }
 
 @media (max-width: 760px) {
-    .home_component_visualisation{
-        .home_body{
-            .space_container {
-                height: calc(50vh - 15px);
+    .space_container {
+        height: calc(50vh - 15px);
+        .space_body{
+            .space_body_tile{
+                gap: 6px;
+                .variable_element{
+                    padding: 0;
+                    min-height: 100%;
+                    width: calc(100% - 5px);
+                }
             }
         }
-    }   
+        
+    }
 }

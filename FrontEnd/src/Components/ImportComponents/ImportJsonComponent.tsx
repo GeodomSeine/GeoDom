@@ -24,16 +24,38 @@ const ImportJsonComponent: React.FC<ImportJsonComponentProps> = ({ visualization
             reader.onload = (event) => {
                 try {
                     const jsonData = JSON.parse(event.target?.result as string);
-                    const requiredKeys = ["name", "selected", "hydro_id_start", "hydro_id_end", "variables", "scenarios"];
+                    const requiredKeys = ["name", "selected", "hydro_id_start", "hydro_id_end", "variables", "scenarios","decades","selectedSliderValue"];
                     const missingKeys = requiredKeys.filter(key => !(key in jsonData));
                     if (missingKeys.length > 0) {
                         setErrorMessage(`Erreur: Les clés suivantes sont manquantes dans le fichier JSON: ${missingKeys.join(", ")}`);
                         return;
                     }
-                    if (jsonData.name === "") {
+
+                    if (jsonData.name == "") {
                         setErrorMessage("Erreur: Le nom de la visualisation est vide");
                         return;
                     }
+
+                    if(jsonData.variables.length == 0 || jsonData.scenarios.length == 0 ){
+                        setErrorMessage("Erreur: Les variables ou scenarios sont vides");
+                        return;
+                    }
+
+                    if(jsonData.decades.length != 2){
+                        setErrorMessage(`Erreur: Le nombre de décennies est incorrect pour la visualisation '${jsonData.name}': ${jsonData.decades.length}`);
+                        return;
+                    }
+
+                    if(jsonData.decades[0] <= 0 || jsonData.decades[1] > 36 || jsonData.decades[0] > jsonData.decades[1]){
+                        setErrorMessage(`Erreur: Les décennies sont incorrectes pour la visualisation '${jsonData.name}': ${jsonData.decades[0]} > ${jsonData.decades[1]}`);
+                        return;
+                    }
+
+                    if(jsonData.selectedSliderValue <= 0){
+                        setErrorMessage(`Erreur: La valeur du slider est incorrecte pour la visualisation '${jsonData.name}': ${jsonData.selectedSliderValue}`);
+                        return;
+                    }
+
                     const visualization = visualizationData.find(v => v.name === jsonData.name);
                     if (!visualization) {
                         setErrorMessage(`Erreur: Aucune visualisation trouvée avec le nom '${jsonData.name}'`);
@@ -48,6 +70,7 @@ const ImportJsonComponent: React.FC<ImportJsonComponentProps> = ({ visualization
                         setErrorMessage(`Erreur: Les scenarios suivants sont incorrects pour la visualisation '${jsonData.name}': ${jsonData.scenarios.filter((scenario: number) => scenario < 0).join(", ")}`);
                         return;
                     }
+
                     localStorage.setItem("confImportation", JSON.stringify(jsonData));
                     navigate(`/${jsonData.name}`);
                 } catch (error) {
@@ -75,17 +98,18 @@ const ImportJsonComponent: React.FC<ImportJsonComponentProps> = ({ visualization
                     onChange={handleFileChange}
                 />
                 <ButtonComponent
-                    txt={selectedFile ? selectedFile.name : "Parcourir"}
+                    txt={selectedFile ? selectedFile.name : "Importer"}
                     onClick={handleButtonClick}
                     className='button_container button_max'
                 />
-                <ButtonComponent
+                {selectedFile && (<ButtonComponent
                     onClick={handleImport}
-                    txt='Importer'
+                    txt='Valider'
                 />
+                )}
             </div>
             {errorMessage && <div className='import_footer'>
-                <p style={{ color: 'red' }}>{errorMessage}</p>
+                <p style={{ color: 'var(--danger-color)' }}>{errorMessage}</p>
             </div>}
         </div>
     );
