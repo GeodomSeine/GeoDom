@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Connexion</title>
+    
+    <!-- 🎨 STYLES CSS INTÉGRÉS -->
+    <style>
+        /* 🎨 Style général */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            width: 50%;
+            max-width: 600px;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            position: relative;
+        }
+        
+        /* 🚀 Bouton de déconnexion */
+        #logoutButton {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        #logoutButton:hover {
+            background-color: #c82333;
+        }
+        
+        /* 📌 Titres */
+        h1 {
+            margin-bottom: 20px;
+            color: #007bff;
+        }
+        
+        h2 {
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+        
+        h3 {
+            font-size: 18px;
+            margin-top: 25px;
+        }
+        
+        /* 📝 Formulaires */
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        label {
+            font-weight: bold;
+            width: 100%;
+            text-align: left;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        
+        button:hover {
+            background-color: #0056b3;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button id="logoutButton" class="hidden">Déconnexion</button>
+        
+        <h1>Administration</h1>
+        
+        <!-- Section Connexion -->
+        <div id="loginSection">
+            <h2>Connexion</h2>
+            <form id="loginForm">
+                <label>Nom d'utilisateur</label>
+                <input type="text" name="username" required>
+                
+                <label>Mot de passe</label>
+                <input type="password" name="password" required>
+                
+                <button type="submit">Se connecter</button>
+            </form>
+        </div>
+        
+        <!-- Section Admin -->
+        <div id="adminSection" class="hidden">
+            <h3>Changer de Mot de Passe</h3>
+            <form id="changePasswordForm">
+                <label>Ancien mot de passe</label>
+                <input type="password" name="old_password" required>
+                
+                <label>Nouveau mot de passe</label>
+                <input type="password" name="new_password" required>
+                
+                <label>Confirmer le nouveau mot de passe</label>
+                <input type="password" name="confirm_password" required>
+                
+                <button type="submit">Modifier</button>
+            </form>
+            <h3>Ajouter un Utilisateur</h3>
+            <form id="addUserForm">
+                <label>Nom d'utilisateur</label>
+                <input type="text" name="username" required>
+                
+                <label>Mot de passe</label>
+                <input type="password" name="password" required>
+                
+                <label>Admin ?</label>
+                <select name="is_admin">
+                    <option value="true">Oui</option>
+                    <option value="false">Non</option>
+                </select>
+                
+                <button type="submit">Ajouter</button>
+            </form>
+            
+            <h3>Ajouter un Programme</h3>
+            <form id="programForm" enctype="multipart/form-data">
+                <label>Nom du Programme</label>
+                <input type="text" name="name" required>
+                
+                <label>Titre</label>
+                <input type="text" name="title" required>
+                
+                <label>Description</label>
+                <textarea name="description"></textarea>
+                
+                <label>Variables (exemple: ["flow", "no3", "nh4"])</label>
+                <input type="text" name="variables" required>
+                
+                <label>Exutoire ID</label>
+                <input type="number" name="exutoire_id" required>
+                
+                <label>Image de fond</label>
+                <input type="file" name="background">
+                <label>PK map sld</label>
+                <input type="file" name="pk_map">
+                <label>seneque_aesn_hydro_basin sld</label>
+                <input type="file" name="seneque_aesn_hydro_basin">
+                <label>seneque_aesn_hydro sld</label>
+                <input type="file" name="seneque_aesn_hydro">
+                <label>stations_donuts sld</label>
+                <input type="file" name="stations_donuts">
+                
+                <button type="submit">Ajouter</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- SCRIPTS INTÉGRÉS -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const token = localStorage.getItem("token");
+            const loginSection = document.getElementById("loginSection");
+            const adminSection = document.getElementById("adminSection");
+            const logoutButton = document.getElementById("logoutButton");
+            
+            if (token) {
+                loginSection.classList.add("hidden");
+                adminSection.classList.remove("hidden");
+                logoutButton.classList.remove("hidden");
+            }
+            
+            document.getElementById("loginForm").addEventListener("submit", async function (event) {
+                event.preventDefault();
+                let formData = new URLSearchParams(new FormData(event.target));
+                
+                let response = await fetch("/auth/token", {
+                    method: "POST",
+                    body: formData,
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" }
+                });
+                
+                let data = await response.json();
+                if (response.ok) {
+                    localStorage.setItem("token", data.access_token);
+                    loginSection.classList.add("hidden");
+                    adminSection.classList.remove("hidden");
+                    logoutButton.classList.remove("hidden");
+                } else {
+                    alert("Connexion échouée : " + data.detail);
+                }
+            });
+            
+            logoutButton.addEventListener("click", function () {
+                localStorage.removeItem("token");
+                loginSection.classList.remove("hidden");
+                adminSection.classList.add("hidden");
+                logoutButton.classList.add("hidden");
+            });
+            
+            document.getElementById("addUserForm").addEventListener("submit", async function (event) {
+                event.preventDefault();
+                let formData = new URLSearchParams(new FormData(event.target));
+                let token = localStorage.getItem("token");
+                
+                let response = await fetch("/auth/add_user", {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "Authorization": "Bearer " + token
+                    }
+                });
+                
+                let data = await response.json();
+                alert(data.message);
+            });
+            
+            document.getElementById("programForm").addEventListener("submit", async function (event) {
+                event.preventDefault();
+                let formData = new FormData(event.target);
+                let token = localStorage.getItem("token");
+                
+                let response = await fetch("/admin/add", {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        "Authorization": "Bearer " + token
+                    }
+                });
+                
+                let data = await response.json();
+                alert(data.message);
+            });
+            document.getElementById("changePasswordForm").addEventListener("submit", async function (event) {
+                event.preventDefault();
+                let formData = new URLSearchParams(new FormData(event.target));
+                let token = localStorage.getItem("token");
+
+                let response = await fetch("/auth/change_password", {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "Authorization": "Bearer " + token
+                    }
+                });
+
+                let data = await response.json();
+                alert(data.message);
+            });
+        });
+    </script>
+</body>
+</html>
