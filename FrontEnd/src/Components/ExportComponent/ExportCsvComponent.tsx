@@ -2,22 +2,24 @@ import ButtonComponent from '../SimpleComponents/ButtonComponent';
 import React from 'react';
 import Papa from 'papaparse';
 import './ExportComponent.scss';
-import { DataResponse } from '../../services/api';
+import { DataResponse, DonutsDataResponse, Scenario } from '../../services/api';
 import { transformData } from '../../utils/dataTransform';
 
 interface ExportCsvComponentProps {
     exportCsvData: {
         name: string | undefined;
         mode: string;
-        data: DataResponse | null;
+        pynutsData: DataResponse | null;
+        donutsData: DonutsDataResponse | null;
+        scenarios: Scenario[]
     }
 }
 
 const ExportCsvComponent: React.FC<ExportCsvComponentProps> = ({ exportCsvData }) => {
     const handleExport = () => {
-        if (!exportCsvData.data) return;
+        if (!exportCsvData.pynutsData || !exportCsvData.donutsData) return;
 
-        const transformedData = transformData(exportCsvData.data, exportCsvData.mode);
+        const transformedData = transformData(exportCsvData.pynutsData, exportCsvData.donutsData, exportCsvData.scenarios, exportCsvData.mode);
 
         const csv = Papa.unparse(transformedData);
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -35,7 +37,7 @@ const ExportCsvComponent: React.FC<ExportCsvComponentProps> = ({ exportCsvData }
             <div className='export_body'>
                 <ButtonComponent
                     onClick={handleExport}
-                    txt='Exporter en CSV'
+                    txt='Les données en CSV'
                     className='button_container'
                 />
             </div>

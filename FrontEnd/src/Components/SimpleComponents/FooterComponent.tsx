@@ -23,7 +23,7 @@ const FooterComponent: React.FC<FooterComponentProps> = ({ names }) => {
                 <h3>Hébergeur</h3>
                 <p>
                     Hostinger International Ltd.<br />
-                    Adresse : 61 Lordou Vironos, 6023 Litochoro, Grèce<br />
+                    Adresse : Švitrigailos str. 34, Vilnius 03230 Lithuania<br />
                     Site web : <a href="https://www.hostinger.fr" target="_blank" rel="noopener noreferrer">https://www.hostinger.fr</a>
                 </p>
             
