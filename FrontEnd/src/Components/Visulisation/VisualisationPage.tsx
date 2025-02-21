@@ -1,14 +1,14 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import './VisualisationPage.scss';
-import { 
-  getScenarios, getAmontAval, Scenario, 
-  AmontAvalResponse, DataRequest, DataResponse, 
-  getData, getFullData, DataRequestFull, GeoJsonResponse, 
-  getPkGeom, ColoredMapResponseData, ColorMapRequest, 
-  getColoredMapData, getBassin, getBassinSLD, getPkSld, 
-  streamPkData, ProfileGraphDataResponse, 
-  ProfileGraphPkRequest, getProfileData, getProfileFullData, 
-  ProgramVariable, Program,getDonutsData, getDonutsFullData, 
+import {
+  getScenarios, getAmontAval, Scenario,
+  AmontAvalResponse, DataRequest, DataResponse,
+  getData, getFullData, DataRequestFull, GeoJsonResponse,
+  getPkGeom, ColoredMapResponseData, ColorMapRequest,
+  getColoredMapData, getBassin, getBassinSLD, getPkSld,
+  streamPkData, ProfileGraphDataResponse,
+  ProfileGraphPkRequest, getProfileData, getProfileFullData,
+  ProgramVariable, Program, getDonutsData, getDonutsFullData,
   DonutsDataResponse
 } from "../../services/api";
 import { useNavigate, useParams } from "react-router";
@@ -24,10 +24,11 @@ import SliderComponent from "../SimpleComponents/SliderComponent";
 import ProfileGraph from "../SimpleComponents/ProfileGraph";
 import FloatingAction from "../SimpleComponents/FloatingAction";
 import ExportJsonComponent from "../ExportComponent/ExportJsonComponent";
+import ExportPdfComponent from "../ExportComponent/ExportPdfComponent";
 import PercentileSelector from "../SimpleComponents/PercentileSelector";
 import { scenarioColorPalette } from "../../utils/scenarioColorPalette";
 
-const scenarioColors: Record<number, string>= {}
+const scenarioColors: Record<number, string> = {}
 import ExportCsvComponent from "../ExportComponent/ExportCsvComponent";
 
 type ChartData = Array<{
@@ -49,7 +50,7 @@ const VisualisationPage: React.FC = () => {
   const [coloredMapData, setColoredMapData] = useState<ColoredMapResponseData | null>(null);
   const [profileGraphData, setProfileGraphData] = useState<ProfileGraphDataResponse | null>(null);
   const [selectedPercentile, setSelectedPercentile] = useState<"p5" | "p50" | "p90">("p50");
-  const [selectedKey, setSelectedKey] = useState<string | null>(null); 
+  const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [chartData, setChartData] = useState<ChartData | null>(null);
   const [selectedPk, setSelectedPk] = useState<GeoJsonResponse | undefined>(undefined);
   const [idHydStart, setIdHydStart] = useState<number | null>(null);
@@ -90,7 +91,7 @@ const VisualisationPage: React.FC = () => {
       if (data) {
 
         const scenariosWithColors = data.scenarios.map((scenario, index) => {
-          if (!scenarioColors[scenario.id]) { 
+          if (!scenarioColors[scenario.id]) {
             scenarioColors[scenario.id] = scenarioColorPalette[index % scenarioColorPalette.length];
           }
           return { ...scenario, color: scenarioColors[scenario.id] };
@@ -133,7 +134,7 @@ const VisualisationPage: React.FC = () => {
       }
     }
   }, [conf, program, scenarios]);
-  
+
   useEffect(() => {
     const fetchInitialData = async () => {
       if (!program) return;
@@ -232,19 +233,19 @@ const VisualisationPage: React.FC = () => {
 
         if (mode === "amont-aval" && request) {
           [response, donutsResponse] = await Promise.all([
-            getData(request), 
+            getData(request),
             getDonutsData(request)
           ]);
 
         } else if (mode === "complet" && requestFull) {
           [response, donutsResponse] = await Promise.all([
-            getFullData(requestFull), 
+            getFullData(requestFull),
             getDonutsFullData(requestFull)
           ]);
         }
-        if(donutsResponse){
+        if (donutsResponse) {
           setDonutsData(donutsResponse);
-        }else{
+        } else {
           setDonutsData(null);
         }
         if (response) {
@@ -385,9 +386,7 @@ const VisualisationPage: React.FC = () => {
   )
 
   const decades = chartData?.length ? chartData.map((entry) => entry.decade) : [];
-  const variablesGraph = chartData?.length
-    ? Object.keys(chartData[0]).filter((key) => key !== "decade")
-    : [];
+  const variablesGraph = chartData?.length ? Object.keys(chartData[0]).filter((key) => key !== "decade") : [];
 
   const groupedData: Record<string, { p5: number[]; p50: number[]; p90: number[] }> = {};
 
@@ -404,6 +403,15 @@ const VisualisationPage: React.FC = () => {
       });
     }
   });
+
+  const selectionMapRef = useRef<null>(null);
+  const testRef = useRef<null>(null);
+  const exportPdfInfo = {
+    selectionMapElements: { mapRef: selectionMapRef, program_name: program_name, selectedVariables: selectedVariables, selectedScenarios: selectedScenarios },
+    mapElements: [],
+    chartElements: { testRef: testRef },
+  };
+
 
   if (!program) {
     return null;
@@ -432,11 +440,13 @@ const VisualisationPage: React.FC = () => {
     <div className='home_component_visualisation'>
       <FloatingAction>
         <ExportJsonComponent exportConf={exportConf} />
+        <ExportPdfComponent exportPdfInfo={exportPdfInfo} />
         {data && <ExportCsvComponent exportCsvData={exportData} />}
       </FloatingAction>
       <div className='home_body'>
         <ToggleContainer title="Carte de sélection" secondChild={sharedSlider}>
           <MapSelection
+            mapRef={selectionMapRef}
             scenarioColors={scenarioColors}
             program={program!.name}
             exutoire_id={program!.exutoire_id}
@@ -458,12 +468,14 @@ const VisualisationPage: React.FC = () => {
           />
         </ToggleContainer>
         {chartData?.length && (
+
           <ToggleContainer title="Graphiques temporels" containsTile={true} secondChild={sharedSlider}>
+
             {Object.entries(groupedData).map(([variable, chartData], index) => (
               <VariableChart
                 scenarios={scenarios}
                 scenarioColors={scenarioColors}
-                donutsData={selectedKey && donutsData && donutsData[selectedKey]? donutsData[selectedKey][variable]: {}}
+                donutsData={selectedKey && donutsData && donutsData[selectedKey] ? donutsData[selectedKey][variable] : {}}
                 key={variable}
                 className={`variable_element element_${index}`}
                 variable={program!.variables.find((v) => v.var_code.toLowerCase() === variable.toLowerCase()) || { var_code: variable, var_name: variable, unit_short: "" }}
@@ -471,7 +483,9 @@ const VisualisationPage: React.FC = () => {
                 data={chartData}
               />
             ))}
+
           </ToggleContainer>
+
         )}
         {coloredMapData && (
           <ToggleContainer
@@ -504,11 +518,11 @@ const VisualisationPage: React.FC = () => {
                 key={`profile_${variable}`}
                 variable={variable}
                 data={profileGraphData}
-                xKey={mode === "amont-aval" ? "PK" : "Strahler"} 
-                donutsData={donutsData!} 
-                scenarioColors={scenarioColors} 
-                scenarios={selectedScenarios} 
-                decades={selectedDecades && selectedDecades.length == 2 ? [selectedDecades[0], selectedDecades[1]]: [1, 10]}              
+                xKey={mode === "amont-aval" ? "PK" : "Strahler"}
+                donutsData={donutsData!}
+                scenarioColors={scenarioColors}
+                scenarios={selectedScenarios}
+                decades={selectedDecades && selectedDecades.length == 2 ? [selectedDecades[0], selectedDecades[1]] : [1, 10]}
               />
             ))}
           </ToggleContainer>

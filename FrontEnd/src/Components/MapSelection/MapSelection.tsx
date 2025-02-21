@@ -18,6 +18,7 @@ const { BaseLayer, Overlay } = LayersControl;
 
 
 interface MapSelectionProps {
+  mapRef: any;
   program: string;
   exutoire_id: number;
   idHydStart: number | null;
@@ -39,6 +40,7 @@ interface MapSelectionProps {
 }
 
 const MapSelection: React.FC<MapSelectionProps> = ({
+  mapRef,
   program,
   exutoire_id,
   idHydStart,
@@ -188,7 +190,9 @@ layer.bindPopup(popupContent).openPopup();
 
 return (
 <div className="map_component">
+  
   <MapContainer
+      ref={mapRef}
       attributionControl={false}
       bounds={bounds || [[50.9, -1.5], [46.5, 8.5]]}
       zoom={6} 
@@ -196,6 +200,8 @@ return (
       zoomControl={false}
       
   >
+    {/* className pour cacher les controles pour l'export  */}
+    <div className="leaflet-control-container"> 
     <MapButtons bounds={bounds}>
         <ControlComponent
           scenarioColors={scenarioColors}
@@ -212,6 +218,7 @@ return (
           setLayerVisibility={setLayerVisibility}
         />
     </MapButtons>
+    </div>
     <LayersControl>
       <BaseLayer {...(layerVisibility.baseLayer ? { checked: true } : { checked: false })} name="BaseLayer">
         <TileLayer
