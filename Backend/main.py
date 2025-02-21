@@ -14,6 +14,7 @@ from core.auth import auth_router
 from scheduler.scheduler import lifespan
 from starlette.exceptions import HTTPException as StarletteHTTPException
 import uvicorn
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
 
 app = FastAPI(
@@ -26,6 +27,7 @@ lifespan(app)
 # Middlewares
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"], expose_headers=["Content-Type"])
 app.add_middleware(GZipMiddleware, minimum_size=1000, compresslevel=9)
+app.add_middleware(TrustedHostMiddleware, allowed_hosts=["*"])
 
 init_db()
 
