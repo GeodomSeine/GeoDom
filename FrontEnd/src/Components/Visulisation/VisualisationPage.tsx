@@ -504,7 +504,11 @@ const VisualisationPage: React.FC = () => {
                 key={`profile_${variable}`}
                 variable={variable}
                 data={profileGraphData}
-                xKey={mode === "amont-aval" ? "PK" : "Strahler"}
+                xKey={mode === "amont-aval" ? "PK" : "Strahler"} 
+                donutsData={donutsData!} 
+                scenarioColors={scenarioColors} 
+                scenarios={selectedScenarios} 
+                decades={selectedDecades && selectedDecades.length == 2 ? [selectedDecades[0], selectedDecades[1]]: [1, 10]}              
               />
             ))}
           </ToggleContainer>
