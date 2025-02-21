@@ -28,6 +28,8 @@ import PercentileSelector from "../SimpleComponents/PercentileSelector";
 import { scenarioColorPalette } from "../../utils/scenarioColorPalette";
 
 const scenarioColors: Record<number, string>= {}
+import ExportCsvComponent from "../ExportComponent/ExportCsvComponent";
+import ExportExcelComponent from "../ExportComponent/ExportExcelComponent";
 
 type ChartData = Array<{
   decade: number;
@@ -419,10 +421,19 @@ const VisualisationPage: React.FC = () => {
     decades: selectedDecades
   };
 
+  const exportData = {
+    name: program.name,
+    mode: mode,
+    data: data,
+    selectedVariables: selectedVariables,
+  }
+
   return (
     <div className='home_component_visualisation'>
       <FloatingAction>
         <ExportJsonComponent exportConf={exportConf} />
+        {data && <ExportCsvComponent exportCsvData={exportData} />}
+        {data && <ExportExcelComponent exportExcelData={exportData} />}
       </FloatingAction>
       <div className='home_body'>
         <ToggleContainer title="Carte de sélection" secondChild={sharedSlider}>

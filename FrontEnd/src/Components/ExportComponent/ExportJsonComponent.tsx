@@ -30,7 +30,6 @@ const ExportJsonComponent: React.FC<ExportJsonComponentProps> = ({ exportConf })
     };
     return (
         <div className="export_container json">
-            {/* need to change this into input*/}
             <div className='export_body'>
                 <ButtonComponent
                 onClick={handleExport}
