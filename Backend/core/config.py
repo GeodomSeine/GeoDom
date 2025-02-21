@@ -9,5 +9,7 @@ class Settings:
     TESTING = os.getenv("TESTING", "False").lower() == "true"  
     LOG_LEVEL = os.getenv("LOG_LEVEL", "CRITICAL")
     DB_ENGINE_LOG = os.getenv("DB_ENGINE_LOG", "False").lower() == "true"
-
+    SECRET_ADMIN_KEY = os.getenv("SECRET_ADMIN_KEY", "")
+    ALGORITHM = os.getenv("ALGORITHM", "HS256")
+    
 settings = Settings()
