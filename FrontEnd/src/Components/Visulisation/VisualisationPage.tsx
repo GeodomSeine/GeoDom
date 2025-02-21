@@ -423,8 +423,9 @@ const VisualisationPage: React.FC = () => {
   const exportData = {
     name: program.name,
     mode: mode,
-    data: data,
-    selectedVariables: selectedVariables,
+    pynutsData: data,
+    donutsData: donutsData,
+    scenarios: selectedScenarios,
   }
 
   return (

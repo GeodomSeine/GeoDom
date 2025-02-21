@@ -34,7 +34,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
                     <LogoComponent size={"35px"} Icon={Import} onClick={() => setIsModalOpen(true)} />
                 )}
             </div>
-            <Modal title='Import Visualisation' isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+            <Modal title='Importer la session' isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
                 <ImportJsonComponent visualizationData={visualizationData} />
             </Modal>
         </div>

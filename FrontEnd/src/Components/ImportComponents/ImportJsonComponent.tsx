@@ -98,14 +98,15 @@ const ImportJsonComponent: React.FC<ImportJsonComponentProps> = ({ visualization
                     onChange={handleFileChange}
                 />
                 <ButtonComponent
-                    txt={selectedFile ? selectedFile.name : "Parcourir"}
+                    txt={selectedFile ? selectedFile.name : "Importer"}
                     onClick={handleButtonClick}
                     className='button_container button_max'
                 />
-                <ButtonComponent
+                {selectedFile && (<ButtonComponent
                     onClick={handleImport}
-                    txt='Importer'
+                    txt='Valider'
                 />
+                )}
             </div>
             {errorMessage && <div className='import_footer'>
                 <p style={{ color: 'var(--danger-color)' }}>{errorMessage}</p>
