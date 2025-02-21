@@ -17,3 +17,4 @@ orjson
 redis
 pandas
 passlib
+jwt
