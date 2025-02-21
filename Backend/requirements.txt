@@ -18,3 +18,4 @@ redis
 pandas
 passlib
 jwt
+geopandas
