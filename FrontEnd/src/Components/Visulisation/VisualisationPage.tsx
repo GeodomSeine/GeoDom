@@ -372,18 +372,13 @@ const VisualisationPage: React.FC = () => {
     />
   );
 
-  const sharedDecadePercentile = (
-    <div className='decade_percentile_selection'>
+  const sharedDecade = (
       <DecadeRangeComponent
         value={selectedDecades}
         onChange={handleDecadeChange}
         min={1}
         max={36}
-        leftLabel={'Première décade'}
-        rightLabel={'dernière décade'}
       />
-      <PercentileSelector selectedPercentile={selectedPercentile} onChange={setSelectedPercentile} />
-    </div>
   )
 
   const decades = chartData?.length ? chartData.map((entry) => entry.decade) : [];
@@ -493,7 +488,11 @@ const VisualisationPage: React.FC = () => {
           <ToggleContainer
             title="Carte des seuils"
             containsTile={true}
-            secondChild={sharedDecadePercentile}
+            secondChild={
+              <div className='decade_percentile_selection'>
+                {sharedDecade}
+                <PercentileSelector selectedPercentile={selectedPercentile} onChange={setSelectedPercentile} />
+              </div>}
           >
             {Object.entries(coloredMapData.legend).map(([variable, __], index) => (
               <ColoredMapComponent
@@ -513,7 +512,7 @@ const VisualisationPage: React.FC = () => {
           </ToggleContainer>
         )}
         {profileGraphData && (
-          <ToggleContainer title="Profil en long" containsTile={true} secondChild={sharedDecadePercentile}>
+          <ToggleContainer title="Profil en long" containsTile={true} secondChild={sharedDecade}>
             {selectedVariables.map((variable, index) => (
               <ProfileGraph
                 className={`variable_element element_${index}`}

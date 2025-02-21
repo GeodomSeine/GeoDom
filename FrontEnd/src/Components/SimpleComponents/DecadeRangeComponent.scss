@@ -1,32 +1,65 @@
 @use "../../styles/main.scss" as *;
 
-.range_container{
+.range_container {
     display: flex;
-    flex-direction: row;
-    gap: 4px;
+    flex-direction: column;
     align-items: center;
-    input {
-        height: fit-content;
-        width: 22px;
-        border: none;
-        border-radius: 3px;
-        padding: 2px;
-        display: flex;
-        background-color: rgb(231, 231, 231);
-        box-shadow: inset rgba(9, 30, 66, 0.25) 0px 1px 1px, inset rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;
-    }
+    width: 100%;
+    padding: 16px;
+}
 
-    input[type=number]::-webkit-inner-spin-button,
-    input[type=number]::-webkit-outer-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-    }
+.range_labels {
+    display: flex;
+    justify-content: space-between;
+    width: 80%;
+    max-width: 600px;
+    margin-bottom: 12px;
+}
 
-    input[type=number] {
-        -moz-appearance: textfield;
-    }
+.range_slider {
+    width: 80%; 
+    max-width: 600px;
+    height: 10px;
+    background: $primary-blue;
+    border-radius: 5px;
+    position: relative;
+    margin: 12px auto;
+}
 
-    input:focus {
-        outline: none;
-    }
+.range_thumb {
+    width: 18px;
+    height: 18px;
+    background: $primary-blue;
+    border-radius: 50%;
+    cursor: grab;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.range_thumb:active {
+    cursor: grabbing;
+}
+
+.range_track {
+    background: $basic-grey;	
+    height: 10px;
+    border-radius: 5px;
+}
+
+.range_values {
+    display: flex;
+    justify-content: space-between;
+    width: 80%;
+    max-width: 600px;
+    margin-top: 8px;
+    position: relative;
+}
+
+.range_values span:first-child {
+    transform: translateX(-10px);
+}
+
+.range_values span:last-child {
+    transform: translateX(10px);
 }

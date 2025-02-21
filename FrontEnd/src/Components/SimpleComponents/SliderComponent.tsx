@@ -22,7 +22,7 @@ const SliderComponent: React.FC<CustomSliderProps> = ({ value, min, max, step, o
           min={min}
           max={max}
           step={step}
-          onChange={onChange}
+          onAfterChange={onChange}
           value={value !== undefined ? value : undefined}
           renderThumb={(props, state) => <div {...props}>{state.valueNow}</div>}
         />
