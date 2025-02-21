@@ -4,6 +4,9 @@ import shutil
 from fastapi import APIRouter, Depends, Form, UploadFile, File, Request
 from fastapi.templating import Jinja2Templates
 from core.auth import get_current_admin_user
+from resources.parser import is_metadata_json_valide, validate_schema_and_data, is_folder_valide, EXPECTED_FILES
+import shutil
+
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -28,32 +31,49 @@ async def add_program(
     seneque_aesn_hydro: UploadFile = File(...),
     stations_donuts: UploadFile = File(...),
 ):
-    program_folder = os.path.join(DATAVIZ_DIR, name)
-    os.makedirs(program_folder, exist_ok=True)
+    try:
+        program_folder = os.path.join(DATAVIZ_DIR, name)
+        os.makedirs(program_folder, exist_ok=True)
 
-    file_map = {
-        "background.png": background,
-        "pk_map.sld": pk_map,
-        "seneque_aesn_hydro_basin.sld": seneque_aesn_hydro_basin,
-        "seneque_aesn_hydro.sld": seneque_aesn_hydro,
-        "stations_donuts.sld": stations_donuts,
-    }
+        file_map = {
+            "background.png": background,
+            "pk_map.sld": pk_map,
+            "seneque_aesn_hydro_basin.sld": seneque_aesn_hydro_basin,
+            "seneque_aesn_hydro.sld": seneque_aesn_hydro,
+            "stations_donuts.sld": stations_donuts,
+        }
 
-    for filename, file in file_map.items():
-        file_path = os.path.join(program_folder, filename)
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
+        for filename, file in file_map.items():
+            file_path = os.path.join(program_folder, filename)
+            with open(file_path, "wb") as buffer:
+                shutil.copyfileobj(file.file, buffer)
 
-    metadata = {
-        "name": name,
-        "title": title,
-        "description": description,
-        "variables": json.loads(variables),
-        "exutoire_id": exutoire_id
-    }
+        metadata = {
+            "name": name,
+            "title": title,
+            "description": description,
+            "variables": json.loads(variables),
+            "exutoire_id": exutoire_id
+        }
 
-    metadata_path = os.path.join(program_folder, "metadata.json")
-    with open(metadata_path, "w", encoding="utf-8") as f:
-        json.dump(metadata, f, indent=4, ensure_ascii=False)
+        metadata_path = os.path.join(program_folder, "metadata.json")
+        with open(metadata_path, "w", encoding="utf-8") as f:
+            json.dump(metadata, f, indent=4, ensure_ascii=False)
+    except Exception as e:
+        shutil.rmtree(program_folder)
+        return {"Exception": e}
+
+    schema_validation = validate_schema_and_data(name, json.loads(variables), exutoire_id)
+    if not schema_validation[0]:
+        shutil.rmtree(program_folder)
+        return {"message" : "Schéma ou données incohérentes en base de données"}
+
+    if not is_folder_valide(program_folder, EXPECTED_FILES):
+        shutil.rmtree(program_folder)
+        return {"message" : "Fichiers / données manquantes ou invalides"}
+
+    if not is_metadata_json_valide(program_folder):
+        shutil.rmtree(program_folder)
+        return {"message" : "Données manquantes ou invalides"}
 
     return {"message": f"Programme '{name}' ajouté avec succès !"}

@@ -15,11 +15,11 @@ auth_router = APIRouter()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
 
-# 📌 Récupérer un utilisateur
+# Récupérer un utilisateur
 def get_user(db: Session, username: str):
     return db.query(User).filter(User.username == username).first()
 
-# 📌 Générer un token JWT
+# Générer un token JWT
 def create_access_token(username: str):
     expire = datetime.utcnow() + timedelta(hours=1)
     payload = {"sub": username, "exp": expire}
@@ -28,14 +28,14 @@ def create_access_token(username: str):
 @auth_router.post("/token")
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = get_user(db, form_data.username)
-    if not user or not pwd_context.verify(form_data.password, user.password):  # ✅ Correction ici
+    if not user or not pwd_context.verify(form_data.password, user.password):
         raise HTTPException(status_code=400, detail="Nom d'utilisateur ou mot de passe incorrect")
     
     access_token = create_access_token(user.username)
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-# 📌 Vérifier que l'utilisateur est admin
+# Vérifier que l'utilisateur est admin
 def get_current_admin_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -66,3 +66,22 @@ def add_user(
     db.add(new_user)
     db.commit()
     return {"message": f"Utilisateur '{username}' ajouté avec succès"}
+
+
+@auth_router.post("/change_password")
+def change_password(
+    old_password: str = Form(...), 
+    new_password: str = Form(...), 
+    confirm_password: str = Form(...), 
+    current_user: User = Depends(get_current_admin_user), 
+    db: Session = Depends(get_db)
+):
+    if new_password != confirm_password:
+        raise HTTPException(status_code=400, detail="Les nouveaux mots de passe ne correspondent pas.")
+
+    if not pwd_context.verify(old_password, current_user.password):
+        raise HTTPException(status_code=400, detail="L'ancien mot de passe est incorrect.")
+
+    current_user.password = hash_password(new_password)
+    db.commit()
+    return {"message": "Mot de passe modifié avec succès !"}
