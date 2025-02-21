@@ -386,7 +386,7 @@ const VisualisationPage: React.FC = () => {
   )
 
   const decades = chartData?.length ? chartData.map((entry) => entry.decade) : [];
-  const variablesGraph = chartData?.length?Object.keys(chartData[0]).filter((key) => key !== "decade"):[];
+  const variablesGraph = chartData?.length ? Object.keys(chartData[0]).filter((key) => key !== "decade") : [];
 
   const groupedData: Record<string, { p5: number[]; p50: number[]; p90: number[] }> = {};
 
@@ -414,124 +414,122 @@ const VisualisationPage: React.FC = () => {
 
 
   if (!program) {
-    if (!program) {
-      return null;
-    }
+    return null;
+  }
 
-    const exportConf = {
-      name: program.name,
-      selected: selectedKey,
-      selectedSliderValue: sliderValue,
-      hydro_id_start: idHydStart,
-      hydro_id_end: idHydEnd,
-      variables: selectedVariables.map((variable) => variable.var_code),
-      scenarios: selectedScenarios.map((scenario) => scenario.id),
-      decades: selectedDecades
-    };
-
-    const exportData = {
-      name: program.name,
-      mode: mode,
-      pynutsData: data,
-      donutsData: donutsData,
-      scenarios: selectedScenarios,
-    }
-
-    return (
-      <div className='home_component_visualisation'>
-        <FloatingAction>
-          <ExportJsonComponent exportConf={exportConf} />
-          <ExportPdfComponent exportPdfInfo={exportPdfInfo} />
-          {data && <ExportCsvComponent exportCsvData={exportData} />}
-        </FloatingAction>
-        <div className='home_body'>
-          <ToggleContainer title="Carte de sélection" secondChild={sharedSlider}>
-            <MapSelection
-              mapRef={selectionMapRef}
-              scenarioColors={scenarioColors}
-              program={program!.name}
-              exutoire_id={program!.exutoire_id}
-              idHydStart={idHydStart}
-              idHydEnd={idHydEnd}
-              setIdHydStart={setIdHydStart}
-              setIdHydEnd={setIdHydEnd}
-              amontAvalResponse={amontAvalResponse}
-              selectedPk={selectedPk}
-              mode={mode}
-              resetSelection={resetSelection}
-              variables={program!.variables}
-              selectedVariables={selectedVariables}
-              setSelectedVariables={setSelectedVariables}
-              selectedScenarios={selectedScenarios}
-              setSelectedScenarios={setSelectedScenarios}
-              scenarios={scenarios}
-              setMode={setMode}
-            />
-          </ToggleContainer>
-          {chartData?.length && (
-
-            <ToggleContainer title="Graphiques temporels" containsTile={true} secondChild={sharedSlider}>
-
-              {Object.entries(groupedData).map(([variable, chartData], index) => (
-                <VariableChart
-                  scenarios={scenarios}
-                  scenarioColors={scenarioColors}
-                  donutsData={selectedKey && donutsData && donutsData[selectedKey] ? donutsData[selectedKey][variable] : {}}
-                  key={variable}
-                  className={`variable_element element_${index}`}
-                  variable={program!.variables.find((v) => v.var_code.toLowerCase() === variable.toLowerCase()) || { var_code: variable, var_name: variable, unit_short: "" }}
-                  decades={decades}
-                  data={chartData}
-                />
-              ))}
-
-            </ToggleContainer>
-
-          )}
-          {coloredMapData && (
-            <ToggleContainer
-              title="Carte des seuils"
-              containsTile={true}
-              secondChild={sharedDecadePercentile}
-            >
-              {Object.entries(coloredMapData.legend).map(([variable, __], index) => (
-                <ColoredMapComponent
-                  key={variable}
-                  data={coloredMapData}
-                  variable={program!.variables.find((v) => v.var_code.toLowerCase() === variable.toLowerCase()) || { var_code: variable, var_name: variable, unit_short: "" }}
-                  className={`variable_element element_${index}`}
-                  pkData={pkData}
-                  pkStyles={[]}
-                  bassinData={bassinData}
-                  bassinStyle={bassinStyle}
-                  bounds={bounds}
-                  getPkStyles={getPkStyles}
-                  percentile={selectedPercentile}
-                />
-              ))}
-            </ToggleContainer>
-          )}
-          {profileGraphData && (
-            <ToggleContainer title="Profil en long" containsTile={true} secondChild={sharedDecadePercentile}>
-              {selectedVariables.map((variable, index) => (
-                <ProfileGraph
-                  className={`variable_element element_${index}`}
-                  key={`profile_${variable}`}
-                  variable={variable}
-                  data={profileGraphData}
-                  xKey={mode === "amont-aval" ? "PK" : "Strahler"}
-                  donutsData={donutsData!}
-                  scenarioColors={scenarioColors}
-                  scenarios={selectedScenarios}
-                  decades={selectedDecades && selectedDecades.length == 2 ? [selectedDecades[0], selectedDecades[1]] : [1, 10]}
-                />
-              ))}
-            </ToggleContainer>
-          )}
-        </div>
-      </div>
-    );
+  const exportConf = {
+    name: program.name,
+    selected: selectedKey,
+    selectedSliderValue: sliderValue,
+    hydro_id_start: idHydStart,
+    hydro_id_end: idHydEnd,
+    variables: selectedVariables.map((variable) => variable.var_code),
+    scenarios: selectedScenarios.map((scenario) => scenario.id),
+    decades: selectedDecades
   };
-}
 
-  export default VisualisationPage;
+  const exportData = {
+    name: program.name,
+    mode: mode,
+    pynutsData: data,
+    donutsData: donutsData,
+    scenarios: selectedScenarios,
+  }
+
+  return (
+    <div className='home_component_visualisation'>
+      <FloatingAction>
+        <ExportJsonComponent exportConf={exportConf} />
+        <ExportPdfComponent exportPdfInfo={exportPdfInfo} />
+        {data && <ExportCsvComponent exportCsvData={exportData} />}
+      </FloatingAction>
+      <div className='home_body'>
+        <ToggleContainer title="Carte de sélection" secondChild={sharedSlider}>
+          <MapSelection
+            mapRef={selectionMapRef}
+            scenarioColors={scenarioColors}
+            program={program!.name}
+            exutoire_id={program!.exutoire_id}
+            idHydStart={idHydStart}
+            idHydEnd={idHydEnd}
+            setIdHydStart={setIdHydStart}
+            setIdHydEnd={setIdHydEnd}
+            amontAvalResponse={amontAvalResponse}
+            selectedPk={selectedPk}
+            mode={mode}
+            resetSelection={resetSelection}
+            variables={program!.variables}
+            selectedVariables={selectedVariables}
+            setSelectedVariables={setSelectedVariables}
+            selectedScenarios={selectedScenarios}
+            setSelectedScenarios={setSelectedScenarios}
+            scenarios={scenarios}
+            setMode={setMode}
+          />
+        </ToggleContainer>
+        {chartData?.length && (
+
+          <ToggleContainer title="Graphiques temporels" containsTile={true} secondChild={sharedSlider}>
+
+            {Object.entries(groupedData).map(([variable, chartData], index) => (
+              <VariableChart
+                scenarios={scenarios}
+                scenarioColors={scenarioColors}
+                donutsData={selectedKey && donutsData && donutsData[selectedKey] ? donutsData[selectedKey][variable] : {}}
+                key={variable}
+                className={`variable_element element_${index}`}
+                variable={program!.variables.find((v) => v.var_code.toLowerCase() === variable.toLowerCase()) || { var_code: variable, var_name: variable, unit_short: "" }}
+                decades={decades}
+                data={chartData}
+              />
+            ))}
+
+          </ToggleContainer>
+
+        )}
+        {coloredMapData && (
+          <ToggleContainer
+            title="Carte des seuils"
+            containsTile={true}
+            secondChild={sharedDecadePercentile}
+          >
+            {Object.entries(coloredMapData.legend).map(([variable, __], index) => (
+              <ColoredMapComponent
+                key={variable}
+                data={coloredMapData}
+                variable={program!.variables.find((v) => v.var_code.toLowerCase() === variable.toLowerCase()) || { var_code: variable, var_name: variable, unit_short: "" }}
+                className={`variable_element element_${index}`}
+                pkData={pkData}
+                pkStyles={[]}
+                bassinData={bassinData}
+                bassinStyle={bassinStyle}
+                bounds={bounds}
+                getPkStyles={getPkStyles}
+                percentile={selectedPercentile}
+              />
+            ))}
+          </ToggleContainer>
+        )}
+        {profileGraphData && (
+          <ToggleContainer title="Profil en long" containsTile={true} secondChild={sharedDecadePercentile}>
+            {selectedVariables.map((variable, index) => (
+              <ProfileGraph
+                className={`variable_element element_${index}`}
+                key={`profile_${variable}`}
+                variable={variable}
+                data={profileGraphData}
+                xKey={mode === "amont-aval" ? "PK" : "Strahler"}
+                donutsData={donutsData!}
+                scenarioColors={scenarioColors}
+                scenarios={selectedScenarios}
+                decades={selectedDecades && selectedDecades.length == 2 ? [selectedDecades[0], selectedDecades[1]] : [1, 10]}
+              />
+            ))}
+          </ToggleContainer>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default VisualisationPage;

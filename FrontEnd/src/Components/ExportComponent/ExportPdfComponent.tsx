@@ -62,8 +62,8 @@ const ExportPdfComponent: React.FC<ExportPdfComponentProps> = ({ exportPdfInfo }
         if (selectionMapElements.mapRef.current) {
             const plugin = (L as any).simpleMapScreenshoter({
                 cropImageByInnerWH: true,
-                hidden: false,
-                preventDownload: false,
+                hidden: false, // Icon screenshot visible
+                preventDownload: true,
                 mimeType: "image/png",
                 hideElementsWithSelectors: [".leaflet-control-container"],
             }).addTo(selectionMapElements.mapRef.current);
@@ -76,12 +76,10 @@ const ExportPdfComponent: React.FC<ExportPdfComponentProps> = ({ exportPdfInfo }
                 const aspectRatio = mapWidth / mapHeight;
                 console.log("Dimensions de la carte:", mapWidth, mapHeight, aspectRatio);
 
-                // Définir les dimensions de l'image en conservant les proportions
+                // Définir les dimensions de l'image en conservant les proportions (certain cas encore buggé..)
                 const imgMaxWidth = 180;
                 const imgWidth = imgMaxWidth;
                 const imgHeight = imgMaxWidth / aspectRatio;
-
-                console.log("Dimensions de l'image:", imgWidth, imgHeight);
                 // Calculer la position pour l'image
                 const imgY = scenarioStartY + 10 + selectionMapElements.selectedScenarios.length * 7 + 20;
                 pdf.addImage(imgUrl, "PNG", 10, imgY, imgWidth, imgHeight);
