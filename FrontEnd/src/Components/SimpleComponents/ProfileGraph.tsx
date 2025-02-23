@@ -40,7 +40,19 @@ interface ProfileGraphProps {
 const ProfileGraph: React.FC<ProfileGraphProps> = ({ variable, data, xKey, className = "profile_graph" , donutsData, scenarioColors, scenarios, decades}) => {
   const chartRef = useRef<any>(null);
 
-  const xLabels = Object.keys(data).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+  let xLabels = Object.keys(data);
+
+  if (xKey === "PK") {
+    xLabels.sort((a, b) => {
+      const [_, ordA, pkA] = a.split('_').map(Number);
+      const [__, ordB, pkB] = b.split('_').map(Number);
+      return ordA - ordB || pkA - pkB;
+    });
+  } else {
+    xLabels.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+  }
+
+  const xDisplayLabels = xLabels.map((_, index) => index + 1);
 
   const p5 = xLabels.map((x) => data[x]?.[`${variable.var_code.toLowerCase()}_p5`] || null);
   const p50 = xLabels.map((x) => data[x]?.[`${variable.var_code.toLowerCase()}_p50`] || null);
@@ -81,7 +93,7 @@ const ProfileGraph: React.FC<ProfileGraphProps> = ({ variable, data, xKey, class
   });
 
   const chartData = {
-    labels: xLabels,
+    labels: xDisplayLabels,
     datasets: [
       {
         label: `${variable.var_code.toUpperCase()} (P5)`,
