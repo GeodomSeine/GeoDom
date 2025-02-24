@@ -15,7 +15,7 @@ const SliderComponent: React.FC<CustomSliderProps> = ({ value, min, max, step, o
 
   return (
     <div className="slider_container">
-        <div className="slider_text"><p>{leftLabel}</p><p>{rightLabel}</p></div>
+        <div className="slider_text"><span>{leftLabel}</span><span>{rightLabel}</span></div>
         <Slider
           className="slider_track"
           thumbClassName="slider_thumb"

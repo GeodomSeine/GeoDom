@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Slider from "react-slider";
-import "./DecadeRangeComponent.scss";
+import "./SliderComponent.scss";
 
 type DecadeRangeProps = {
   min: number;
@@ -25,15 +25,13 @@ const DecadeRangeComponent: React.FC<DecadeRangeProps> = ({ min, max, value, onC
   };
 
   return (
-    <div className="range_container">
-      <div className="range_labels">
-        Décades
+    <div className="slider_container doubled">
+      <div className="slider_text">
+        <span>Décades</span>
       </div>
-      
-      <Slider
-        className="range_slider"
-        thumbClassName="range_thumb"
-        trackClassName="range_track"
+      <Slider 
+        className="slider_track"
+        thumbClassName="slider_thumb"
         min={min}
         max={max}
         value={range}
@@ -41,12 +39,8 @@ const DecadeRangeComponent: React.FC<DecadeRangeProps> = ({ min, max, value, onC
         onAfterChange={handleAfterChange}
         pearling
         minDistance={1}
+        renderThumb={(props, state) => <div {...props}>{state.valueNow}</div>}
       />
-
-      <div className="range_values">
-        <span>{range[0]}</span>
-        <span>{range[1]}</span>
-      </div>
     </div>
   );
 };
