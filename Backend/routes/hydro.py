@@ -1,3 +1,4 @@
+import zipfile
 import orjson
 import redis
 from fastapi import APIRouter, HTTPException
@@ -7,7 +8,9 @@ from sqlalchemy.future import select
 from core.database import async_session_pynuts
 from models.models import SenequeAesnHydro
 import os
+import time
 import geopandas as gpd
+from zipfile import ZipFile
 from fastapi.responses import FileResponse
 
 router = APIRouter(prefix="/hydro", tags=["Hydrographie"])
@@ -76,7 +79,14 @@ async def get_hydro(program: str):
 @router.get("/export/{program}")
 async def export_geopackage(program: str):
     """Exporte les données hydrographiques d'un programme sous forme de GeoPackage."""
-    
+    file_path = f"/tmp/{program}_hydro.gpkg"
+    zipfile_path = f"/tmp/{program}.zip"
+    if os.path.exists(zipfile_path):
+        if (os.path.getmtime(zipfile_path) > (time.time() - 600)):
+            os.remove(zipfile_path)     
+        else:
+            return FileResponse(zipfile_path, media_type='application/zip', filename=f"{program}_hydro.zip")
+        
     async with async_session_pynuts() as session:
         DynamicHydro = SenequeAesnHydro.create(program)
         try:
@@ -89,10 +99,12 @@ async def export_geopackage(program: str):
             raise HTTPException(status_code=500, detail="Erreur interne du serveur")
 
         gdf = gpd.GeoDataFrame.from_features([feature.geojson_feature for feature in geo_features])
-        file_path = f"/tmp/{program}_hydro.gpkg"
-        if(os.path.exists(file_path)):
-            os.remove(file_path)
         gdf.to_file(file_path, driver="GPKG")
         
-        return FileResponse(file_path, media_type='application/geopackage+sqlite3', filename=f"{program}_hydro.gpkg")
-    
+        with ZipFile(zipfile_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+            zipf.write(file_path, f"{program}_hydro.gpkg")
+            zipf.write(f"./resources/dataviz/{program}/seneque_aesn_hydro_basin.sld", "hydro_bassin.sld")
+            zipf.write(f"./resources/dataviz/{program}/seneque_aesn_hydro.sld", "hydrographie.sld")
+            os.remove(file_path)
+        return FileResponse(zipfile_path, media_type='application/zip', filename=f"{program}_hydro.zip")
+            
