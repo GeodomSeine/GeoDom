@@ -1,0 +1,62 @@
+@use "../../styles/main.scss" as *;
+
+@keyframes modal-fade-in {
+from {
+    opacity: 0;
+    transform: translateY(-20px);
+}
+to {
+    opacity: 1;
+    transform: translateY(0);
+}
+}
+
+@keyframes overlay-fade-in {
+from {
+    opacity: 0;
+}
+to {
+    opacity: 1;
+}
+}
+
+.modal_overlay_tutorial {
+    position: fixed;
+    inset: 0;
+    background-color: rgba($shade-grey, 0.5);
+    display: flex;
+    align-items: flex-end;
+    justify-content: right;
+    z-index: 10000;
+    animation: overlay-fade-in 0.3s ease-out;
+    padding: 15px;
+    .modal_action {
+        background: white;
+        padding: 10px;
+        @include card;
+        display: flex;
+        flex-flow: column;
+        gap: 8px;
+        width: 500px;
+        animation: modal-fade-in 0.3s ease-out; 
+        .modal_action_header {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal_action_body{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .modal_action_footer{
+            display: flex;
+            justify-content: right;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+    }
+}

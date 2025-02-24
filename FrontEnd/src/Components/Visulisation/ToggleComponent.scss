@@ -6,13 +6,12 @@
         flex-direction: row;
         justify-content: space-between;
         writing-mode: vertical-rl;
-        transform: rotate(180deg);
         cursor: pointer;
         .set_is_visible, .is_visible {
-            transform: rotate(-90deg);
+            transform: rotate(-180deg);
         }
         .set_is_visible {
-            transform: rotate(90deg);
+            transform: rotate(180deg);
         }
     }
     .space_body {

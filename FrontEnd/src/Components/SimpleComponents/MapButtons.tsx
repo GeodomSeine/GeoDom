@@ -32,7 +32,6 @@ const MapControls: React.FC<MapControlsProps> = ({ bounds, children }) => {
     };
 
     useEffect(() => {
-        // stop click propagation
         if (fixedControls.current) {
             L.DomEvent.disableClickPropagation(fixedControls.current);
             L.DomEvent.disableScrollPropagation(fixedControls.current);

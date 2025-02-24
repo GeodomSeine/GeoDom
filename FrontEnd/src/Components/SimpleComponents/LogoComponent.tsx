@@ -28,6 +28,7 @@ const LogoComponent: FC<LogoComponentProps> = ({
         alignItems: "center",
         justifyContent: "center",
         cursor: cursor, 
+        color: "inherit",
     };
     const svgStyle: React.CSSProperties = {
         width: size,
@@ -36,12 +37,13 @@ const LogoComponent: FC<LogoComponentProps> = ({
 
     return cursor != 'default' ?(
         <a className={className || "logo_container"} style={containerStyle} onClick={onClick}>
-            <Icon style={svgStyle} color={customColor} />
+            <Icon color={`${customColor}`} style={svgStyle}/>
         </a>
     ) : (
         <div className={className || "logo_container"} style={containerStyle}>
-            <Icon style={svgStyle} color={customColor} />
+            <Icon color={`${customColor}`} style={svgStyle}/>
         </div>
+        
     );
 };
 

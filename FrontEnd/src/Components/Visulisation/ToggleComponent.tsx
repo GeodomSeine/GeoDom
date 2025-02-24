@@ -1,6 +1,6 @@
 import React, { ReactNode, useState } from "react";
 import "./ToggleComponent.scss";
-import Arrow from "../../assets/down_arrow.svg?react";
+import Arrow from "../../assets/right_arrow.svg?react";
 import LogoComponent from "../SimpleComponents/LogoComponent";
 
 interface ToggleContainerProps {

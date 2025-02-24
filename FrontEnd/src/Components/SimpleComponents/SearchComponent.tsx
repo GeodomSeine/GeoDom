@@ -34,7 +34,7 @@ export default function SearchComponent({onSearch}: Props) {
       <LogoComponent
         containerSize={"30px"}
         size={"20px"}
-        customColor={"var(--shade-lighter-grey)"}
+        customColor={"var(--shade-mid-grey)"}
         Icon={Research}
         onClick={handleIconClick}
         cursor={"text"}  

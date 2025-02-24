@@ -3,7 +3,7 @@ import "./ButtonComponent.scss";
 
 interface ButtonComponentProps {
 	link?: string;
-	txt?: string;
+	txt?: string | React.ReactNode;
 	className?:string;
 	onClick?: () => void;
 	onDark?: boolean |null;
