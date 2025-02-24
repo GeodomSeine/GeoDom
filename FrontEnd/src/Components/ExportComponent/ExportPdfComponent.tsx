@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import html2canvas from 'html2canvas';
 import L from 'leaflet';
 import "leaflet-simple-map-screenshoter";
 import jsPDF from 'jspdf';
 import './ExportComponent.scss';
 import ButtonComponent from '../SimpleComponents/ButtonComponent';
+
+let marginX = 10;
 
 const getMapDimensionsFromBounds = (map: L.Map) => {
     const bounds = map.getBounds();
@@ -17,11 +19,102 @@ const getMapDimensionsFromBounds = (map: L.Map) => {
     return { mapWidth, mapHeight };
 };
 
-interface ExportPdfComponentProps {
-    exportPdfInfo: any;
-}
 
-const ExportPdfComponent: React.FC<ExportPdfComponentProps> = ({ exportPdfInfo }) => {
+const addMapsToPDF = async (pdf: jsPDF, mapElements: any) => {
+    const { mapRefs } = mapElements;
+
+    if (mapRefs.current) {
+        let imagesOnPage = 0;
+
+        // Ajouter la première page avec le titre
+        pdf.addPage();
+        pdf.setFontSize(18);
+        pdf.text("Carte des seuils", 105, 20, { align: "center" }); // Centré en haut
+
+        for (let index = 0; index < mapRefs.current.length; index++) {
+            const mapRef = mapRefs.current[index];
+            const plugin = mapRef.current.plugin;
+
+            try {
+                const blob = await plugin.takeScreen("blob", { mimeType: "image/png" });
+                const imgUrl = URL.createObjectURL(blob);
+
+                // Calculer les dimensions selon les bounds
+                const { mapWidth, mapHeight } = getMapDimensionsFromBounds(mapRef.current);
+                const aspectRatio = mapWidth / mapHeight;
+
+                // Dimensions de la page PDF (A4 : 210x297 mm)
+                const pageWidth = 180; // Légères marges
+                const pageHeight = 260; // Laisser de l'espace pour le titre
+
+                // Espace disponible pour 4 cartes (2x2)
+                const gridCols = 2;
+                const gridRows = 2;
+                const cellWidth = pageWidth / gridCols;
+                const cellHeight = pageHeight / gridRows;
+
+                // Adapter l'image à la cellule en conservant les proportions
+                let imgWidth = cellWidth;
+                let imgHeight = cellWidth / aspectRatio;
+
+                if (imgHeight > cellHeight) {
+                    imgHeight = cellHeight;
+                    imgWidth = cellHeight * aspectRatio;
+                }
+
+                // Calcul de la position (grille 2x2)
+                const col = imagesOnPage % gridCols;
+                const row = Math.floor(imagesOnPage / gridCols);
+                const imgX = 15 + col * cellWidth + (cellWidth - imgWidth) / 2; // Centrage horizontal
+                const imgY = 30 + row * cellHeight + (cellHeight - imgHeight) / 2; // Centrage vertical sous le titre
+
+                // Ajouter l'image
+                pdf.addImage(imgUrl, "PNG", imgX, imgY, imgWidth, imgHeight);
+
+                URL.revokeObjectURL(imgUrl);
+
+                imagesOnPage++;
+
+            } catch (e) {
+                console.error(`Erreur de capture pour la carte ${index + 1}:`, e);
+            }
+        }
+    }
+};
+
+const getPlugin = (mapRef: any) => {
+    return (L as any).simpleMapScreenshoter({
+      cropImageByInnerWH: true,
+      hidden: false,
+      preventDownload: false,
+      mimeType: "image/png",
+      hideElementsWithSelectors: [".leaflet-control-container"],
+    }).addTo(mapRef.current);
+  };
+  
+  interface ExportPdfComponentProps {
+    exportPdfInfo: any;
+  }
+  
+  const ExportPdfComponent: React.FC<ExportPdfComponentProps> = ({ exportPdfInfo }) => {
+    useEffect(() => {
+      const mapRefs = exportPdfInfo.mapElements.mapRefs;
+  
+      mapRefs.current.forEach((mapRef: any) => {
+        if (mapRef.current && !mapRef.current.plugin) {
+            mapRef.current.plugin = getPlugin(mapRef);
+          }
+      });
+      
+    }, [exportPdfInfo.mapElements.mapRefs]);
+
+    useEffect(() => {
+        const mapRef = exportPdfInfo.selectionMapElements.mapRef;
+    
+        if (mapRef.current && !mapRef.current.plugin) {
+          mapRef.current.plugin = getPlugin(mapRef);
+        }
+      }, [exportPdfInfo.selectionMapElements.mapRef]);
 
     const handleExportPDF = async () => {
         const pdf = new jsPDF('p', 'mm', 'a4');
@@ -59,14 +152,8 @@ const ExportPdfComponent: React.FC<ExportPdfComponentProps> = ({ exportPdfInfo }
         });
 
         // Capturer la carte de sélection Leaflet
-        if (selectionMapElements.mapRef.current) {
-            const plugin = (L as any).simpleMapScreenshoter({
-                cropImageByInnerWH: true,
-                hidden: false, // Icon screenshot visible
-                preventDownload: true,
-                mimeType: "image/png",
-                hideElementsWithSelectors: [".leaflet-control-container"],
-            }).addTo(selectionMapElements.mapRef.current);
+        if (selectionMapElements.mapRef.current && selectionMapElements.mapRef.current.plugin) {
+            const plugin = selectionMapElements.mapRef.current.plugin;
 
             try {
                 const blob = await plugin.takeScreen("blob", { mimeType: "image/png" });
@@ -74,7 +161,6 @@ const ExportPdfComponent: React.FC<ExportPdfComponentProps> = ({ exportPdfInfo }
                 // Utiliser les bounds pour calculer le ratio
                 const { mapWidth, mapHeight } = getMapDimensionsFromBounds(selectionMapElements.mapRef.current);
                 const aspectRatio = mapWidth / mapHeight;
-                console.log("Dimensions de la carte:", mapWidth, mapHeight, aspectRatio);
 
                 // Définir les dimensions de l'image en conservant les proportions (certain cas encore buggé..)
                 const imgMaxWidth = 180;
@@ -99,6 +185,10 @@ const ExportPdfComponent: React.FC<ExportPdfComponentProps> = ({ exportPdfInfo }
             chartCanvas.remove(); // Free memory by removing the canvas element
         }
 
+        // Capturer les cartes de seuil
+        const { mapElements } = exportPdfInfo;
+        addMapsToPDF(pdf, mapElements);
+
         // Ajouter les éléments au PDF
         elements.forEach((element, index) => {
             if (index > 0) pdf.addPage();
@@ -107,7 +197,7 @@ const ExportPdfComponent: React.FC<ExportPdfComponentProps> = ({ exportPdfInfo }
         });
 
         // Télécharger le PDF
-        pdf.save("export.pdf");
+        pdf.save(`export_${selectionMapElements.program_name}.pdf`);
 
 
     };
