@@ -143,7 +143,7 @@ const strahler = feature.properties?.strahler;
 const id = feature.properties?.id_hyd;
 
 if (amontAvalResponse?.id_hyd.includes(id))
-  return { color: "var(--warning-color)", weight: 3 };
+  return { color: "var(--danger-color)", weight: 3 };
 if (idHydStart === id || idHydEnd === id)
   return { color: "var(--success-color)", weight: 4 };
 

@@ -60,6 +60,8 @@ jobs:
           echo "DATABASE_DONUTS_URL=${{ secrets.DATABASE_DONUTS_URL }}" >> $GITHUB_ENV
           echo "LOG_LEVEL=${{ secrets.LOG_LEVEL }}" >> $GITHUB_ENV
           echo "TESTING=${{ secrets.TESTING }}" >> $GITHUB_ENV
+          echo "SECRET_ADMIN_KEY=${{ secrets.SECRET_ADMIN_KEY }}" >> $GITHUB_ENV
+          echo "ALGORITHM=${{ secrets.ALGORITHM }}" >> $GITHUB_ENV
       #- name: Run tests with pytest
       #  run: pytest tests/
 
@@ -106,6 +108,8 @@ jobs:
           echo "DATABASE_DONUTS_URL=${{ secrets.DATABASE_DONUTS_URL }}" >> $GITHUB_ENV
           echo "LOG_LEVEL=${{ secrets.LOG_LEVEL }}" >> $GITHUB_ENV
           echo "TESTING=${{ secrets.TESTING }}" >> $GITHUB_ENV
+          echo "SECRET_ADMIN_KEY=${{ secrets.SECRET_ADMIN_KEY }}" >> $GITHUB_ENV
+          echo "ALGORITHM=${{ secrets.ALGORITHM }}" >> $GITHUB_ENV
        - name: Analyze Backend with SonarQube
          uses: sonarsource/sonarqube-scan-action@v4
          env:
@@ -166,4 +170,6 @@ jobs:
             export DATABASE_DONUTS_URL="${{ secrets.DATABASE_DONUTS_URL }}"
             export TESTING="${{ secrets.TESTING }}"
             export LOG_LEVEL="${{ secrets.LOG_LEVEL }}"
+            export SECRET_ADMIN_KEY="${{ secrets.SECRET_ADMIN_KEY }}"
+            export ALGORITHM="${{ secrets.ALGORITHM }}"
             bash deploy.sh pre-production

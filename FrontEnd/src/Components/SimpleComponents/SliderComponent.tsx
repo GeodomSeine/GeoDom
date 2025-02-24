@@ -15,14 +15,14 @@ const SliderComponent: React.FC<CustomSliderProps> = ({ value, min, max, step, o
 
   return (
     <div className="slider_container">
-        <div className="slider_text"><p>{leftLabel}</p><p>{rightLabel}</p></div>
+        <div className="slider_text"><span>{leftLabel}</span><span>{rightLabel}</span></div>
         <Slider
           className="slider_track"
           thumbClassName="slider_thumb"
           min={min}
           max={max}
           step={step}
-          onChange={onChange}
+          onAfterChange={onChange}
           value={value !== undefined ? value : undefined}
           renderThumb={(props, state) => <div {...props}>{state.valueNow}</div>}
         />

@@ -176,6 +176,18 @@ export const getDonutsData = async (request: DataRequest) : Promise<DonutsDataRe
   }
 }
 
+export const getExportHydroData = async (program: string): Promise<Blob | null> => {
+  try {
+    const response = await api.get(`/hydro/export/${program}`, {
+      responseType: 'blob',
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching hydro data:", error);
+    return null;
+  }
+};
+
 
 export const getDonutsFullData = async (request: DataRequestFull) : Promise<DonutsDataResponse | null> => {
   try{

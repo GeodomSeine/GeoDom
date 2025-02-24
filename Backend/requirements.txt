@@ -16,3 +16,7 @@ greenlet
 orjson
 redis
 pandas
+passlib
+PyJWT
+bcrypt
+geopandas

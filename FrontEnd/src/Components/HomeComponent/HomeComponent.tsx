@@ -70,7 +70,7 @@ import FooterComponent from '../SimpleComponents/FooterComponent';
                         }
                     </div>
                 </div>
-                <FooterComponent names={["Ahmed","Brice","Corentin","Marius"]}></FooterComponent>
+                <FooterComponent names={["Ahmed SOUSSI","Brice PANIZZI","Corentin VIRY","Marius LEMAIRE"]}></FooterComponent>
             </div>
         );
     }
