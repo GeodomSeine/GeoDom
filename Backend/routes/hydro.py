@@ -16,6 +16,8 @@ from fastapi.responses import FileResponse
 router = APIRouter(prefix="/hydro", tags=["Hydrographie"])
 redis_url = os.getenv("REDIS_URL", "redis://redis:6379")
 redis_client = redis.from_url(redis_url)
+DATAVIZ_PATH = "./resources/dataviz"
+
 
 async def fetch_hydro_from_db(program: str, session: AsyncSession):
     """Récupère les données hydrographiques depuis PostgreSQL en streaming."""
@@ -103,8 +105,8 @@ async def export_geopackage(program: str):
         
         with ZipFile(zipfile_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
             zipf.write(file_path, f"{program}_hydro.gpkg")
-            zipf.write(f"./resources/dataviz/{program}/seneque_aesn_hydro_basin.sld", "hydro_bassin.sld")
-            zipf.write(f"./resources/dataviz/{program}/seneque_aesn_hydro.sld", "hydrographie.sld")
+            zipf.write(f"{DATAVIZ_PATH}/{program}/seneque_aesn_hydro_basin.sld", "hydro_bassin.sld")
+            zipf.write(f"{DATAVIZ_PATH}/{program}/seneque_aesn_hydro.sld", "hydrographie.sld")
             os.remove(file_path)
         return FileResponse(zipfile_path, media_type='application/zip', filename=f"{program}_hydro.zip")
             
