@@ -10,6 +10,7 @@ import { getVariableSld } from "../../services/api";
 const { BaseLayer, Overlay } = LayersControl;
 
 type Props = {
+  mapRef: any;
   data: ColoredMapResponseData | null;
   variable: ProgramVariable;
   pkData: GeoJsonResponse | null;
@@ -61,6 +62,7 @@ function getColorFromSLD(value: number, rules: SLDColorRule[]): string {
 }
 
 function MapBaseComponent({
+  mapRef,
   data,
   variable,
   pkData,
@@ -118,6 +120,7 @@ function MapBaseComponent({
   return (
     <div className="map_base">
       <MapContainer
+        ref={mapRef}
         attributionControl={false}
         bounds={bounds || [
           [50.9, -1.5],

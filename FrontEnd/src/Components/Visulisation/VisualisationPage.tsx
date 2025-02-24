@@ -402,9 +402,22 @@ const VisualisationPage: React.FC = () => {
 
   const selectionMapRef = useRef<null>(null);
   const testRef = useRef<null>(null);
+  const mapRefs = useRef<Array<React.RefObject<HTMLDivElement>>>([]);
+  // Met à jour mapRefs si coloredMapData change
+  useEffect(() => {
+    if (coloredMapData) {
+      Object.entries(coloredMapData.legend).map(([variable, __], index) => {
+        console.log("1 index", index);
+        mapRefs.current[index] = React.createRef();
+        console.log("1 mapRefs", mapRefs);
+      });
+    }
+  }, [coloredMapData]);
+
+
   const exportPdfInfo = {
     selectionMapElements: { mapRef: selectionMapRef, program_name: program_name, selectedVariables: selectedVariables, selectedScenarios: selectedScenarios },
-    mapElements: [],
+    mapElements: { mapRefs: mapRefs },
     chartElements: { testRef: testRef },
   };
 
@@ -495,8 +508,11 @@ const VisualisationPage: React.FC = () => {
               </div>}
           >
             {Object.entries(coloredMapData.legend).map(([variable, __], index) => (
+              console.log("2 index", index),
+              console.log("2 mapRef", mapRefs.current[index]),
               <ColoredMapComponent
                 key={variable}
+                mapRef={mapRefs.current[index]}
                 data={coloredMapData}
                 variable={program!.variables.find((v) => v.var_code.toLowerCase() === variable.toLowerCase()) || { var_code: variable, var_name: variable, unit_short: "" }}
                 className={`variable_element element_${index}`}
