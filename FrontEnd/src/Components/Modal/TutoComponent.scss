@@ -38,6 +38,7 @@ to {
         flex-flow: column;
         gap: 8px;
         width: 500px;
+        z-index: 10002;
         animation: modal-fade-in 0.3s ease-out; 
         .modal_action_header {
             display: flex;

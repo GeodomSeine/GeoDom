@@ -5,6 +5,7 @@
     flex-flow: row wrap;
     justify-content: space-between;
     height: 35vh;
+    background-color: $basic_white;
     cursor: pointer;
     @include shadow;
     border-radius: 5px;

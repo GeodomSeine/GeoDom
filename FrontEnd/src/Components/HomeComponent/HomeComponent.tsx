@@ -41,6 +41,7 @@ import FooterComponent from '../SimpleComponents/FooterComponent';
                 <HeaderComponent onSearch={setSearchQuery} showImportButton={true} visualizationData={visualizationData}></HeaderComponent>
                 <div className="main_body">
                     <div className='main_scroll_area' >
+                        {/* need to add a condition in order for the tutorial to work and to recognize the "carbone dans l'orgeval" */}
                         {searchQuery ? (filteredPrograms.length > 0 ? filteredPrograms.map((item: Program) => (
                                     item.background && (
                                         <CardComponent
