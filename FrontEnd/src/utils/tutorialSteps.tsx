@@ -10,8 +10,8 @@ export const steps: TutoStep[] = [
       content: (
         <div>
           <p>
-            GeoDom est un outil de visualisation et d’analyse de la qualité de l’eau, conçu pour comparer les données réelles issues de la base Donuts aux données prédictives modélisées dans la base PyNuts.
-            Pour bien prendre en main l’outil et explorer ses fonctionnalités, souhaitez-vous suivre un tutoriel ?
+          GeoDom est un outil de visualisation et d’analyse de la qualité de l’eau, permettant de comparer les données d'observation aux données de modélisation.
+          Souhaitez-vous suivre un tutoriel pour découvrir ses fonctionnalités ?
           </p>
         </div>
       ),
@@ -21,7 +21,10 @@ export const steps: TutoStep[] = [
       content: (
         <div>
           <p>
-            Vous voici sur la page d'accueil, cette page permet de choisir parmis ce qui est appelé des"visualisations", dans chaque visualisation se trouve des cartes intéractives, ainsi que des graphes permettant d'intépréter ou simplement d'observer des resultats du modèle pynuts par rapport au données réel. Une visualisation sera focalisé sur une zone géographique précise ainsi que des indicateurs prédéfinis, permettant de cibler plus facilement en fonction de votre intéret.
+          <h4>Bienvenue sur la page d'accueil !</h4>
+          Ici, vous pouvez choisir parmi différentes <strong>visualisations</strong>, qui regroupent des cartes interactives et des graphiques pour analyser ou observer les résultats du modèle par rapport aux données réelles.
+ 
+          Chaque visualisation se concentre sur une zone géographique spécifique et des indicateurs prédéfinis, afin de vous aider à cibler plus facilement les informations qui vous intéressent.
           </p>
         </div>
       ),
@@ -30,7 +33,11 @@ export const steps: TutoStep[] = [
       targetClass: 'header_component', 
       content: (
         <div>
-          Sur cette page vous pourrez retrouvez un haut de page avec lequel vous pourrez revenir en tout en haut de la page (bouton à gauche logo lastProject-pirenSeine), recherché une visualisation en fonction du nom, de la description, ou des indicateurs souhaité. Et enfin tout à droite un bouton qui permettra d'importer une session de visualisation avec des paramètres définis, nous reviendrons sur ce bouton plutard.   
+          <h4>Sur cette page, vous trouverez plusieurs fonctionnalités utiles :</h4>
+          <br/>
+          <strong>En haut à gauche</strong>, le logo LastProject-PirenSeine vous permet de revenir en haut de la page en un clic.<br/>
+          <strong>Une barre de recherche</strong> vous aide à trouver une visualisation en fonction de son nom, de sa description ou des indicateurs souhaités.<br/>
+          <strong>À droite</strong>, un bouton permet d’importer une session de visualisation avec des paramètres prédéfinis. Nous reviendrons sur cette fonctionnalité plus tard.<br/>
         </div>
       ),
     },
@@ -39,7 +46,7 @@ export const steps: TutoStep[] = [
       content: (
         <div>
           <p>
-            Cliquez par exemple sur la visualization "le carbone dans l'orgeval" qui est affiché en surbrillance sur votre écran
+            Cliquez, par exemple, sur la visualisation <strong>"Le carbone dans l'Orgeval"</strong>, mise en surbrillance sur votre écran.
           </p>
         </div>
       ),
@@ -50,7 +57,7 @@ export const steps: TutoStep[] = [
       content: (
         <div>
           <p>
-            Vous voici maintenant dans la visualisation de l'orgeval, cette visualisation regroupe plusieurs fenetre d'interet qui sont refermable et ouvrables à volonté
+            Vous êtes maintenant dans la visualisation de l'Orgeval. Celle-ci regroupe plusieurs fenêtres d'intérêt, que vous pouvez ouvrir et fermer à votre convenance.
           </p>
         </div>
       ),
@@ -59,8 +66,25 @@ export const steps: TutoStep[] = [
       targetClass: 'space_container_1', 
       content: (
         <div>
+          <h4>Paramétrage général</h4>
+          <br/>
+          <strong>Mode "Complet"</strong> : Agrège les données sur l’ensemble des Strahler sélectionnés via le curseur ci-dessous.<br/>
+          <strong>Mode "Amont-Aval"</strong>: Vous sélectionnez un tronçon et le définissez comme amont. Le programme calculera automatiquement les données jusqu’à l’exutoire. Vous pourrez ensuite sélectionner l’aval.<br/>
           <p>
-            espace1 texte... slider etc
+            En mode "Amont-Aval", le curseur ci-dessous s’exprimera en points kilométriques, vous permettant d’afficher les statistiques à l’échelle souhaitée. Ces points seront mis en évidence en vert sur la carte.
+          </p>
+        </div>
+      ),
+    },
+    {
+      targetClass: 'space_container_1', 
+      content: (
+        <div>
+          Vous pouvez ensuite sélectionner jusqu’à quatre <strong>indicateurs</strong>.
+          <p>
+            Il est également possible de choisir différents <strong>scénarios</strong> (années de modélisation). 
+            Chaque scénario est associé à une <strong>couleur spécifique</strong>, qui sera utilisée dans les graphiques sous 
+            forme de bulles pour représenter <strong>les données d'observation</strong> correspondantes.
           </p>
         </div>
       ),
@@ -69,8 +93,24 @@ export const steps: TutoStep[] = [
       targetClass: 'space_container_2', 
       content: (
         <div>
+          <h4>Visualisation des données</h4>
+          <br/>
           <p>
-            espace2 texte... slider etc
+            Dans cette fenêtre, nous visualisons les <strong>données de modélisation</strong> selon les percentiles <strong>5, 50 et 90</strong>.<br/>
+            La zone entre les percentiles <strong>5 et 90</strong> est <strong>grisée</strong>, indiquant que la majorité des valeurs se situent dans cet intervalle.<br/>
+            Les <strong>données d'observation</strong> sont représentées par des <strong>bulles colorées</strong>, chaque couleur correspondant à un scénario spécifique.<br/>
+          </p>
+          <h4>Axes du graphique</h4>
+          <p>
+            L’<strong>axe des X</strong> représente les <strong>36 décades</strong>.<br/>
+            L’<strong>axe des Y</strong> affiche la valeur de l’indicateur sélectionné, avec son <strong>unité de mesure</strong>.<br/>
+          </p>
+          <h4>Filtrage des données</h4>
+
+          <p>
+            Grâce au <strong>curseur situé en bas</strong>, vous pouvez choisir d’afficher les données en fonction :<br/>
+            <strong>D’un Strahler donné</strong>, si vous êtes en mode <strong>"Complet"</strong>.<br/>
+            <strong>D’un point kilométrique précis</strong>, si vous êtes en mode <strong>"Amont-Aval"</strong>.<br/>
           </p>
         </div>
       ),
@@ -79,8 +119,15 @@ export const steps: TutoStep[] = [
       targetClass: 'space_container_3', 
       content: (
         <div>
+          <h4>Espace de visualisation</h4>
+          <br/>
+          <p>Dans cet espace, chaque <strong>indicateur</strong> est représenté par une <strong>carte dédiée</strong>. Les valeurs sont converties en couleurs selon la <strong>classe de valeur</strong> définie dans la légende.</p>
+          <br/>
+          <h4>Options de filtrage</h4>
+          <br/>
           <p>
-            espace3 texte... decade etc
+            Grâce au <strong>double curseur</strong> situé en dessous, vous pouvez définir une période spécifique (par exemple, de la <strong>décade 1 à 9</strong>).<br/>
+            Vous pouvez également choisir quel <strong>percentile</strong> afficher (<strong>5, 50 ou 90</strong>) en utilisant la sélection <strong>radio</strong> ci-dessous.<br/>
           </p>
         </div>
       ),
@@ -89,8 +136,27 @@ export const steps: TutoStep[] = [
       targetClass: 'space_container_4', 
       content: (
         <div>
+          <h4>Graphiques en profil en long</h4>
+          <br/>
           <p>
-            espace4 texte... decade etc
+            Dans cet espace, nous affichons des <strong>graphiques en profil en long</strong>, avec un graphique par <strong>indicateur</strong>. Comme dans les graphiques temporels, nous visualisons :
+            <br/>
+            Les percentiles <strong>5, 50 et 90</strong>.<br/>
+            Les <strong>données d'observation</strong>, représentées sous forme de bulles colorées.<br/>
+          </p>
+
+          <h4>Axes du graphique</h4>
+
+          <p>
+              Sur l’<strong>axe des X</strong> : <br/>
+              En mode <strong>Strahler</strong>, les valeurs sont triées du <strong>plus petit au plus grand</strong>.<br/>
+              En mode <strong>Amont-Aval</strong>, les points kilométriques sélectionnés sont triés de <strong>l’amont jusqu’à l’aval</strong>.<br/>
+              Sur l’<strong>axe des Y</strong>, nous affichons la valeur de l’<strong>indicateur sélectionné</strong> avec son <strong>unité de mesure</strong>.<br/>
+          </p>
+
+          <h4>Options de filtrage</h4>
+          <p>
+          Comme pour les cartes, le <strong>double curseur</strong> situé en dessous permet de sélectionner une période spécifique (par exemple, de la <strong>décade 1 à 9</strong>).
           </p>
         </div>
       ),
@@ -99,8 +165,18 @@ export const steps: TutoStep[] = [
       targetClass: 'floating_card_component', 
       content: (
         <div>
+          <h4>Navigation et exportation</h4>
           <p>
-            floatin action where you can have action to return back to menu, or export thing
+              Ici, le <strong>logo</strong> permet de revenir à l’<strong>accueil</strong>, tandis que le <strong>bouton situé à droite</strong> offre plusieurs options d’exportation des données.
+          </p>
+          <h4>Formats d'exportation disponibles</h4>
+          <br/>
+          <p>
+            <strong>CSV</strong> – Export des données sous forme de tableau.<br/>
+            <strong>PDF</strong> – Génération d’un rapport imprimable.<br/>
+            <strong>GeoPackage</strong> – Format géospatial standard.<br/>
+            <strong>Export de session JSON</strong> – Permet de sauvegarder votre session pour la réimporter plus tard depuis l’accueil, 
+            ou la partager avec un collègue afin qu’il puisse visualiser les mêmes données que vous.
           </p>
         </div>
       ),
