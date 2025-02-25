@@ -509,8 +509,6 @@ const VisualisationPage: React.FC = () => {
               </div>}
           >
             {Object.entries(coloredMapData.legend).map(([variable, __], index) => (
-              console.log("2 index", index),
-              console.log("2 mapRef", mapRefs.current[index]),
               <ColoredMapComponent
                 key={variable}
                 mapRef={mapRefs.current[index]}

@@ -23,23 +23,34 @@ async function html2canvas(element: any): Promise<HTMLCanvasElement> {
 }
 
 const ExportPdfDocument = ({ exportPdfInfo }: any) => {
-    const { selectionMapElements, chartElements } = exportPdfInfo;
-    const [mapImageUrl, setMapImageUrl] = React.useState<string | null>(null);
+    const { selectionMapElements, mapElements, chartElements } = exportPdfInfo;
+    const [selectionMapImageUrl, setSelectionMapImageUrl] = React.useState<string | null>(null);
     const [chartImageUrl, setChartImageUrl] = React.useState<string | null>(null);
+    const [mapImageUrls, setMapImageUrls] = React.useState<string[]>([]);
 
     useEffect(() => {
         const captureImages = async () => {
             if (selectionMapElements.mapRef.current) {
                 const mapUrl = await captureMap(selectionMapElements.mapRef);
-                setMapImageUrl(mapUrl);
+                setSelectionMapImageUrl(mapUrl);
             }
             if (chartElements.testRef.current) {
                 const chartUrl = await captureChart(chartElements.testRef);
                 setChartImageUrl(chartUrl);
             }
+            const mapUrls = await Promise.all(
+                mapElements.mapRefs.current.map(async (mapRef: any) => {
+                    if (mapRef.current) {
+                        return await captureMap(mapRef);
+                    }
+                    return null;
+                })
+            );
+            setMapImageUrls(mapUrls.filter((url) => url !== null) as string[]);
         };
         captureImages();
-    }, [selectionMapElements.mapRef, chartElements.testRef]);
+    }, [selectionMapElements.mapRef, chartElements.testRef, mapElements.mapRefs]);
+
 
     return (
         <Document>
@@ -58,15 +69,16 @@ const ExportPdfDocument = ({ exportPdfInfo }: any) => {
                         - {scenario.year} : {scenario.description}
                     </Text>
                 ))}
-                {mapImageUrl && (
+                {selectionMapImageUrl && (
                     <View style={{ marginTop: 20 }}>
                         <Text style={{ fontSize: 14, marginBottom: 5 }}>Carte de sélection:</Text>
-                        <Image src={mapImageUrl} style={{ width: '80%', height: 'auto' }} />
+                        <Image src={selectionMapImageUrl} style={{ width: '80%', height: 'auto' }} />
                     </View>
                 )}
-               
+
             </Page>
             <Page size="A4" style={{ padding: 10 }}>
+            <Text style={{ fontSize: 18, marginBottom: 10 }}>Graphiques</Text>
                 {chartImageUrl && (
                     <View style={{ marginTop: 20 }}>
                         <Text style={{ fontSize: 14, marginBottom: 5 }}>Graphique:</Text>
@@ -74,43 +86,52 @@ const ExportPdfDocument = ({ exportPdfInfo }: any) => {
                     </View>
                 )}
             </Page>
+            <Page size="A4" style={{ padding: 10 }}>
+            <Text style={{ fontSize: 18, marginBottom: 10 }}>Carte des seuils</Text>
+                {mapImageUrls.map((url, index) => (
+                    <View key={index} style={{ marginTop: 20 }}>
+                        <Text style={{ fontSize: 14, marginBottom: 5 }}>Carte {index + 1}:</Text>
+                        <Image src={url} style={{ width: '80%', height: 'auto' }} />
+                    </View>
+                ))}
+            </Page>
         </Document>
     );
 };
 
 const getPlugin = (mapRef: any) => {
     return (L as any).simpleMapScreenshoter({
-      cropImageByInnerWH: true,
-      hidden: false,
-      preventDownload: false,
-      mimeType: "image/png",
-      hideElementsWithSelectors: [".leaflet-control-container"],
+        cropImageByInnerWH: true,
+        hidden: false,
+        preventDownload: false,
+        mimeType: "image/png",
+        hideElementsWithSelectors: [".leaflet-control-container"],
     }).addTo(mapRef.current);
-  };
-  
-  interface ExportPdfComponentProps {
+};
+
+interface ExportPdfComponentProps {
     exportPdfInfo: any;
-  }
-  
-  const ExportPdfComponent: React.FC<ExportPdfComponentProps> = ({ exportPdfInfo }) => {
+}
+
+const ExportPdfComponent: React.FC<ExportPdfComponentProps> = ({ exportPdfInfo }) => {
     useEffect(() => {
-      const mapRefs = exportPdfInfo.mapElements.mapRefs;
-  
-      mapRefs.current.forEach((mapRef: any) => {
-        if (mapRef.current && !mapRef.current.plugin) {
-            mapRef.current.plugin = getPlugin(mapRef);
-          }
-      });
-      
+        const mapRefs = exportPdfInfo.mapElements.mapRefs;
+
+        mapRefs.current.forEach((mapRef: any) => {
+            if (mapRef.current && !mapRef.current.plugin) {
+                mapRef.current.plugin = getPlugin(mapRef);
+            }
+        });
+
     }, [exportPdfInfo.mapElements.mapRefs]);
 
     useEffect(() => {
         const mapRef = exportPdfInfo.selectionMapElements.mapRef;
-    
+
         if (mapRef.current && !mapRef.current.plugin) {
-          mapRef.current.plugin = getPlugin(mapRef);
+            mapRef.current.plugin = getPlugin(mapRef);
         }
-      }, [exportPdfInfo.selectionMapElements.mapRef]);
+    }, [exportPdfInfo.selectionMapElements.mapRef]);
 
     return (
         <div className="export_container">
@@ -118,7 +139,7 @@ const getPlugin = (mapRef: any) => {
                 document={<ExportPdfDocument exportPdfInfo={exportPdfInfo} />}
                 fileName={`export_${exportPdfInfo.selectionMapElements.program_name}.pdf`}
             >
-                <ButtonComponent onClick={() => {}} txt={'Exporter en PDF'} />
+                <ButtonComponent onClick={() => { }} txt={'Exporter en PDF'} />
             </PDFDownloadLink>
         </div>
     );

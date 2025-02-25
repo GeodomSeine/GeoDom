@@ -130,7 +130,10 @@ function MapBaseComponent({
         minZoom={6}
         zoomControl={false}
       >
+          {/* className pour cacher les controles pour l'export  */}
+        <div className="leaflet-control-container"> 
         <MapButtons bounds={bounds} />
+        </div>
         <LayersControl>
           <BaseLayer checked name="BaseLayer">
             <TileLayer
