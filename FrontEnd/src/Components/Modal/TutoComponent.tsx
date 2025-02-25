@@ -6,22 +6,15 @@ import Cross from "../../assets/cross.svg?react";
 import RightArrow from "../../assets/right_arrow.svg?react";
 import Back from "../../assets/back.svg?react";
 import ButtonComponent from '../SimpleComponents/ButtonComponent';
-
-interface TutoStep {
-  targetClass?: string; 
-  content: React.ReactNode;
-  route?: string; 
-  noContinueButton?: boolean;
-}
+import { steps } from '../../utils/tutorialSteps';
 
 interface TutoComponentProps {
   isOpen?: boolean;
   onClose?: () => void;
-  steps: TutoStep[];
   title?: string;
 }
 
-const TutoComponent: React.FC<TutoComponentProps> = ({ isOpen, onClose, steps, title }) => {
+const TutoComponent: React.FC<TutoComponentProps> = ({ isOpen, onClose, title }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const navigate = useNavigate();
   const location = useLocation();
@@ -57,7 +50,7 @@ const TutoComponent: React.FC<TutoComponentProps> = ({ isOpen, onClose, steps, t
       if (!applyHighlight()) {
   
         // Create a MutationObserver in order to track the dom when ready
-        const observer = new MutationObserver((mutations, obs) => {
+        const observer = new MutationObserver((__, obs) => {
           if (applyHighlight()) {
             obs.disconnect(); 
           }
