@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './TutoComponent.scss';
 import LogoComponent from '../SimpleComponents/LogoComponent';
@@ -23,38 +23,58 @@ interface TutoComponentProps {
 
 const TutoComponent: React.FC<TutoComponentProps> = ({ isOpen, onClose, steps, title }) => {
   const [currentStep, setCurrentStep] = useState(0);
-  const current = steps[currentStep];
   const navigate = useNavigate();
   const location = useLocation();
+  const lastPathRef = useRef<string | null>(null);
 
-  // Only handle highlighting here.
   useEffect(() => {
-    document.querySelectorAll('.highlight').forEach(el => el.classList.remove('highlight'));
+    if (lastPathRef.current && lastPathRef.current === location.pathname) {
+      lastPathRef.current = null;
+      setCurrentStep(prev => prev - 1);
+    } else if (currentStep > 0 && steps[currentStep]?.route && steps[currentStep].route !== location.pathname) {
+      setCurrentStep(prev => prev + 1);
+    }
+  }, [lastPathRef, location.pathname]);
 
-    if (current && current.targetClass) {
-      const target = document.querySelector(`.${current.targetClass}`);
-      if (target) {
-        target.classList.add('highlight');
-        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  useEffect(() => {
+    // Remove previous highlights
+    document.querySelectorAll('.highlight').forEach(el => el.classList.remove('highlight'));
+  
+    if (steps[currentStep]?.targetClass) {
+      const targetSelector = `.${steps[currentStep].targetClass}`;
+      
+      const applyHighlight = () => {
+        const target = document.querySelector(targetSelector);
+        if (target) {
+          console.log("Element found, highlighting:", target);
+          target.classList.add('highlight');
+          target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          return true; 
+        }
+        return false; 
+      };
+  
+      if (!applyHighlight()) {
+  
+        // Create a MutationObserver in order to track the dom when ready
+        const observer = new MutationObserver((mutations, obs) => {
+          if (applyHighlight()) {
+            obs.disconnect(); 
+          }
+        });
+
+        observer.observe(document.body, {
+          childList: true,
+          subtree: true,   
+        });
+  
+        setTimeout(() => observer.disconnect(), 2000);
       }
     }
+  }, [currentStep]);
+  
 
-    console.log("test "+location.pathname)
-
-    if (currentStep > 0 && current.route !== undefined && current.route !== location.pathname) {
-      setCurrentStep(prev => prev + 1);
-      console.log("bad value "+currentStep);
-    }
-  }, [current, location.pathname]);
-
-  // Cleanup: Remove all highlights on unmount.
-  useEffect(() => {
-    return () => {
-      document.querySelectorAll('.highlight').forEach(el => el.classList.remove('highlight'));
-    };
-  }, []);
-
-  if (!isOpen) return null;
+  if (!isOpen) {document.querySelectorAll('.highlight').forEach(el => el.classList.remove('highlight')); return null;};
 
   const nextStep = () => {
     if (currentStep < steps.length - 1) {
@@ -65,43 +85,40 @@ const TutoComponent: React.FC<TutoComponentProps> = ({ isOpen, onClose, steps, t
   };
 
   const prevStep = () => {
-    console.log("curren before "+currentStep);
     if (currentStep > 0) {
-      if (steps[currentStep-1].route &&  steps[currentStep-1].route !== location.pathname) {
-        navigate(steps[currentStep-1].route!);
+      const prevRoute = steps[currentStep - 1]?.route;
+      if (prevRoute && prevRoute !== location.pathname) {
+        lastPathRef.current = prevRoute;
+        navigate(prevRoute);
+      } else {
+        setCurrentStep(prev => prev - 1);
       }
-      setCurrentStep(prev => prev - 1);
-      console.log("curren after "+currentStep);
     } else {
       onClose && onClose();
     }
   };
 
   return (
-    <div className="modal_overlay_tutorial">
+    <div className="modal_overlay_tutorial" onClick={(e) => e.stopPropagation()}>
       <div className="modal_action" onClick={(e) => e.stopPropagation()}>
         <div className="modal_action_header">
           <h3>{title}</h3>
           <LogoComponent Icon={Cross} onClick={onClose} size="30px" />
         </div>
         <div className="modal_action_body">
-          {current.content}
+          {steps[currentStep]?.content}
         </div>
-        <div className="modal_action_footer" onClick={(e) => e.stopPropagation()}>
+        <div className="modal_action_footer">
           <ButtonComponent
             txt={
               <>
                 <p>{currentStep === 0 ? "Quitter" : "Retour"}</p>
-                <LogoComponent
-                  Icon={currentStep === 0 ? Cross : Back}
-                  customColor="--primary-blue"
-                  size="30px"
-                />
+                <LogoComponent Icon={currentStep === 0 ? Cross : Back} customColor="--primary-blue" size="30px" />
               </>
             }
             onClick={currentStep === 0 ? onClose : prevStep}
           />
-          {!current.noContinueButton && (
+          {!steps[currentStep]?.noContinueButton && (
             <ButtonComponent
               txt={
                 <>

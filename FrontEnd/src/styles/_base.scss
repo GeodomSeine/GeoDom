@@ -1,4 +1,3 @@
-// Réinitialisation CSS de base
 
 @font-face {
   font-family: 'Roboto-Regular';
@@ -14,7 +13,6 @@
     
   }
   
-  // Typographie de base
   body {
     font-family: 'Roboto-Regular';
   }
@@ -23,5 +21,16 @@
     display: flex;
     position: fixed;
     z-index: 10001;
+    animation: fadeInOut 1.25s infinite alternate; 
   }
+
+  @keyframes fadeInOut {
+      0% {
+          opacity: 0; 
+      }
+      100% {
+          opacity: 1; 
+      }
+  }
+
   
