@@ -15,13 +15,13 @@ const ToggleContainer: React.FC<ToggleContainerProps> = ({
   title,
   children,
   secondChild,
-  className = "space_container",
+  className,
   containsTile,
 }) => {
   const [isVisible, setIsVisible] = useState(true);
 
   return (
-    <div className={className}>
+    <div className={`space_container ${className}`}>
       <div className="space_header" onClick={() => setIsVisible((prev) => !prev)}>
         <h2>{title}</h2>
         <LogoComponent

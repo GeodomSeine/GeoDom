@@ -18,15 +18,14 @@
   }
 
   .highlight {
-    display: flex;
-    position: fixed;
+    position: relative;
     z-index: 10001;
-    animation: fadeInOut 1.25s infinite alternate; 
+    animation: fadeInOut 1.2s infinite alternate; 
   }
 
   @keyframes fadeInOut {
       0% {
-          opacity: 0; 
+          opacity: 0.5; 
       }
       100% {
           opacity: 1; 

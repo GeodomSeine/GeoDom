@@ -1,6 +1,7 @@
 @use "../../styles/main.scss" as *;
 
 .space_container {
+    background-color: $basic-white;
     .space_header {
         display: flex;
         flex-direction: row;

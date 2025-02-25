@@ -441,7 +441,7 @@ const VisualisationPage: React.FC = () => {
         <ExportGeoPackageComponent program={program!.name} />
       </FloatingAction>
       <div className='home_body'>
-        <ToggleContainer title="Carte de sélection" secondChild={sharedSlider}>
+        <ToggleContainer className="space_container_1" title="Carte de sélection" secondChild={sharedSlider}>
           <MapSelection
             mapRef={selectionMapRef}
             scenarioColors={scenarioColors}
@@ -466,7 +466,7 @@ const VisualisationPage: React.FC = () => {
         </ToggleContainer>
         {chartData?.length && (
 
-          <ToggleContainer title="Graphiques temporels" containsTile={true} secondChild={sharedSlider}>
+          <ToggleContainer className="space_container_2" title="Graphiques temporels" containsTile={true} secondChild={sharedSlider}>
 
             {Object.entries(groupedData).map(([variable, chartData], index) => (
               <VariableChart
@@ -488,6 +488,7 @@ const VisualisationPage: React.FC = () => {
           <ToggleContainer
             title="Carte des seuils"
             containsTile={true}
+            className="space_container_3"
             secondChild={
               <div className='decade_percentile_selection'>
                 {sharedDecade}
@@ -512,7 +513,7 @@ const VisualisationPage: React.FC = () => {
           </ToggleContainer>
         )}
         {profileGraphData && (
-          <ToggleContainer title="Profil en long" containsTile={true} secondChild={sharedDecade}>
+          <ToggleContainer className="space_container_4" title="Profil en long" containsTile={true} secondChild={sharedDecade}>
             {selectedVariables.map((variable, index) => (
               <ProfileGraph
                 className={`variable_element element_${index}`}

@@ -27,7 +27,7 @@ to {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 10000;
+    z-index: 10004;
     animation: overlay-fade-in 0.3s ease-out;
     .modal_action {
         background: white;
@@ -37,7 +37,7 @@ to {
         flex-flow: column;
         gap: 8px;
         width: 300px;
-        animation: modal-fade-in 0.3s ease-out;
+        animation: modal-fade-in 0.3s ease-out; 
         .modal_action_header {
             display: flex;
             flex-direction: row;

@@ -41,7 +41,7 @@ const steps = [
     content: (
       <div>
         <p>
-          cliquez par exemple sur la visualization "le carbone dans l'orgeval" qui est affiché en surbrillance sur votre écran
+          Cliquez par exemple sur la visualization "le carbone dans l'orgeval" qui est affiché en surbrillance sur votre écran
         </p>
       </div>
     ),
@@ -49,21 +49,60 @@ const steps = [
     route: '/',
   },
   {
-    targetClass: 'footer', 
     content: (
       <div>
         <p>
-          Vous êtes arrivé au pied de page. Vous avez terminé le tutoriel !
+          Vous voici maintenant dans la visualisation de l'orgeval, cette visualisation regroupe plusieurs fenetre d'interet qui sont refermable et ouvrables à volonté
         </p>
       </div>
     ),
   },
   {
-    targetClass: 'footer', 
+    targetClass: 'space_container_1', 
     content: (
       <div>
         <p>
-          Vous êtes arrivé au pied de page. Vous avez terminé le tutoriel !
+          espace1 texte... slider etc
+        </p>
+      </div>
+    ),
+  },
+  {
+    targetClass: 'space_container_2', 
+    content: (
+      <div>
+        <p>
+          espace2 texte... slider etc
+        </p>
+      </div>
+    ),
+  },
+  {
+    targetClass: 'space_container_3', 
+    content: (
+      <div>
+        <p>
+          espace3 texte... decade etc
+        </p>
+      </div>
+    ),
+  },
+  {
+    targetClass: 'space_container_4', 
+    content: (
+      <div>
+        <p>
+          espace4 texte... decade etc
+        </p>
+      </div>
+    ),
+  },
+  {
+    targetClass: 'floating_card_component', 
+    content: (
+      <div>
+        <p>
+          floatin action where you can have action to return back to menu, or export thing
         </p>
       </div>
     ),

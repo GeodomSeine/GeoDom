@@ -6,7 +6,7 @@
     align-items: center;
     gap: 8px;
     @include card;
-    position: fixed;
+    position: fixed !important;
     width: fit-content;
     height: fit-content;
     z-index: 1000;
