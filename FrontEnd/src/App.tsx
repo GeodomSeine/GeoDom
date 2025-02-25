@@ -6,13 +6,21 @@ import VisualisationPage from './Components/Visulisation/VisualisationPage';
 import ImportJsonComponent from './Components/ImportComponents/ImportJsonComponent';
 import TutoComponent from './Components/Modal/TutoComponent';
 import { getPrograms, ProgramResponse, ProgramVariable } from './services/api';
-
+import { getCookie, setCookie } from './utils/cookies';
 
 
 const App: React.FC = () => {
   const [programs, setPrograms] = useState<ProgramResponse | null>(null);
-  // cookie gestion
-  const [tutorialOpen, setTutorialOpen] = useState(true);
+
+  const [tutorialOpen, setTutorialOpen] = useState(() => {
+    return getCookie("tutorial_seen") !== "true";
+  });
+
+  useEffect(() => {
+    if (tutorialOpen) {
+      setCookie("tutorial_seen", "true", 365);
+    }
+  }, [tutorialOpen]);
 
   useEffect(() => {
     const fetchPrograms = async () => {
@@ -32,7 +40,7 @@ const App: React.FC = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<HomeComponent />} />
+        <Route path="/" element={<HomeComponent setTutorialOpen={setTutorialOpen}/>} />
         <Route path="/:program_name" element={<VisualisationPage />} />
         <Route path="/import-json" element={<ImportJsonComponent visualizationData={visualizationData} />} />
       </Routes>

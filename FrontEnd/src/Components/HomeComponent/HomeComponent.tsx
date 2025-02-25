@@ -7,9 +7,11 @@ import { Program } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 import FooterComponent from '../SimpleComponents/FooterComponent';
 
-    type Props = {}
+    type Props = {
+        setTutorialOpen?: (value: boolean) => void;
+    }
 
-    export default function HomeComponent({}: Props) {
+    export default function HomeComponent({setTutorialOpen}: Props) {
         const [programs, setPrograms] = useState<ProgramResponse | null>(null);
         const [searchQuery, setSearchQuery] = useState(""); 
         const navigate = useNavigate();
@@ -38,7 +40,7 @@ import FooterComponent from '../SimpleComponents/FooterComponent';
         
         return (
             <div className='home_component'>
-                <HeaderComponent onSearch={setSearchQuery} showImportButton={true} visualizationData={visualizationData}></HeaderComponent>
+                <HeaderComponent onSearch={setSearchQuery} showImportButton={true} visualizationData={visualizationData} setTutorialOpen={setTutorialOpen}></HeaderComponent>
                 <div className="main_body">
                     <div className='main_scroll_area' >
                         {/* need to add a condition in order for the tutorial to work and to recognize the "carbone dans l'orgeval" */}
