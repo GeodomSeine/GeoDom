@@ -16,6 +16,11 @@ const captureChart = async (chartRef: any) => {
     return chartCanvas.toDataURL('image/png');
 };
 
+const captureProfilLong = async (profilLong: any) => {
+    const chartCanvas = await html2canvas(profilLong.current);
+    return chartCanvas.toDataURL('image/png');
+};
+
 async function html2canvas(element: any): Promise<HTMLCanvasElement> {
     // Assuming html2canvas is imported from a library
     const html2canvas = (await import('html2canvas')).default;
@@ -27,6 +32,7 @@ const ExportPdfDocument = ({ exportPdfInfo }: any) => {
     const [selectionMapImageUrl, setSelectionMapImageUrl] = React.useState<string | null>(null);
     const [chartImageUrl, setChartImageUrl] = React.useState<string | null>(null);
     const [mapImageUrls, setMapImageUrls] = React.useState<string[]>([]);
+    const [profilLongUrl, setProfilLongUrl] = React.useState<string | null>(null);
 
     useEffect(() => {
         const captureImages = async () => {
@@ -34,8 +40,8 @@ const ExportPdfDocument = ({ exportPdfInfo }: any) => {
                 const mapUrl = await captureMap(selectionMapElements.mapRef);
                 setSelectionMapImageUrl(mapUrl);
             }
-            if (chartElements.testRef.current) {
-                const chartUrl = await captureChart(chartElements.testRef);
+            if (chartElements.chartRefs.current) {
+                const chartUrl = await captureChart(chartElements.chartRefs);
                 setChartImageUrl(chartUrl);
             }
             const mapUrls = await Promise.all(
@@ -47,10 +53,13 @@ const ExportPdfDocument = ({ exportPdfInfo }: any) => {
                 })
             );
             setMapImageUrls(mapUrls.filter((url) => url !== null) as string[]);
+            if(chartElements.profilLongs.current){
+                const profilLongUrl = await captureProfilLong(chartElements.profilLongs);
+                setProfilLongUrl(profilLongUrl);
+            }
         };
         captureImages();
-    }, [selectionMapElements.mapRef, chartElements.testRef, mapElements.mapRefs]);
-
+    }, [selectionMapElements.mapRef, chartElements.chartRefs, chartElements.profilLongs]);
 
     return (
         <Document>
@@ -86,14 +95,23 @@ const ExportPdfDocument = ({ exportPdfInfo }: any) => {
                     </View>
                 )}
             </Page>
+            
             <Page size="A4" style={{ padding: 10 }}>
-            <Text style={{ fontSize: 18, marginBottom: 10 }}>Carte des seuils</Text>
+                <Text style={{ fontSize: 18, marginBottom: 10 }}>Carte des seuils</Text>
                 {mapImageUrls.map((url, index) => (
                     <View key={index} style={{ marginTop: 20 }}>
                         <Text style={{ fontSize: 14, marginBottom: 5 }}>Carte {index + 1}:</Text>
                         <Image src={url} style={{ width: '80%', height: 'auto' }} />
                     </View>
                 ))}
+            </Page>
+            <Page size="A4" style={{ padding: 10 }}>
+                {profilLongUrl && (
+                    <View style={{ marginTop: 20 }}>
+                        <Text style={{ fontSize: 14, marginBottom: 5 }}>Graphique:</Text>
+                        <Image src={profilLongUrl} style={{ width: '80%', height: 'auto' }} />
+                    </View>
+                )}
             </Page>
         </Document>
     );

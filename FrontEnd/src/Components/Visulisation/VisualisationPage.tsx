@@ -401,8 +401,9 @@ const VisualisationPage: React.FC = () => {
   });
 
   const selectionMapRef = useRef<null>(null);
-  const testRef = useRef<null>(null);
+  const chartRefs = useRef<Array<React.RefObject<HTMLDivElement>>>([]);
   const mapRefs = useRef<Array<React.RefObject<HTMLDivElement>>>([]);
+  const profilLongs = useRef<Array<React.RefObject<HTMLDivElement>>>([]);
   
   // Met à jour mapRefs si coloredMapData change
   useEffect(() => {
@@ -419,7 +420,8 @@ const VisualisationPage: React.FC = () => {
   const exportPdfInfo = {
     selectionMapElements: { mapRef: selectionMapRef, program_name: program_name, selectedVariables: selectedVariables, selectedScenarios: selectedScenarios },
     mapElements: { mapRefs: mapRefs },
-    chartElements: { testRef: testRef },
+    chartElements: { chartRefs: chartRefs },
+    profilLongElements: {profilLongs: profilLongs}
   };
 
 
@@ -492,9 +494,9 @@ const VisualisationPage: React.FC = () => {
                 variable={program!.variables.find((v) => v.var_code.toLowerCase() === variable.toLowerCase()) || { var_code: variable, var_name: variable, unit_short: "" }}
                 decades={decades}
                 data={chartData}
+                chartRef={chartRefs.current[index]}
               />
             ))}
-
           </ToggleContainer>
 
         )}
@@ -539,6 +541,7 @@ const VisualisationPage: React.FC = () => {
                 scenarioColors={scenarioColors}
                 scenarios={selectedScenarios}
                 decades={selectedDecades && selectedDecades.length == 2 ? [selectedDecades[0], selectedDecades[1]] : [1, 10]}
+                profilLongs = {profilLongs.current[index]}
               />
             ))}
           </ToggleContainer>
