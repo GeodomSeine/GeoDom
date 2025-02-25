@@ -74,6 +74,7 @@ const TutoComponent: React.FC<TutoComponentProps> = ({ isOpen, onClose, title })
       setCurrentStep(prev => prev + 1);
     } else {
       onClose && onClose();
+      setCurrentStep(0);
     }
   };
 
@@ -88,6 +89,7 @@ const TutoComponent: React.FC<TutoComponentProps> = ({ isOpen, onClose, title })
       }
     } else {
       onClose && onClose();
+      setCurrentStep(0);
     }
   };
 
@@ -96,7 +98,7 @@ const TutoComponent: React.FC<TutoComponentProps> = ({ isOpen, onClose, title })
       <div className="modal_action" onClick={(e) => e.stopPropagation()}>
         <div className="modal_action_header">
           <h3>{title}</h3>
-          <LogoComponent Icon={Cross} onClick={onClose} size="30px" />
+          <LogoComponent Icon={Cross} onClick={() => {onClose && onClose(); setCurrentStep(0);}} size="30px" />
         </div>
         <div className="modal_action_body">
           {steps[currentStep]?.content}
