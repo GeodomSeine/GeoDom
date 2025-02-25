@@ -403,10 +403,11 @@ const VisualisationPage: React.FC = () => {
   const selectionMapRef = useRef<null>(null);
   const testRef = useRef<null>(null);
   const mapRefs = useRef<Array<React.RefObject<HTMLDivElement>>>([]);
+  
   // Met à jour mapRefs si coloredMapData change
   useEffect(() => {
     if (coloredMapData) {
-      Object.entries(coloredMapData.legend).map(([variable, __], index) => {
+      Object.entries(coloredMapData.legend).map(([, __], index) => {
         console.log("1 index", index);
         mapRefs.current[index] = React.createRef();
         console.log("1 mapRefs", mapRefs);

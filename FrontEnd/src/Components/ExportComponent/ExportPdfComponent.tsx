@@ -6,7 +6,7 @@ import jsPDF from 'jspdf';
 import './ExportComponent.scss';
 import ButtonComponent from '../SimpleComponents/ButtonComponent';
 
-let marginX = 10;
+// let marginX = 10;
 
 const getMapDimensionsFromBounds = (map: L.Map) => {
     const bounds = map.getBounds();
