@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import ChangePassword from "../ChangePassword/ChangePassword";
 import AddUser from "../AddUser/AddUser";
 import AddProgram from "../AddProgram/AddProgram";
+import ListPrograms from "../ListPrograms/ListPrograms";
 import "./AdminDashboard.scss";
 
 const AdminDashboard: React.FC = () => {
@@ -42,12 +43,19 @@ const AdminDashboard: React.FC = () => {
         >
           Ajouter Programme
         </button>
+        <button 
+          className={`admin-nav-button ${activeSection === "list-programs" ? "active" : ""}`} 
+          onClick={() => setActiveSection("list-programs")}
+        >
+          Gérer Programmes
+        </button>
       </div>
 
       <div className="admin-content">
         {activeSection === "change-password" && <ChangePassword />}
         {activeSection === "add-user" && <AddUser />}
         {activeSection === "add-program" && <AddProgram />}
+        {activeSection === "list-programs" && <ListPrograms/>}
       </div>
     </div>
   );

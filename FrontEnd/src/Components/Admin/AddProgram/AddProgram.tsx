@@ -20,7 +20,7 @@ const AddProgram: React.FC = () => {
 
   const handleFileChange = (setter: React.Dispatch<React.SetStateAction<File | null>>) => 
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (e.target.files) {
+      if (e.target.files && e.target.files.length > 0) {
         setter(e.target.files[0]);
       }
     };
