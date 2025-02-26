@@ -117,12 +117,13 @@ const ExportPdfComponent: React.FC<ExportPdfComponentProps> = ({ exportPdfInfo }
             mapRef.current.plugin = getPlugin(mapRef);
         }
     }, [exportPdfInfo.selectionMapElements.mapRef]);
-    
+
     const { selectionMapElements, chartElements, mapElements, profilLongElements } = exportPdfInfo;
     const [selectionMapImageUrl, setSelectionMapImageUrl] = useState<string | null>(null);
     const [chartImageUrls, setChartImageUrls] = useState<string[]>([]);
     const [mapImageUrls, setMapImageUrls] = useState<string[]>([]);
     const [profilLongImageUrls, setProfilLongImageUrls] = useState<string[]>([]);
+    const [isReady, setIsReady] = useState(false);
 
     useEffect(() => {
         const captureImages = async () => {
@@ -160,6 +161,7 @@ const ExportPdfComponent: React.FC<ExportPdfComponentProps> = ({ exportPdfInfo }
                 })
             );
             setProfilLongImageUrls(profilLongUrls.filter((url) => url !== null) as string[]);
+            setIsReady(true);
         };
 
         captureImages();
@@ -167,18 +169,22 @@ const ExportPdfComponent: React.FC<ExportPdfComponentProps> = ({ exportPdfInfo }
 
     return (
         <div className="export_container">
-            <PDFDownloadLink
-                document={<ExportPdfDocument
-                    selectionMapElements={selectionMapElements}
-                    selectionMapImageUrl={selectionMapImageUrl}
-                    chartImageUrls={chartImageUrls}
-                    mapImageUrls={mapImageUrls}
-                    profilLongImageUrls={profilLongImageUrls}
-                />}
-                fileName={`export_${exportPdfInfo.selectionMapElements.program_name}.pdf`}
-            >
-                <ButtonComponent onClick={() => { }} txt={'Exporter en PDF'} />
-            </PDFDownloadLink>
+            {isReady ? (
+                <PDFDownloadLink
+                    document={<ExportPdfDocument
+                        selectionMapElements={selectionMapElements}
+                        selectionMapImageUrl={selectionMapImageUrl}
+                        chartImageUrls={chartImageUrls}
+                        mapImageUrls={mapImageUrls}
+                        profilLongImageUrls={profilLongImageUrls}
+                    />}
+                    fileName={`export_${exportPdfInfo.selectionMapElements.program_name}.pdf`}
+                >
+                    <ButtonComponent onClick={() => { }} txt={'Les données au format PDF'} />
+                </PDFDownloadLink>
+            ) : (
+                <ButtonComponent onClick={() => { }} txt={'Préparation du PDF...'} disabled={true} />
+            )}
         </div>
     );
 };
