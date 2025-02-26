@@ -14,10 +14,6 @@ templates = Jinja2Templates(directory="templates")
 DATAVIZ_DIR = "resources/dataviz"
 os.makedirs(DATAVIZ_DIR, exist_ok=True)
 
-@router.get("/admin")
-async def admin_page(request: Request):
-    return templates.TemplateResponse("admin.html", {"request": request})
-
 @router.post("/admin/add", dependencies=[Depends(get_current_admin_user)])
 async def add_program(
     name: str = Form(...),

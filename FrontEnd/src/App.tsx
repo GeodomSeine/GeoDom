@@ -7,6 +7,15 @@ import ImportJsonComponent from './Components/ImportComponents/ImportJsonCompone
 import TutoComponent from './Components/Modal/TutoComponent';
 import { getPrograms, ProgramResponse, ProgramVariable } from './services/api';
 import { getCookie, setCookie } from './utils/cookies';
+import AdminDashboard from './Components/Admin/Dashboard/AdminDashboard';
+import LoginForm from './Components/Admin/LoginForm/LoginForm';
+import { useAuth, AuthProvider} from './Components/Admin/Auth/AuthContext';
+
+
+const AdminPage: React.FC = () => {
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? <AdminDashboard /> : <LoginForm />;
+};
 
 
 const App: React.FC = () => {
@@ -38,18 +47,21 @@ const App: React.FC = () => {
     : [];
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<HomeComponent setTutorialOpen={setTutorialOpen}/>} />
-        <Route path="/:program_name" element={<VisualisationPage />} />
-        <Route path="/import-json" element={<ImportJsonComponent visualizationData={visualizationData} />} />
-      </Routes>
-      <TutoComponent
-        title="Geodom Tutoriel"
-        isOpen={tutorialOpen}
-        onClose={() => setTutorialOpen(false)}
-      />
-    </Router>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<HomeComponent setTutorialOpen={setTutorialOpen}/>} />
+          <Route path="/:program_name" element={<VisualisationPage />} />
+          <Route path="/import-json" element={<ImportJsonComponent visualizationData={visualizationData} />} />
+          <Route path="/admin" element={<AdminPage />} />
+        </Routes>
+        <TutoComponent
+          title="Geodom Tutoriel"
+          isOpen={tutorialOpen}
+          onClose={() => setTutorialOpen(false)}
+        />
+      </Router>
+    </AuthProvider>
   );
 };
 
