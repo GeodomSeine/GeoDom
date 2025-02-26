@@ -151,7 +151,7 @@ async def export_geopackage(program: str):
         zipf.write(f"{DATAVIZ_PATH}/{program}/seneque_aesn_hydro.sld", f"{program}_hydro.sld")
         zipf.write(bassin_file_path, f"{program}_bassin.gpkg")
         zipf.write(f"{DATAVIZ_PATH}/{program}/seneque_aesn_hydro_basin.sld", f"{program}_hydro_basin.sld")
-        zipf.write(station_file_path, f"{program}_station_snap.geojson")
+        zipf.write(station_file_path, f"{program}_station_snap.gpkg")
         zipf.write(f"{DATAVIZ_PATH}/{program}/stations_donuts.sld", f"{program}_stations.sld")
         os.remove(hydro_file_path)
         os.remove(bassin_file_path)
