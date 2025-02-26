@@ -16,7 +16,7 @@ const EditProgramModal: React.FC<EditProgramModalProps> = ({ isOpen, onClose, pr
   
   const [title, setTitle] = useState(program.title);
   const [description, setDescription] = useState(program.description);
-  const [variables, setVariables] = useState(JSON.stringify(program.variables));
+  const [variables, setVariables] = useState(JSON.stringify(program.variables.map(variable => variable.var_code)));
   const [exutoireId, setExutoireId] = useState(program.exutoire_id.toString());
 
   const handleSubmit = async (e: React.FormEvent) => {
