@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -14,6 +14,7 @@ import {
 } from "chart.js";
 import { DonutsDataResponse, ProfileGraphDataResponse, ProgramVariable, Scenario } from "../../services/api";
 import { getColor } from "../../utils/mapUtils";
+import ButtonComponent from "./ButtonComponent";
 
 ChartJS.register(
   CategoryScale,
@@ -39,6 +40,7 @@ interface ProfileGraphProps {
 
 const ProfileGraph: React.FC<ProfileGraphProps> = ({ variable, data, xKey, className = "profile_graph" , donutsData, scenarioColors, scenarios, decades}) => {
   const chartRef = useRef<any>(null);
+  const [showObservations, setShowObservations] = useState(false);
 
   let xLabels = Object.keys(data);
 
@@ -114,10 +116,10 @@ const ProfileGraph: React.FC<ProfileGraphProps> = ({ variable, data, xKey, class
         borderColor: getColor("--secondary-blue"),
         order:-1,
       },
-      ...donutsDatasets.map((dataset) => ({
+      ... (showObservations ? donutsDatasets.map((dataset) => ({
         ...dataset,
         order: -2,
-      })),
+      })) : [])
     ],
   };
 
@@ -153,6 +155,7 @@ const ProfileGraph: React.FC<ProfileGraphProps> = ({ variable, data, xKey, class
 
   return (
     <div className={className}>
+      <ButtonComponent onClick={() => setShowObservations(!showObservations)} txt={showObservations ? "Cacher les observations" : "Afficher les observations"}/>
       <Line ref={chartRef} data={chartData} options={options} />
     </div>
   );

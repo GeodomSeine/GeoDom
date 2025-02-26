@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -12,6 +12,7 @@ import {
   Filler,
   ChartOptions,
 } from "chart.js";
+import ButtonComponent from "./ButtonComponent";
 import zoomPlugin from "chartjs-plugin-zoom";
 import { DecadeScenarioValue, ProgramVariable, Scenario } from "../../services/api";
 import { getColor } from "../../utils/mapUtils";
@@ -48,6 +49,7 @@ const VariableChart: React.FC<VariableChartProps> = ({
   scenarios
 }) => {
   const chartRef = useRef<any>(null);
+  const [showObservations, setShowObservations] = useState(false);
 
   // Générer les datasets des scénarios dans donutsData
   const scenarioDatasets = Object.entries(donutsData ?? {}).flatMap(([decade, values]) => {
@@ -61,7 +63,7 @@ const VariableChart: React.FC<VariableChartProps> = ({
       showLine: false,
     }));
   });  
-
+  
   const chartData = {
     labels: decades,
     datasets: [
@@ -84,10 +86,10 @@ const VariableChart: React.FC<VariableChartProps> = ({
         borderColor: getColor("--secondary-blue"),
         order:-1,
       },
-      ...scenarioDatasets.map((dataset) => ({
+      ... (showObservations ? scenarioDatasets.map((dataset) => ({
         ...dataset,
         order: -2,
-      })),
+      })) : [])
     ],
   };
 
@@ -125,6 +127,7 @@ const VariableChart: React.FC<VariableChartProps> = ({
 
   return (
     <div className={`${className}`}>
+      <ButtonComponent onClick={() => setShowObservations(!showObservations)} txt={showObservations ? "Cacher les observations" : "Afficher les observations"}/>
       <Line ref={chartRef} data={chartData} options={options} />
     </div>
   );
