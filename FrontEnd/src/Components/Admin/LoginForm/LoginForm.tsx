@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useAuth } from "../Auth/AuthContext";
 import { useNavigate } from "react-router-dom";
+import './LoginForm.scss';
 
 const LoginForm: React.FC = () => {
   const { login } = useAuth();

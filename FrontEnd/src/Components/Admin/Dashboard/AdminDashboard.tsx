@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import ChangePassword from "../ChangePassword/ChangePassword";
 import AddUser from "../AddUser/AddUser";
 import AddProgram from "../AddProgram/AddProgram";
+import "./AdminDashboard.scss";
 
 const AdminDashboard: React.FC = () => {
   const { logout } = useAuth();
@@ -16,19 +17,38 @@ const AdminDashboard: React.FC = () => {
   };
 
   return (
-    <div className="container">
-      <button onClick={handleLogout} className="logout-button">Déconnexion</button>
-      <h1>Administration</h1>
-
-      <div className="admin-nav">
-        <button onClick={() => setActiveSection("change-password")}>Changer Mot de Passe</button>
-        <button onClick={() => setActiveSection("add-user")}>Ajouter Utilisateur</button>
-        <button onClick={() => setActiveSection("add-program")}>Ajouter Programme</button>
+    <div className="admin-dashboard">
+      <div className="admin-header">
+        <h1 className="admin-title">Administration</h1>
+        <button onClick={handleLogout} className="logout-button">Déconnexion</button>
       </div>
 
-      {activeSection === "change-password" && <ChangePassword />}
-      {activeSection === "add-user" && <AddUser />}
-      {activeSection === "add-program" && <AddProgram />}
+      <div className="admin-nav">
+        <button 
+          className={`admin-nav-button ${activeSection === "change-password" ? "active" : ""}`} 
+          onClick={() => setActiveSection("change-password")}
+        >
+          Changer Mot de Passe
+        </button>
+        <button 
+          className={`admin-nav-button ${activeSection === "add-user" ? "active" : ""}`} 
+          onClick={() => setActiveSection("add-user")}
+        >
+          Ajouter Utilisateur
+        </button>
+        <button 
+          className={`admin-nav-button ${activeSection === "add-program" ? "active" : ""}`} 
+          onClick={() => setActiveSection("add-program")}
+        >
+          Ajouter Programme
+        </button>
+      </div>
+
+      <div className="admin-content">
+        {activeSection === "change-password" && <ChangePassword />}
+        {activeSection === "add-user" && <AddUser />}
+        {activeSection === "add-program" && <AddProgram />}
+      </div>
     </div>
   );
 };
