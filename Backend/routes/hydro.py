@@ -5,6 +5,8 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from routes.stationsnap import get_station_snap_geojson
+from routes.bassin import get_bassin_geopackage
 from core.database import async_session_pynuts
 from models.models import SenequeAesnHydro
 import os
@@ -78,17 +80,15 @@ async def get_hydro(program: str):
         media_type="application/json"
     )
 
-@router.get("/export/{program}")
-async def export_geopackage(program: str):
-    """Exporte les données hydrographiques d'un programme sous forme de GeoPackage."""
-    file_path = f"/tmp/{program}_hydro.gpkg"
-    zipfile_path = f"/tmp/{program}.zip"
-    if os.path.exists(zipfile_path):
-        if (os.path.getmtime(zipfile_path) > (time.time() - 600)):
-            os.remove(zipfile_path)     
-        else:
-            return FileResponse(zipfile_path, media_type='application/zip', filename=f"{program}_hydro.zip")
+async def get_geojson_features(program: str):
+    """Récupère les données hydrographiques d'un programme.
+    
+    Args:
+        program (str): Nom du programme (schéma).
         
+    Returns:
+        list: Liste des données hydro
+    """
     async with async_session_pynuts() as session:
         DynamicHydro = SenequeAesnHydro.create(program)
         try:
@@ -96,17 +96,66 @@ async def export_geopackage(program: str):
             result = await session.execute(query)
             geo_features = result.fetchall()
             if not geo_features:
-                raise HTTPException(status_code=404, detail="Aucune donnée trouvée pour ce programme")
+                raise HTTPException(status_code=404, detail="Aucune donnée hydrographique trouvée pour ce programme")
         except Exception:
             raise HTTPException(status_code=500, detail="Erreur interne du serveur")
 
-        gdf = gpd.GeoDataFrame.from_features([feature.geojson_feature for feature in geo_features])
-        gdf.to_file(file_path, driver="GPKG")
+        return [feature.geojson_feature for feature in geo_features]
+
+
+@router.get("/export/{program}")
+async def export_geopackage(program: str):
+    """
+    Exporte les données hydrographiques d'un programme sous forme de GeoPackage.
+    
+    Args:
+        program (str): Nom du programme (schéma).
         
-        with ZipFile(zipfile_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
-            zipf.write(file_path, f"{program}_hydro.gpkg")
-            zipf.write(f"{DATAVIZ_PATH}/{program}/seneque_aesn_hydro_basin.sld", "hydro_bassin.sld")
-            zipf.write(f"{DATAVIZ_PATH}/{program}/seneque_aesn_hydro.sld", "hydrographie.sld")
-            os.remove(file_path)
-        return FileResponse(zipfile_path, media_type='application/zip', filename=f"{program}_hydro.zip")
+    Returns:
+        StreamingResponse: Fichier GeoPackage
+    """
+    hydro_file_path = f"/tmp/{program}_hydro.gpkg"
+    bassin_file_path = f"/tmp/{program}_bassin.gpkg"
+    station_file_path = f"/tmp/{program}_station_snap.geojson"
+    zipfile_path = f"/tmp/{program}.zip"
+    
+    """
+        Check if the zip file is already created
+        If the file is older than 10 minutes, delete it
+        else return the existing file
+    """
+    if os.path.exists(zipfile_path):
+        if (os.path.getmtime(zipfile_path) < (time.time() - 600)):
+            os.remove(zipfile_path)     
+        else:
+            return FileResponse(zipfile_path, media_type='application/zip', filename=f"{program}.zip")
+        
+    # Get the hydro features
+    geo_features = await get_geojson_features(program)
+    gdf = gpd.GeoDataFrame.from_features(geo_features)
+    gdf.to_file(hydro_file_path, driver="GPKG")
+      
+    # Get the bassin features    
+    basin_features = await get_bassin_geopackage(program)
+    gdf = gpd.GeoDataFrame.from_features(basin_features)
+    gdf.to_file(bassin_file_path, driver="GPKG")
+    
+    # Get the station snap features
+    station_feature = await get_station_snap_geojson(program)
+    gdf = gpd.GeoDataFrame.from_features(station_feature)
+    gdf.to_file(station_file_path, driver="GPKG")
+    
+    # Create the zip file
+    with ZipFile(zipfile_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+        zipf.write(hydro_file_path, f"{program}_hydro.gpkg")
+        zipf.write(f"{DATAVIZ_PATH}/{program}/seneque_aesn_hydro.sld", f"{program}_hydro.sld")
+        zipf.write(bassin_file_path, f"{program}_bassin.gpkg")
+        zipf.write(f"{DATAVIZ_PATH}/{program}/seneque_aesn_hydro_basin.sld", f"{program}_hydro_basin.sld")
+        zipf.write(station_file_path, f"{program}_station_snap.geojson")
+        zipf.write(f"{DATAVIZ_PATH}/{program}/stations_donuts.sld", f"{program}_stations.sld")
+        os.remove(hydro_file_path)
+        os.remove(bassin_file_path)
+        os.remove(station_file_path)
+        
+    return FileResponse(zipfile_path, media_type='application/zip', filename=f"{program}.zip")
             
