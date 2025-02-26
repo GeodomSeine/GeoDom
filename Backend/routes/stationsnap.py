@@ -86,7 +86,7 @@ async def get_station_snap_geojson(program: str):
     async with async_session_pynuts() as session_pynuts, async_session_donuts() as session_donuts:
         station_data = await fetch_station_snap_from_db(program, session_pynuts, session_donuts)
 
-    geojson_data = {
+    return {
         "type": "FeatureCollection",
         "features": [
             {
@@ -102,5 +102,3 @@ async def get_station_snap_geojson(program: str):
             for station in station_data
         ]
     }
-
-    return geojson_data

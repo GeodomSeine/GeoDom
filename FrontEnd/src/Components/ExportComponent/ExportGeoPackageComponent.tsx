@@ -13,7 +13,7 @@ const ExportGeoPackageComponent: React.FC<HydroExportComponentProps> = ({ progra
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${program}_hydro.gpkg`;
+      a.download = `${program}.zip`;
       document.body.appendChild(a);
       a.click();
       a.remove();
