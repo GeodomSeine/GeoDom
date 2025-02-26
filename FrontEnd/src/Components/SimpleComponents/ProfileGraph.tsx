@@ -152,8 +152,8 @@ const ProfileGraph: React.FC<ProfileGraphProps> = ({ variable, data, xKey, class
   };
 
   return (
-    <div className={className}>
-      <Line ref={profilLongs} data={chartData} options={options} />
+    <div ref={profilLongs} className={className}>
+      <Line data={chartData} options={options} />
     </div>
   );
 };

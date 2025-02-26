@@ -1,9 +1,14 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { PDFDownloadLink, Document, Page, Text, View, Image } from '@react-pdf/renderer';
 import L from 'leaflet';
 import "leaflet-simple-map-screenshoter";
 import './ExportComponent.scss';
 import ButtonComponent from '../SimpleComponents/ButtonComponent';
+
+async function html2canvas(element: any): Promise<HTMLCanvasElement> {
+    const html2canvas = (await import('html2canvas')).default;
+    return html2canvas(element);
+}
 
 const captureMap = async (mapRef: any) => {
     const plugin = mapRef.current.plugin;
@@ -21,45 +26,7 @@ const captureProfilLong = async (profilLong: any) => {
     return chartCanvas.toDataURL('image/png');
 };
 
-async function html2canvas(element: any): Promise<HTMLCanvasElement> {
-    // Assuming html2canvas is imported from a library
-    const html2canvas = (await import('html2canvas')).default;
-    return html2canvas(element);
-}
-
-const ExportPdfDocument = ({ exportPdfInfo }: any) => {
-    const { selectionMapElements, mapElements, chartElements } = exportPdfInfo;
-    const [selectionMapImageUrl, setSelectionMapImageUrl] = React.useState<string | null>(null);
-    const [chartImageUrl, setChartImageUrl] = React.useState<string | null>(null);
-    const [mapImageUrls, setMapImageUrls] = React.useState<string[]>([]);
-    const [profilLongUrl, setProfilLongUrl] = React.useState<string | null>(null);
-
-    useEffect(() => {
-        const captureImages = async () => {
-            if (selectionMapElements.mapRef.current) {
-                const mapUrl = await captureMap(selectionMapElements.mapRef);
-                setSelectionMapImageUrl(mapUrl);
-            }
-            if (chartElements.chartRefs.current) {
-                const chartUrl = await captureChart(chartElements.chartRefs);
-                setChartImageUrl(chartUrl);
-            }
-            const mapUrls = await Promise.all(
-                mapElements.mapRefs.current.map(async (mapRef: any) => {
-                    if (mapRef.current) {
-                        return await captureMap(mapRef);
-                    }
-                    return null;
-                })
-            );
-            setMapImageUrls(mapUrls.filter((url) => url !== null) as string[]);
-            if(chartElements.profilLongs.current){
-                const profilLongUrl = await captureProfilLong(chartElements.profilLongs);
-                setProfilLongUrl(profilLongUrl);
-            }
-        };
-        captureImages();
-    }, [selectionMapElements.mapRef, chartElements.chartRefs, chartElements.profilLongs]);
+const ExportPdfDocument = ({ selectionMapElements, selectionMapImageUrl, chartImageUrls, mapImageUrls, profilLongImageUrls }: any) => {
 
     return (
         <Document>
@@ -84,21 +51,19 @@ const ExportPdfDocument = ({ exportPdfInfo }: any) => {
                         <Image src={selectionMapImageUrl} style={{ width: '80%', height: 'auto' }} />
                     </View>
                 )}
-
             </Page>
             <Page size="A4" style={{ padding: 10 }}>
-            <Text style={{ fontSize: 18, marginBottom: 10 }}>Graphiques</Text>
-                {chartImageUrl && (
-                    <View style={{ marginTop: 20 }}>
-                        <Text style={{ fontSize: 14, marginBottom: 5 }}>Graphique:</Text>
-                        <Image src={chartImageUrl} style={{ width: '80%', height: 'auto' }} />
+                <Text style={{ fontSize: 18, marginBottom: 10 }}>Evolution temporelle</Text>
+                {chartImageUrls?.map((url: string, index: number) => (
+                    <View key={index} style={{ marginTop: 20 }}>
+                        <Text style={{ fontSize: 14, marginBottom: 5 }}>Graphique {index + 1}:</Text>
+                        <Image src={url} style={{ width: '80%', height: 'auto' }} />
                     </View>
-                )}
+                ))}
             </Page>
-            
             <Page size="A4" style={{ padding: 10 }}>
                 <Text style={{ fontSize: 18, marginBottom: 10 }}>Carte des seuils</Text>
-                {mapImageUrls.map((url, index) => (
+                {mapImageUrls?.map((url: string, index: number) => (
                     <View key={index} style={{ marginTop: 20 }}>
                         <Text style={{ fontSize: 14, marginBottom: 5 }}>Carte {index + 1}:</Text>
                         <Image src={url} style={{ width: '80%', height: 'auto' }} />
@@ -106,12 +71,13 @@ const ExportPdfDocument = ({ exportPdfInfo }: any) => {
                 ))}
             </Page>
             <Page size="A4" style={{ padding: 10 }}>
-                {profilLongUrl && (
-                    <View style={{ marginTop: 20 }}>
-                        <Text style={{ fontSize: 14, marginBottom: 5 }}>Graphique:</Text>
-                        <Image src={profilLongUrl} style={{ width: '80%', height: 'auto' }} />
+                <Text style={{ fontSize: 18, marginBottom: 10 }}>Evolution spatiale</Text>
+                {profilLongImageUrls?.map((url: string, index: number) => (
+                    <View key={index} style={{ marginTop: 20 }}>
+                        <Text style={{ fontSize: 14, marginBottom: 5 }}>Profil Long {index + 1}:</Text>
+                        <Image src={url} style={{ width: '80%', height: 'auto' }} />
                     </View>
-                )}
+                ))}
             </Page>
         </Document>
     );
@@ -132,6 +98,7 @@ interface ExportPdfComponentProps {
 }
 
 const ExportPdfComponent: React.FC<ExportPdfComponentProps> = ({ exportPdfInfo }) => {
+
     useEffect(() => {
         const mapRefs = exportPdfInfo.mapElements.mapRefs;
 
@@ -150,11 +117,64 @@ const ExportPdfComponent: React.FC<ExportPdfComponentProps> = ({ exportPdfInfo }
             mapRef.current.plugin = getPlugin(mapRef);
         }
     }, [exportPdfInfo.selectionMapElements.mapRef]);
+    
+    const { selectionMapElements, chartElements, mapElements, profilLongElements } = exportPdfInfo;
+    const [selectionMapImageUrl, setSelectionMapImageUrl] = useState<string | null>(null);
+    const [chartImageUrls, setChartImageUrls] = useState<string[]>([]);
+    const [mapImageUrls, setMapImageUrls] = useState<string[]>([]);
+    const [profilLongImageUrls, setProfilLongImageUrls] = useState<string[]>([]);
+
+    useEffect(() => {
+        const captureImages = async () => {
+            if (selectionMapElements.mapRef.current) {
+                const mapUrl = await captureMap(selectionMapElements.mapRef);
+                setSelectionMapImageUrl(mapUrl);
+            }
+
+            const chartUrls = await Promise.all(
+                chartElements.chartRefs.current.map(async (chartRef: any) => {
+                    if (chartRef.current) {
+                        return await captureChart(chartRef);
+                    }
+                    return null;
+                })
+            );
+            setChartImageUrls(chartUrls.filter((url) => url !== null) as string[]);
+
+            const mapUrls = await Promise.all(
+                mapElements.mapRefs.current.map(async (mapRef: any) => {
+                    if (mapRef.current) {
+                        return await captureMap(mapRef);
+                    }
+                    return null;
+                })
+            );
+            setMapImageUrls(mapUrls.filter((url) => url !== null) as string[]);
+
+            const profilLongUrls = await Promise.all(
+                profilLongElements.profilLongRefs.current.map(async (profilLong: any) => {
+                    if (profilLong.current) {
+                        return await captureProfilLong(profilLong);
+                    }
+                    return null;
+                })
+            );
+            setProfilLongImageUrls(profilLongUrls.filter((url) => url !== null) as string[]);
+        };
+
+        captureImages();
+    }, [exportPdfInfo]);
 
     return (
         <div className="export_container">
             <PDFDownloadLink
-                document={<ExportPdfDocument exportPdfInfo={exportPdfInfo} />}
+                document={<ExportPdfDocument
+                    selectionMapElements={selectionMapElements}
+                    selectionMapImageUrl={selectionMapImageUrl}
+                    chartImageUrls={chartImageUrls}
+                    mapImageUrls={mapImageUrls}
+                    profilLongImageUrls={profilLongImageUrls}
+                />}
                 fileName={`export_${exportPdfInfo.selectionMapElements.program_name}.pdf`}
             >
                 <ButtonComponent onClick={() => { }} txt={'Exporter en PDF'} />
@@ -164,4 +184,3 @@ const ExportPdfComponent: React.FC<ExportPdfComponentProps> = ({ exportPdfInfo }
 };
 
 export default ExportPdfComponent;
-

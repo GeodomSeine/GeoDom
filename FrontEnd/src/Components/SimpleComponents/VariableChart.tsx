@@ -122,8 +122,8 @@ const VariableChart: React.FC<VariableChartProps> = ({
   };
 
   return (
-    <div className={`${className}`}>
-      <Line ref={chartRef} data={chartData} options={options} />
+    <div ref={chartRef} className={`${className}`}>
+      <Line data={chartData} options={options} />
     </div>
   );
 };
