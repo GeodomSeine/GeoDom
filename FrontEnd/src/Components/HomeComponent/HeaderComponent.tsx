@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import LogoComponent from '../SimpleComponents/LogoComponent';
 import Import from "../../assets/import.svg?react";
-import Tutorial from "../../assets/tutorial.svg?react";
+import Tutorial from "../../assets/question.svg?react";
 
 import "./HeaderComponent.scss";
 import SearchComponent from '../SimpleComponents/SearchComponent';
@@ -34,10 +34,10 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
             <LogoComponent size={"50px"} onClick={handleHomeClick} />
             <div className='action_header'>
                 {onSearch && <SearchComponent onSearch={onSearch} />}
+                <LogoComponent size={"30px"} Icon={Tutorial} onClick={() => setTutorialOpen && setTutorialOpen(true)}/>
                 {showImportButton && (
                     <LogoComponent size={"35px"} Icon={Import} onClick={() => setIsModalOpen(true)} />
                 )}
-                <LogoComponent size={"30px"} Icon={Tutorial} onClick={() => setTutorialOpen && setTutorialOpen(true)}/>
             </div>
             <Modal title='Importer la session' isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
                 <ImportJsonComponent visualizationData={visualizationData} />

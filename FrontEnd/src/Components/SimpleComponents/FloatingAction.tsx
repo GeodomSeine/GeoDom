@@ -23,7 +23,7 @@ const FloatingAction: React.FC<FloatingActionProps> = ({
     return (
         <>
             <div className="floating_card_component">
-                <LogoComponent size={"40px"} onClick={handleHomeClick} />
+                <LogoComponent size={"35px"} onClick={handleHomeClick} />
                 <LogoComponent size={"35px"} Icon={Export} onClick={() => setIsModalOpen(true)}/>
             </div>
             <Modal title='Exporter' isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
