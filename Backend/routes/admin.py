@@ -21,6 +21,7 @@ async def add_program(
     description: str = Form(...),
     variables: str = Form(...),
     exutoire_id: int = Form(...),
+    is_actived: bool = Form(...),
     background: UploadFile = File(...),
     pk_map: UploadFile = File(...),
     seneque_aesn_hydro_basin: UploadFile = File(...),
@@ -49,7 +50,8 @@ async def add_program(
             "title": title,
             "description": description,
             "variables": json.loads(variables),
-            "exutoire_id": exutoire_id
+            "exutoire_id": exutoire_id, 
+            "is_actived": is_actived
         }
 
         metadata_path = os.path.join(program_folder, "metadata.json")
@@ -83,6 +85,7 @@ async def edit_program(
     description: str = Form(None),
     variables: str = Form(None),
     exutoire_id: int = Form(None),
+    is_actived: bool = Form(None),
     background: UploadFile = File(None),
     pk_map: UploadFile = File(None),
     seneque_aesn_hydro_basin: UploadFile = File(None),
@@ -103,6 +106,7 @@ async def edit_program(
         if description: metadata["description"] = description
         if variables: metadata["variables"] = json.loads(variables)
         if exutoire_id: metadata["exutoire_id"] = exutoire_id
+        metadata["is_actived"] = is_actived
 
         with open(metadata_path, "w", encoding="utf-8") as f:
             json.dump(metadata, f, indent=4, ensure_ascii=False)

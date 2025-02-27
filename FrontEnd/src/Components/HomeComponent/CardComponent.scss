@@ -25,6 +25,11 @@
     }
 }
 
+.card_component.preview:hover  {
+    opacity: 0.5;
+    transition: 0.3s;
+}
+
 @media (max-width: 1160px) {
     .card_component {
         height: 35vh;

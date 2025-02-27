@@ -1,0 +1,17 @@
+{
+    "name": "dataviz_nord_carbone",
+    "title": "dataviz_nord_carbone",
+    "description": "dataviz_nord_carbone",
+    "variables": [
+        "DIC",
+        "DOM1",
+        "DOM2",
+        "DOM3",
+        "FLOW",
+        "NO3",
+        "PH",
+        "TA"
+    ],
+    "exutoire_id": 10132,
+    "is_actived": false
+}
