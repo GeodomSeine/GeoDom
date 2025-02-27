@@ -47,14 +47,14 @@ import { useAuth } from '../Admin/Auth/AuthContext';
                     <div className='main_scroll_area' >
                         {/* need to add a condition in order for the tutorial to work and to recognize the "carbone dans l'orgeval" */}
                         {searchQuery ? (filteredPrograms.length > 0 ? filteredPrograms.map((item: Program) => (
-                                    item.background && (
+                                    item.background && (item.is_actived || isAuthenticated) && (
                                         <CardComponent
                                             key={item.name}
                                             title={item.title}
                                             description={item.description}
                                             variables={item.variables.map(variable => variable.var_code.toUpperCase())}
                                             background={item.background}
-                                            onClick={(item.is_actived || isAuthenticated) ? (() => handleCardClick(item)) : () => {}}
+                                            onClick={() => handleCardClick(item)}
                                             is_actived={item.is_actived}
                                         />
                                     )
@@ -62,16 +62,16 @@ import { useAuth } from '../Admin/Auth/AuthContext';
                                 : <div className="no_results">Pas de résulats.</div>
                             )
                             : (Array.isArray(programs) && programs.map((item: Program) => (
-                                item.background && (
+                                item.background && (item.is_actived || isAuthenticated) && (
                                     <CardComponent
                                         key={item.name}
                                         title={item.title}
                                         description={item.description}
                                         variables={item.variables.map(variable => variable.var_code.toUpperCase())}
                                         background={item.background}
-                                        onClick={(item.is_actived || isAuthenticated) ? (() => handleCardClick(item)) : () => {}}
+                                        onClick={() => handleCardClick(item)}
                                         is_actived={item.is_actived}
-                                        />
+                                    />
                                 )
                             )))
                         }

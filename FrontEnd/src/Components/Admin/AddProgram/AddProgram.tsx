@@ -9,6 +9,7 @@ const AddProgram: React.FC = () => {
   const [description, setDescription] = useState("");
   const [variables, setVariables] = useState("");
   const [exutoireId, setExutoireId] = useState("");
+  const [active, setIsActive] = useState(true);
 
   const [background, setBackground] = useState<File | null>(null);
   const [pkMap, setPkMap] = useState<File | null>(null);
@@ -34,6 +35,7 @@ const AddProgram: React.FC = () => {
     formData.append("description", description);
     formData.append("variables", variables);
     formData.append("exutoire_id", exutoireId);
+    formData.append("is_actived", (!active).toString());
 
     if (background) formData.append("background", background);
     if (pkMap) formData.append("pk_map", pkMap);
@@ -77,6 +79,9 @@ const AddProgram: React.FC = () => {
         <label>Exutoire ID</label>
         <input type="number" className="add-program-input" value={exutoireId} onChange={(e) => setExutoireId(e.target.value)} required />
 
+        <label>Prévisualisation</label>
+        <input type="checkbox" className="add-program-checkbox" checked={active} onChange={(e) => setIsActive(e.target.checked)} />
+        
         <label>Image de fond</label>
         <input type="file" className="add-program-file" onChange={handleFileChange(setBackground)} />
 

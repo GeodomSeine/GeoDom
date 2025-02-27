@@ -1,6 +1,5 @@
 import React from "react";
 import "./CardComponent.scss";
-import { useAuth } from "../Admin/Auth/AuthContext";
 
 interface ClickableCardProps {
   title: string;
@@ -19,9 +18,9 @@ const CardComponent: React.FC<ClickableCardProps> = ({
   onClick,
   is_actived
 }) => {
-  const {isAuthenticated} = useAuth();
+
   return (
-    <div onClick={onClick} className={(is_actived && !isAuthenticated) ? "card_component":"card_component preview"}>
+    <div onClick={onClick} className="card_component">
       <div className="card_text">
         <h2>{(is_actived) ? title: title + " (Preview)"}</h2>
         <p>{description}</p>
