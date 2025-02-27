@@ -6,6 +6,7 @@ import HeaderComponent from './HeaderComponent';
 import { Program } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 import FooterComponent from '../SimpleComponents/FooterComponent';
+import { useAuth } from '../Admin/Auth/AuthContext';
 
     type Props = {
         setTutorialOpen?: (value: boolean) => void;
@@ -15,6 +16,7 @@ import FooterComponent from '../SimpleComponents/FooterComponent';
         const [programs, setPrograms] = useState<ProgramResponse | null>(null);
         const [searchQuery, setSearchQuery] = useState(""); 
         const navigate = useNavigate();
+        const { token } = useAuth();
 
         useEffect(() => {
             const fetchPrograms = async () => {
@@ -52,7 +54,8 @@ import FooterComponent from '../SimpleComponents/FooterComponent';
                                             description={item.description}
                                             variables={item.variables.map(variable => variable.var_code.toUpperCase())}
                                             background={item.background}
-                                            onClick={() => handleCardClick(item)}
+                                            onClick={(item.is_actived || token) ? (() => handleCardClick(item)) : () => {}}
+                                            is_actived={item.is_actived}
                                         />
                                     )
                                 ))
@@ -66,8 +69,9 @@ import FooterComponent from '../SimpleComponents/FooterComponent';
                                         description={item.description}
                                         variables={item.variables.map(variable => variable.var_code.toUpperCase())}
                                         background={item.background}
-                                        onClick={() => handleCardClick(item)}
-                                    />
+                                        onClick={(item.is_actived || token) ? (() => handleCardClick(item)) : () => {}}
+                                        is_actived={item.is_actived}
+                                        />
                                 )
                             )))
                         }

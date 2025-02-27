@@ -49,6 +49,7 @@ export interface Program {
   variables: ProgramVariable[];
   exutoire_id: number;
   background: string;
+  is_actived: boolean;
 }
 
 export interface ProgramVariable {

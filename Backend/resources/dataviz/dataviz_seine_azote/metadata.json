@@ -3,5 +3,6 @@
     "title": "La cascade de l’azote dans le bassin de la Seine", 
     "description": "La cascade de l’azote dans le bassin de la Seine",
     "variables": ["FLOW", "NO3", "NH4", "DOC", "PHY", "OXY"],
-    "exutoire_id": 12393
+    "exutoire_id": 12393,
+    "is_actived": true
 }
