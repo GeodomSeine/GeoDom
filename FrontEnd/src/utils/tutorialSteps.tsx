@@ -76,10 +76,7 @@ export const steps: TutoStep[] = [
           <h4>Paramétrage général</h4>
           <br/>
           <strong>Mode "Complet"</strong> : Agrège les données sur l’ensemble des Strahler sélectionnés via le curseur ci-dessous.<br/>
-          <strong>Mode "Amont-Aval"</strong>: Vous sélectionnez un tronçon et le définissez comme amont. Le programme calculera automatiquement les données jusqu’à l’exutoire. Vous pourrez ensuite sélectionner l’aval.<br/>
-          <p>
-            En mode "Amont-Aval", le curseur ci-dessous s’exprimera en points kilométriques, vous permettant d’afficher les statistiques à l’échelle souhaitée. Ces points seront mis en évidence en vert sur la carte.
-          </p>
+          <strong>Mode "Amont-Aval"</strong>: Vous sélectionnez un tronçon et le définissez comme amont. Le programme calculera automatiquement les données jusqu’à l’exutoire. Vous pourrez ensuite sélectionner l’aval.
         </div>
       ),
       position : "right_bottom",
@@ -99,6 +96,19 @@ export const steps: TutoStep[] = [
       position : "right_bottom",
     },
     {
+      targetClass: 'space_container_1 .slider_container', 
+      content: (
+        <div>
+          <p>
+            En mode "Complet", le curseur ci-dessous s’exprimera en <strong>Strahler</strong><br/>
+            En mode "Amont-Aval", le curseur ci-dessous s’exprimera en points kilométriques, vous permettant d’afficher les statistiques 
+            à l’échelle souhaitée. Ces points seront mis en évidence en vert sur la carte.
+          </p>
+        </div>
+      ),
+      position : "right_bottom",
+    },
+    {
       targetClass: 'space_container_2', 
       content: (
         <div>
@@ -109,13 +119,28 @@ export const steps: TutoStep[] = [
             La zone entre les percentiles <strong>5 et 90</strong> est <strong>grisée</strong>, indiquant que la majorité des valeurs se situent dans cet intervalle.<br/>
             Les <strong>données d'observation</strong> sont représentées par des <strong>bulles colorées</strong>, chaque couleur correspondant à un scénario spécifique.<br/>
           </p>
+        </div>
+      ),
+      position : "left_bottom",
+    },
+    {
+      targetClass: 'space_container_2', 
+      content: (
+        <div>
           <h4>Axes du graphique</h4>
           <p>
             L’<strong>axe des X</strong> représente les <strong>36 décades</strong>.<br/>
             L’<strong>axe des Y</strong> affiche la valeur de l’indicateur sélectionné, avec son <strong>unité de mesure</strong>.<br/>
           </p>
+        </div>
+      ),
+      position : "left_bottom",
+    },
+    {
+      targetClass: 'space_container_2 .slider_container', 
+      content: (
+        <div>
           <h4>Filtrage des données</h4>
-
           <p>
             Grâce au <strong>curseur situé en bas</strong>, vous pouvez choisir d’afficher les données en fonction :<br/>
             <strong>D’un Strahler donné</strong>, si vous êtes en mode <strong>"Complet"</strong>.<br/>
@@ -129,15 +154,34 @@ export const steps: TutoStep[] = [
       targetClass: 'space_container_3', 
       content: (
         <div>
-          <h4>Espace de visualisation</h4>
+          <h4>Cartes des seuils</h4>
           <br/>
           <p>Dans cet espace, chaque <strong>indicateur</strong> est représenté par une <strong>carte dédiée</strong>. Les valeurs sont converties en couleurs selon la <strong>classe de valeur</strong> définie dans la légende.</p>
-          <br/>
+        </div>
+      ),
+      position : "right_bottom",
+    },
+    {
+      targetClass: 'space_container_3 .slider_container', 
+      content: (
+        <div>
           <h4>Options de filtrage</h4>
           <br/>
           <p>
-            Grâce au <strong>double curseur</strong> situé en dessous, vous pouvez définir une période spécifique (par exemple, de la <strong>décade 1 à 9</strong>).<br/>
-            Vous pouvez également choisir quel <strong>percentile</strong> afficher (<strong>5, 50 ou 90</strong>) en utilisant la sélection <strong>radio</strong> ci-dessous.<br/>
+            Grâce au <strong>double curseur</strong> situé en dessous, vous pouvez définir une période spécifique (par exemple, de la <strong>décade 1 à 9</strong>).
+          </p>
+        </div>
+      ),
+      position : "right_bottom",
+    },
+    {
+      targetClass: 'space_container_3 .percentile_selector', 
+      content: (
+        <div>
+          <h4>Options de filtrage</h4>
+          <br/>
+          <p>
+            Vous pouvez également choisir quel <strong>percentile</strong> afficher (<strong>5, 50 ou 90</strong>) en utilisant la sélection <strong>radio</strong> ci-dessous.
           </p>
         </div>
       ),
@@ -155,16 +199,30 @@ export const steps: TutoStep[] = [
             Les percentiles <strong>5, 50 et 90</strong>.<br/>
             Les <strong>données d'observation</strong>, représentées sous forme de bulles colorées.<br/>
           </p>
+        </div>
+      ),
+      position : "left_bottom",
+    },
+    {
+      targetClass: 'space_container_4', 
+      content: (
+        <div>
 
           <h4>Axes du graphique</h4>
-
           <p>
               Sur l’<strong>axe des X</strong> : <br/>
               En mode <strong>Strahler</strong>, les valeurs sont triées du <strong>plus petit au plus grand</strong>.<br/>
               En mode <strong>Amont-Aval</strong>, les points kilométriques sélectionnés sont triés de <strong>l’amont jusqu’à l’aval</strong>.<br/>
               Sur l’<strong>axe des Y</strong>, nous affichons la valeur de l’<strong>indicateur sélectionné</strong> avec son <strong>unité de mesure</strong>.<br/>
           </p>
-
+        </div>
+      ),
+      position : "left_bottom",
+    },
+    {
+      targetClass: 'space_container_4  .slider_container', 
+      content: (
+        <div>
           <h4>Options de filtrage</h4>
           <p>
           Comme pour les cartes, le <strong>double curseur</strong> situé en dessous permet de sélectionner une période spécifique (par exemple, de la <strong>décade 1 à 9</strong>).
@@ -181,6 +239,14 @@ export const steps: TutoStep[] = [
           <p>
               Ici, le <strong>logo</strong> permet de revenir à l’<strong>accueil</strong>, tandis que le <strong>bouton situé à droite</strong> offre plusieurs options d’exportation des données.
           </p>
+        </div>
+      ),
+      position : "rigth_bottom",
+    },
+    {
+      targetClass: 'floating_card_component', 
+      content: (
+        <div>
           <h4>Formats d'exportation disponibles</h4>
           <br/>
           <p>
