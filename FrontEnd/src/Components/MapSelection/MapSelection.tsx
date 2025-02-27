@@ -139,53 +139,54 @@ const [layerVisibility, setLayerVisibility] = useState<Record<string, boolean>>(
 });
 
 const getHydroStyle = (feature: any): PathOptions => {
-const strahler = feature.properties?.strahler;
-const id = feature.properties?.id_hyd;
+  const strahler = feature.properties?.strahler;
+  const id = feature.properties?.id_hyd;
 
-if (amontAvalResponse?.id_hyd.includes(id))
-  return { color: "var(--danger-color)", weight: 3 };
-if (idHydStart === id || idHydEnd === id)
-  return { color: "var(--success-color)", weight: 4 };
+  if (amontAvalResponse?.id_hyd.includes(id))
+    return { color: "var(--danger-color)", weight: 3 };
+  if (idHydStart === id || idHydEnd === id)
+    return { color: "var(--success-color)", weight: 4 };
 
-for (const rule of hydroStyles) {
-  if (strahler >= rule.min && strahler <= rule.max)
-    return { color: rule.color, weight: rule.weight };
-}
+  for (const rule of hydroStyles) {
+    if (strahler >= rule.min && strahler <= rule.max)
+      return { color: rule.color, weight: rule.weight };
+  }
 
-return { color: "var(--basic-black)", weight: 1 };
+  return { color: "var(--basic-black)", weight: 1 };
 };
 
 // handle click on a pk, to create a selection pop-up
-const handleFeatureClick = (feature: { properties: { [key: string]: any } }, layer: any) => {
-const properties = feature.properties;
+const handleFeatureClick = (feature: { properties: { [key: string]: any } }, layer: any, popUpLayer: "Hydro" | "Station") => {
+  const properties = feature.properties;
 
-const popupContent = document.createElement("div");
-popupContent.setAttribute("class", "leaflet-elements-container");
+  const popupContent = document.createElement("div");
+  popupContent.setAttribute("class", "leaflet-elements-container");
 
-const onSelectAmont = () => {
-  setIdHydStart(properties.id_hyd);
-  setIdHydEnd(exutoire_id);
-  layer.closePopup();
-};
+  const onSelectAmont = () => {
+    setIdHydStart(properties.id_hyd);
+    setIdHydEnd(exutoire_id);
+    layer.closePopup();
+  };
 
-const onSelectAval = () => {
-  setIdHydEnd(properties.id_hyd);
-  layer.closePopup();
-};
+  const onSelectAval = () => {
+    setIdHydEnd(properties.id_hyd);
+    layer.closePopup();
+  };
 
-const root = createRoot(popupContent);
-// here unfotunatly for the moment, leaflet only accept pre-render html element, 
-// so we need to prerender element in order for them to appear in the pop-up, removing the advantages of React
-root.render(
-  <PopupContent
-    properties={properties}
-    mode={mode}
-    onSelectAmont={onSelectAmont}
-    onSelectAval={onSelectAval}
-  />
-);
+  const root = createRoot(popupContent);
+  // here unfotunatly for the moment, leaflet only accept pre-render html element, 
+  // so we need to prerender element in order for them to appear in the pop-up, removing the advantages of React
+  root.render(
+    <PopupContent
+      properties={properties}
+      mode={mode}
+      onSelectAmont={onSelectAmont}
+      onSelectAval={onSelectAval}
+      layer={popUpLayer}
+    />
+  );
 
-layer.bindPopup(popupContent).openPopup();
+  layer.bindPopup(popupContent).openPopup();
 };
 
 return (
@@ -238,6 +239,12 @@ return (
               };
               return new CircleMarker(latlng, style);
             }}
+            onEachFeature={(feature, layer) => {
+              layer.off();
+              layer.on({
+                  click: () => handleFeatureClick(feature, layer, "Station"),
+              });
+            }}
           />
         </Overlay>
       )}
@@ -252,7 +259,7 @@ return (
                   onEachFeature={(feature, layer) => {
                       layer.off();
                       layer.on({
-                          click: () => handleFeatureClick(feature, layer),
+                          click: () => handleFeatureClick(feature, layer, "Hydro"),
                       });
                   }}
               />
