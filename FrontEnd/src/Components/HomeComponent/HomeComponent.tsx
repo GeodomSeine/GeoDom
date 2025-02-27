@@ -16,7 +16,7 @@ import { useAuth } from '../Admin/Auth/AuthContext';
         const [programs, setPrograms] = useState<ProgramResponse | null>(null);
         const [searchQuery, setSearchQuery] = useState(""); 
         const navigate = useNavigate();
-        const { token } = useAuth();
+        const { isAuthenticated } = useAuth();
 
         useEffect(() => {
             const fetchPrograms = async () => {
@@ -54,7 +54,7 @@ import { useAuth } from '../Admin/Auth/AuthContext';
                                             description={item.description}
                                             variables={item.variables.map(variable => variable.var_code.toUpperCase())}
                                             background={item.background}
-                                            onClick={(item.is_actived || token) ? (() => handleCardClick(item)) : () => {}}
+                                            onClick={(item.is_actived || isAuthenticated) ? (() => handleCardClick(item)) : () => {}}
                                             is_actived={item.is_actived}
                                         />
                                     )
@@ -69,7 +69,7 @@ import { useAuth } from '../Admin/Auth/AuthContext';
                                         description={item.description}
                                         variables={item.variables.map(variable => variable.var_code.toUpperCase())}
                                         background={item.background}
-                                        onClick={(item.is_actived || token) ? (() => handleCardClick(item)) : () => {}}
+                                        onClick={(item.is_actived || isAuthenticated) ? (() => handleCardClick(item)) : () => {}}
                                         is_actived={item.is_actived}
                                         />
                                 )
