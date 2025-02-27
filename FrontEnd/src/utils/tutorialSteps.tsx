@@ -3,6 +3,8 @@ interface TutoStep {
     content: React.ReactNode;
     route?: string; 
     noContinueButton?: boolean;
+    // forced to have it by default in order for the tuto to be custom, but its a bit bad
+    position: string;
 }
 
 export const steps: TutoStep[] = [
@@ -15,6 +17,7 @@ export const steps: TutoStep[] = [
           </p>
         </div>
       ),
+      position : "right_bottom",
       // Optional route: '/',
     },
     {
@@ -28,6 +31,7 @@ export const steps: TutoStep[] = [
           </p>
         </div>
       ),
+      position : "right_bottom",
     },
     {
       targetClass: 'header_component', 
@@ -40,6 +44,7 @@ export const steps: TutoStep[] = [
           <strong>À droite</strong>, un bouton permet d’importer une session de visualisation avec des paramètres prédéfinis. Nous reviendrons sur cette fonctionnalité plus tard.<br/>
         </div>
       ),
+      position : "right_bottom",
     },
     {
       targetClass: 'card_component', 
@@ -52,6 +57,7 @@ export const steps: TutoStep[] = [
       ),
       noContinueButton: true,
       route: '/',
+      position : "right_bottom",
     },
     {
       content: (
@@ -61,6 +67,7 @@ export const steps: TutoStep[] = [
           </p>
         </div>
       ),
+      position : "right_bottom",
     },
     {
       targetClass: 'space_container_1', 
@@ -75,9 +82,10 @@ export const steps: TutoStep[] = [
           </p>
         </div>
       ),
+      position : "right_bottom",
     },
     {
-      targetClass: 'space_container_1', 
+      targetClass: 'space_container_1',
       content: (
         <div>
           Vous pouvez ensuite sélectionner jusqu’à quatre <strong>indicateurs</strong>.
@@ -88,6 +96,7 @@ export const steps: TutoStep[] = [
           </p>
         </div>
       ),
+      position : "right_bottom",
     },
     {
       targetClass: 'space_container_2', 
@@ -114,6 +123,7 @@ export const steps: TutoStep[] = [
           </p>
         </div>
       ),
+      position : "left_bottom",
     },
     {
       targetClass: 'space_container_3', 
@@ -131,6 +141,7 @@ export const steps: TutoStep[] = [
           </p>
         </div>
       ),
+      position : "right_bottom",
     },
     {
       targetClass: 'space_container_4', 
@@ -160,6 +171,7 @@ export const steps: TutoStep[] = [
           </p>
         </div>
       ),
+      position : "left_bottom",
     },
     {
       targetClass: 'floating_card_component', 
@@ -180,5 +192,6 @@ export const steps: TutoStep[] = [
           </p>
         </div>
       ),
+      position : "rigth_bottom",
     },
 ];

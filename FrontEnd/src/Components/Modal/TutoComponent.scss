@@ -24,9 +24,9 @@ to {
     position: fixed;
     inset: 0;
     background-color: rgba($shade-grey, 0.5);
-    display: flex;
-    align-items: flex-end;
     justify-content: right;
+    align-items: flex-end;
+    display: flex;
     z-index: 10000;
     animation: overlay-fade-in 0.3s ease-out;
     padding: 15px;
@@ -60,4 +60,22 @@ to {
             gap: 8px;
         }
     }
+}
+
+//modifying the position of the tutorial pop-up
+.modal_overlay_tutorial.left_top{
+    justify-content: left;
+    align-items: flex-start;
+}   
+.modal_overlay_tutorial.rigth_top{
+    justify-content: right;
+    align-items: flex-start;
+}
+.modal_overlay_tutorial.left_bottom{
+    justify-content: left;
+    align-items: flex-end;
+}
+.modal_overlay_tutorial.rigth_bottom{
+    justify-content: right;
+    align-items: flex-end;
 }

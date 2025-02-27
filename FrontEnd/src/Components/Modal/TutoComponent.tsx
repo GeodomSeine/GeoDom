@@ -63,6 +63,11 @@ const TutoComponent: React.FC<TutoComponentProps> = ({ isOpen, onClose, title })
   
         setTimeout(() => observer.disconnect(), 2000);
       }
+      const targetClass = document.querySelector(".modal_overlay_tutorial");
+      if(currentStep>0){
+        targetClass?.classList.remove(steps[currentStep-1].position!);
+      }
+      targetClass?.classList.add(steps[currentStep].position!);
     }
   }, [currentStep]);
   
@@ -111,7 +116,7 @@ const TutoComponent: React.FC<TutoComponentProps> = ({ isOpen, onClose, title })
                 <LogoComponent Icon={currentStep === 0 ? Cross : Back} customColor="--primary-blue" size="30px" />
               </>
             }
-            onClick={currentStep === 0 ? onClose : prevStep}
+            onClick={currentStep === 0 ? onClose : prevStep}  
           />
           {!steps[currentStep]?.noContinueButton && (
             <ButtonComponent
