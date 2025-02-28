@@ -27,6 +27,7 @@ interface MapSelectionProps {
   setIdHydStart: (id: number | null) => void;
   setIdHydEnd: (id: number | null) => void;
   selectedPk?: GeoJsonResponse;
+  pkByStrahler?: GeoJsonResponse;
   resetSelection: () => void;
   variables: ProgramVariable[];
   scenarios: Scenario[];
@@ -50,6 +51,7 @@ const MapSelection: React.FC<MapSelectionProps> = ({
   setIdHydEnd,
   scenarios,
   selectedPk,
+  pkByStrahler,
   resetSelection,
   variables,
   selectedVariables,
@@ -282,6 +284,16 @@ return (
             key={JSON.stringify(selectedPk)}
             data={selectedPk as GeoJsonObject}
             style={{ color: "var(--success-color)", weight: 6 }}
+            interactive={false}
+          />
+        </Overlay>
+      )}
+      {pkByStrahler && (
+        <Overlay {...(layerVisibility.pk ? { checked: true } : { checked: false })} name="Pk par strahler">
+          <GeoJSON
+            key={JSON.stringify(pkByStrahler)}
+            data={pkByStrahler as GeoJsonObject}
+            style={{ color: "var(--success-color)", weight: 2 }}
             interactive={false}
           />
         </Overlay>
