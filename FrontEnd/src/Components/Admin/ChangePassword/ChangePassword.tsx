@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useAuth } from "../Auth/AuthContext";
-import "./ChangePassword.scss";
+import "../AdminContent.scss";
 
 const ChangePassword: React.FC = () => {
   const { token } = useAuth();
@@ -39,14 +39,12 @@ const ChangePassword: React.FC = () => {
   };
 
   return (
-    <div className="change-password-container">
-      <h3 className="change-password-title">Changer de Mot de Passe</h3>
-      {message && <p className="change-password-message">{message}</p>}
-      <form onSubmit={handleSubmit} className="change-password-form">
+    <form onSubmit={handleSubmit} className="admin_content_container">
+      <h3>Changer de Mot de Passe</h3>
+      {message && <p className="status_message">{message}</p>}
         <label>Ancien mot de passe</label>
         <input
           type="password"
-          className="change-password-input"
           value={oldPassword}
           onChange={(e) => setOldPassword(e.target.value)}
           required
@@ -54,7 +52,6 @@ const ChangePassword: React.FC = () => {
         <label>Nouveau mot de passe</label>
         <input
           type="password"
-          className="change-password-input"
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
           required
@@ -62,16 +59,14 @@ const ChangePassword: React.FC = () => {
         <label>Confirmer le nouveau mot de passe</label>
         <input
           type="password"
-          className="change-password-input"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           required
         />
-        <button type="submit" className="change-password-button">
+        <button type="submit">
           Modifier
         </button>
       </form>
-    </div>
   );
 };
 

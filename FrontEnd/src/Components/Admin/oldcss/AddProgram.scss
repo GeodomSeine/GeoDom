@@ -1,32 +1,31 @@
 @use "../../../styles/main.scss" as *;
 
-.add-user-container {
+.add-program-container {
   background: $basic-white;
   width: 100%;
-  max-width: 400px;
+  max-width: 500px;
   padding: 30px;
   border-radius: 10px;
   box-shadow: 0px 4px 10px $shade-grey;
   text-align: center;
   margin: auto;
-  margin-top: 100px;
   transition: all 0.3s ease-in-out;
 }
 
-.add-user-title {
+.add-program-title {
   color: $primary-blue;
   font-size: 24px;
   margin-bottom: 20px;
 }
 
-.add-user-message {
+.add-program-message {
   font-size: 14px;
   font-weight: bold;
   color: $danger-color;
   margin-bottom: 10px;
 }
 
-.add-user-form {
+.add-program-form {
   display: flex;
   flex-direction: column;
   gap: 15px;
@@ -38,8 +37,10 @@
     color: $shade-grey;
   }
 
-  .add-user-input,
-  .add-user-select {
+  .add-program-input,
+  .add-program-textarea,
+  .add-program-checkbox
+  .add-program-file {
     width: 100%;
     padding: 10px;
     border: 1px solid $basic-grey;
@@ -54,7 +55,7 @@
     }
   }
 
-  .add-user-button {
+  .add-program-button {
     background-color: $primary-blue;
     color: $basic-white;
     padding: 12px;

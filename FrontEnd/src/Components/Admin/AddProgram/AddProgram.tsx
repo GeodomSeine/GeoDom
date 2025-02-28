@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useAuth } from "../Auth/AuthContext";
-import "./AddProgram.scss";
+import "../AdminContent.scss";
+import ButtonComponent from "../../SimpleComponents/ButtonComponent";
+import InputComponent from "../../SimpleComponents/InputComponent";
 
 const AddProgram: React.FC = () => {
   const { token } = useAuth();
@@ -60,46 +62,45 @@ const AddProgram: React.FC = () => {
   };
 
   return (
-    <div className="add-program-container">
-      <h3 className="add-program-title">Ajouter un Programme</h3>
-      {message && <p className="add-program-message">{message}</p>}
-      <form onSubmit={handleSubmit} className="add-program-form">
-        <label>Nom du Programme</label>
-        <input type="text" className="add-program-input" value={name} onChange={(e) => setName(e.target.value)} required />
+    <form onSubmit={handleSubmit} className="admin_content_container">
+      <h3 >Ajouter un Programme</h3>
+      {message && <p className="status_message">{message}</p>}
+      <label>Nom du Programme</label>
+      <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
 
-        <label>Titre</label>
-        <input type="text" className="add-program-input" value={title} onChange={(e) => setTitle(e.target.value)} required />
+      <label>Titre</label>
+      <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
 
-        <label>Description</label>
-        <textarea className="add-program-textarea" value={description} onChange={(e) => setDescription(e.target.value)} />
+      <label>Description</label>
+      <textarea value={description} onChange={(e) => setDescription(e.target.value)} />
 
-        <label>Variables (exemple: ["flow", "no3", "nh4"])</label>
-        <input type="text" className="add-program-input" value={variables} onChange={(e) => setVariables(e.target.value)} required />
+      <label>Variables (exemple: ["flow", "no3", "nh4"])</label>
+      <input type="text"value={variables} onChange={(e) => setVariables(e.target.value)} required />
 
-        <label>Exutoire ID</label>
-        <input type="number" className="add-program-input" value={exutoireId} onChange={(e) => setExutoireId(e.target.value)} required />
+      
 
-        <label>Prévisualisation</label>
-        <input type="checkbox" className="add-program-checkbox" checked={active} onChange={(e) => setIsActive(e.target.checked)} />
-        
-        <label>Image de fond</label>
-        <input type="file" className="add-program-file" onChange={handleFileChange(setBackground)} />
+      <label>Exutoire ID</label>
+      <input type="number"  value={exutoireId} onChange={(e) => setExutoireId(e.target.value)} required />
 
-        <label>PK map sld</label>
-        <input type="file" className="add-program-file" onChange={handleFileChange(setPkMap)} />
+      <InputComponent label="Prévisualisation" type="checkbox" checked={active} onChange={(e) => setIsActive(e.target.checked)}/>
+      
+      <label>Image de fond</label>
+      <input type="file" onChange={handleFileChange(setBackground)} />
 
-        <label>seneque_aesn_hydro_basin sld</label>
-        <input type="file" className="add-program-file" onChange={handleFileChange(setSenequeAesnHydroBasin)} />
+      <label>PK map sld</label>
+      <input type="file" onChange={handleFileChange(setPkMap)} />
 
-        <label>seneque_aesn_hydro sld</label>
-        <input type="file" className="add-program-file" onChange={handleFileChange(setSenequeAesnHydro)} />
+      <label>seneque_aesn_hydro_basin sld</label>
+      <input type="file" onChange={handleFileChange(setSenequeAesnHydroBasin)} />
 
-        <label>stations_donuts sld</label>
-        <input type="file" className="add-program-file" onChange={handleFileChange(setStationsDonuts)} />
+      <label>seneque_aesn_hydro sld</label>
+      <input type="file"  onChange={handleFileChange(setSenequeAesnHydro)} />
 
-        <button type="submit" className="add-program-button">Ajouter</button>
-      </form>
-    </div>
+      <label>stations_donuts sld</label>
+      <input type="file" onChange={handleFileChange(setStationsDonuts)} />
+      <ButtonComponent txt={"Ajouter"} />
+      <button type="submit" >Ajouter</button>
+    </form>
   );
 };
 

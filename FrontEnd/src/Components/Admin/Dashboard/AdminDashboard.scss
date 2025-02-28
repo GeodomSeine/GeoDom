@@ -1,86 +1,23 @@
 @use "../../../styles/main.scss" as *;
 
-.admin-dashboard {
-  background: $basic-white;
-  width: 80%;
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0px 4px 10px $shade-grey;
-  text-align: center;
-  margin: auto;
-  transition: all 0.3s ease-in-out;
-}
-
-.admin-header {
+.admin_dashboard{
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-
-  .admin-title {
-    color: $primary-blue;
-    font-size: 24px;
-    margin: 0;
-  }
-
-  .logout-button {
-    background-color: $danger-color;
-    color: $basic-white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
-
-    &:hover {
-      background-color: $danger-color;
-      transform: scale(1.05);
-    }
-
-    &:active {
-      transform: scale(0.95);
-    }
-  }
-}
-
-.admin-nav {
-  display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   gap: 10px;
-  margin-bottom: 20px;
-
-  .admin-nav-button {
-    background-color: $primary-blue;
-    color: $basic-white;
-    border: none;
-    padding: 10px;
-    flex-grow: 1;
-    border-radius: 5px;
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
-
-    &:hover {
-      background-color: $secondary-blue;
-      transform: scale(1.05);
-    }
-
-    &:active {
-      transform: scale(0.95);
-    }
-
-    &.active {
-      background-color: $success-color;
-      transform: scale(1.05);
-    }
+  margin: 15px;
+  padding: 10px;
+  @include card;
+  width: fit-content;
+  .admin_header{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
   }
-}
-
-.admin-content {
-  background: $shade-light-grey;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0px 2px 5px $shade-mid-grey;
+  .admin_nav{
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    align-items: center;
+  }
 }

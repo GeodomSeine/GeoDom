@@ -6,6 +6,7 @@ import AddUser from "../AddUser/AddUser";
 import AddProgram from "../AddProgram/AddProgram";
 import ListPrograms from "../ListPrograms/ListPrograms";
 import "./AdminDashboard.scss";
+import ButtonComponent from "../../SimpleComponents/ButtonComponent";
 
 const AdminDashboard: React.FC = () => {
   const { logout } = useAuth();
@@ -18,44 +19,40 @@ const AdminDashboard: React.FC = () => {
   };
 
   return (
-    <div className="admin-dashboard">
-      <div className="admin-header">
-        <h1 className="admin-title">Administration</h1>
-        <button onClick={handleLogout} className="logout-button">Déconnexion</button>
+    <div className="admin_dashboard">
+      <div className="admin_header">
+        <h2 className="admin_title">Administration</h2>
+        <ButtonComponent txt="Déconnexion" onClick={handleLogout} />
       </div>
 
-      <div className="admin-nav">
-        <button 
-          className={`admin-nav-button ${activeSection === "change-password" ? "active" : ""}`} 
+      <div className="admin_nav">
+        <ButtonComponent
+          txt="Changer Mot de Passe"
           onClick={() => setActiveSection("change-password")}
-        >
-          Changer Mot de Passe
-        </button>
-        <button 
-          className={`admin-nav-button ${activeSection === "add-user" ? "active" : ""}`} 
+          onDark={activeSection !== "change-password"}
+        />
+        <ButtonComponent
+          txt="Ajouter Utilisateur"
           onClick={() => setActiveSection("add-user")}
-        >
-          Ajouter Utilisateur
-        </button>
-        <button 
-          className={`admin-nav-button ${activeSection === "add-program" ? "active" : ""}`} 
+          onDark={activeSection !== "add-user"}
+        />
+        <ButtonComponent
+          txt="Ajouter Programme"
           onClick={() => setActiveSection("add-program")}
-        >
-          Ajouter Programme
-        </button>
-        <button 
-          className={`admin-nav-button ${activeSection === "list-programs" ? "active" : ""}`} 
+          onDark={activeSection !== "add-program"}
+        />
+        <ButtonComponent
+          txt="Gérer Programmes"
           onClick={() => setActiveSection("list-programs")}
-        >
-          Gérer Programmes
-        </button>
+          onDark={activeSection !== "list-programs"}
+        />
       </div>
 
-      <div className="admin-content">
+      <div className="admin_content">
         {activeSection === "change-password" && <ChangePassword />}
         {activeSection === "add-user" && <AddUser />}
         {activeSection === "add-program" && <AddProgram />}
-        {activeSection === "list-programs" && <ListPrograms/>}
+        {activeSection === "list-programs" && <ListPrograms />}
       </div>
     </div>
   );

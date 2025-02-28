@@ -1,37 +1,3 @@
 @use "../../../styles/main.scss" as *;
 
-.delete-program-content {
-  text-align: center;
-}
 
-.delete-program-actions {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
-
-  .cancel-button {
-    background-color: $secondary-blue;
-    color: $basic-white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-
-  .confirm-button {
-    background-color: $danger-color;
-    color: $basic-white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-
-  .cancel-button:hover {
-    background-color: $secondary-blue
-  }
-
-  .confirm-button:hover {
-    background-color: $danger-color
-  }
-}

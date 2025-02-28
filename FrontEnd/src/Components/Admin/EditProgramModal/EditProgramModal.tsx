@@ -3,6 +3,7 @@ import { useAuth } from "../Auth/AuthContext";
 import Modal from "../../Modal/Modal";
 import "./EditProgramModal.scss";
 import { Program } from "../../../services/api";
+import InputComponent from "../../SimpleComponents/InputComponent";
 
 interface EditProgramModalProps {
   isOpen: boolean;
@@ -61,6 +62,7 @@ const EditProgramModal: React.FC<EditProgramModalProps> = ({ isOpen, onClose, pr
       <form onSubmit={handleSubmit} className="edit-program-form">
         <label>Titre</label>
         <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
+        
 
         <label>Description</label>
         <textarea value={description} onChange={(e) => setDescription(e.target.value)} />
@@ -68,11 +70,11 @@ const EditProgramModal: React.FC<EditProgramModalProps> = ({ isOpen, onClose, pr
         <label>Variables (format JSON)</label>
         <input type="text" value={variables} onChange={(e) => setVariables(e.target.value)} required />
 
+        
         <label>Exutoire ID</label>
         <input type="number" value={exutoireId} onChange={(e) => setExutoireId(e.target.value)} required />
 
-        <label>Prévisualisation</label>
-        <input type="checkbox" checked={active} onChange={(e) => setIsActive(e.target.checked)} />
+        <InputComponent label={"Prévisualisation"} type={"checkbox"} onChange={(e) => setIsActive(e.target.checked)}/>
         <button type="submit" className="edit-button">Sauvegarder</button>
       </form>
     </Modal>

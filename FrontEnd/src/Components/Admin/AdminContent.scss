@@ -1,0 +1,13 @@
+@use "../../styles/main.scss" as *;
+
+.admin_content_container{
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  @include card;
+  padding: 10px;
+  .status_message { 
+    font-size: 1rem;
+    color: $danger-color;
+  }
+}

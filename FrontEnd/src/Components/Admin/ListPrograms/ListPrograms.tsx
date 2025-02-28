@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../Auth/AuthContext";
-import "./ListPrograms.scss";
+import "../AdminContent.scss";
 import { getPrograms, ProgramResponse } from "../../../services/api";
 import { Program } from "../../../services/api";
 import DeleteProgramModal from "../DeleteProgramModal/DeleteProgramModal";
 import EditProgramModal from "../EditProgramModal/EditProgramModal";
+import ButtonComponent from "../../SimpleComponents/ButtonComponent";
 
 const ListPrograms: React.FC = () => {
   const { token } = useAuth();
@@ -61,7 +62,7 @@ const ListPrograms: React.FC = () => {
   }, [token]);
 
   return (
-    <div className="list-programs-container">
+    <div className="admin_content_container">
       <h3 className="list-programs-title">Liste des Programmes</h3>
       {loading ? (
         <p className="list-programs-loading">Chargement...</p>
@@ -76,8 +77,8 @@ const ListPrograms: React.FC = () => {
                 <p>{item.description}</p>
               </div>
               <div className="program-actions">
-                <button className="edit-button" onClick={() => openEditModal(item)}>Éditer</button>
-                <button className="delete-button" onClick={() => openDeleteModal(item)}>Supprimer</button>              
+                <ButtonComponent txt={"Éditer"} onClick={() => openEditModal(item)}/>
+                <ButtonComponent txt={"Supprimer"} onClick={() => openDeleteModal(item)}/>
               </div>
             </li>
           ))}

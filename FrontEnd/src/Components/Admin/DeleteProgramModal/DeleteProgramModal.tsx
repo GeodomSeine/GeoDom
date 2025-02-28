@@ -1,6 +1,7 @@
 import React from "react";
 import Modal from "../../Modal/Modal";
 import "./DeleteProgramModal.scss";
+import ButtonComponent from "../../SimpleComponents/ButtonComponent";
 
 interface DeleteProgramModalProps {
   isOpen: boolean;
@@ -15,8 +16,8 @@ const DeleteProgramModal: React.FC<DeleteProgramModalProps> = ({ isOpen, onClose
       <div className="delete-program-content">
         <p>Voulez-vous vraiment supprimer le programme <strong>{programName}</strong> ?</p>
         <div className="delete-program-actions">
-          <button className="cancel-button" onClick={onClose}>Annuler</button>
-          <button className="confirm-button" onClick={onConfirm}>Supprimer</button>
+          <ButtonComponent onClick={onClose} txt={"Annuler"}/>
+          <ButtonComponent onClick={onConfirm} txt={"Supprimer"}/>
         </div>
       </div>
     </Modal>
