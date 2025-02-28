@@ -365,6 +365,21 @@ export const getPkGeom = async (
   }
 };
 
+export const getPkGeomByStrahler = async (
+  program: string,
+  strahler: number
+): Promise<GeoJsonResponse | null> => {
+  try {
+    const response = await api.get<GeoJsonResponse>(
+      `/pk_geom/strahler/${program}/${strahler}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching PK geometry:", error);
+    return null;
+  }
+};
+
 export const getStationSnap = async (
   program: string
 ): Promise<GeoJsonResponse | null> => {

@@ -9,7 +9,8 @@ import {
   streamPkData, ProfileGraphDataResponse,
   ProfileGraphPkRequest, getProfileData, getProfileFullData,
   ProgramVariable, Program, getDonutsData, getDonutsFullData,
-  DonutsDataResponse
+  DonutsDataResponse,
+  getPkGeomByStrahler
 } from "../../services/api";
 import { useNavigate, useParams } from "react-router";
 import ToggleContainer from "./ToggleComponent";
@@ -54,6 +55,8 @@ const VisualisationPage: React.FC = () => {
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [chartData, setChartData] = useState<ChartData | null>(null);
   const [selectedPk, setSelectedPk] = useState<GeoJsonResponse | undefined>(undefined);
+  const [pkByStrahler, setPkByStrahler] = useState<GeoJsonResponse | undefined>(undefined);
+
   const [idHydStart, setIdHydStart] = useState<number | null>(null);
   const [idHydEnd, setIdHydEnd] = useState<number | null>(null);
   const [scenarios, setScenarios] = useState<Scenario[]>([]);
@@ -296,8 +299,18 @@ const VisualisationPage: React.FC = () => {
         setSelectedPk(response);
       }
     };
+
+    const fetchPkByStrahler = async () => {
+      const response = await getPkGeomByStrahler(program.name, Number.parseInt(selectedKey));
+      if (response) {
+        setPkByStrahler(response);
+      }
+    }
+
     if (mode === "amont-aval") {
       fetchPk();
+    }else {
+      fetchPkByStrahler();
     }
   }, [selectedKey]);
 
@@ -452,7 +465,7 @@ const VisualisationPage: React.FC = () => {
             setIdHydStart={setIdHydStart}
             setIdHydEnd={setIdHydEnd}
             amontAvalResponse={amontAvalResponse}
-            selectedPk={selectedPk}
+            selectedPk={mode === "amont-aval" ? selectedPk: undefined}
             mode={mode}
             resetSelection={resetSelection}
             variables={program!.variables}
@@ -462,6 +475,7 @@ const VisualisationPage: React.FC = () => {
             setSelectedScenarios={setSelectedScenarios}
             scenarios={scenarios}
             setMode={setMode}
+            pkByStrahler={mode === "complet" ? pkByStrahler: undefined}
           />
         </ToggleContainer>
         {chartData?.length && (
