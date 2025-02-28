@@ -123,13 +123,35 @@ const ExportPdfComponent: React.FC<ExportPdfComponentProps> = ({ exportPdfInfo }
     const [chartImageUrls, setChartImageUrls] = useState<string[]>([]);
     const [mapImageUrls, setMapImageUrls] = useState<string[]>([]);
     const [profilLongImageUrls, setProfilLongImageUrls] = useState<string[]>([]);
-    const [isReady, setIsReady] = useState(false);
+    const [isReady, setIsReady] = useState(0);
 
     useEffect(() => {
-        const captureImages = async () => {
+        const captureSelectionMapImage = async () => {
+            if (selectionMapImageUrl) {
+                URL.revokeObjectURL(selectionMapImageUrl);
+                setIsReady(isReady - 1);
+                setSelectionMapImageUrl(null);
+            }
             if (selectionMapElements.mapRef.current) {
                 const mapUrl = await captureMap(selectionMapElements.mapRef);
                 setSelectionMapImageUrl(mapUrl);
+                setIsReady(isReady + 1);
+            }
+        };
+
+        captureSelectionMapImage();
+    }, [selectionMapElements]);
+
+    useEffect(() => {
+        const captureChartImages = async () => {
+
+            if (chartImageUrls.length > 0) {
+                chartImageUrls.forEach((url) => {
+                    URL.revokeObjectURL(url);
+                });
+
+                setIsReady(isReady - 1);
+                setChartImageUrls([]);
             }
 
             const chartUrls = await Promise.all(
@@ -141,7 +163,21 @@ const ExportPdfComponent: React.FC<ExportPdfComponentProps> = ({ exportPdfInfo }
                 })
             );
             setChartImageUrls(chartUrls.filter((url) => url !== null) as string[]);
+            setIsReady(isReady + (chartUrls.length > 0 ? 1 : 0));
+        };
 
+        captureChartImages();
+    }, [chartElements]);
+
+    useEffect(() => {
+        const captureMapImages = async () => {
+            if (mapImageUrls.length > 0) {
+                mapImageUrls.forEach((url) => {
+                    URL.revokeObjectURL(url);
+                });
+                setIsReady(isReady - 1);
+                setMapImageUrls([]);
+            }
             const mapUrls = await Promise.all(
                 mapElements.mapRefs.current.map(async (mapRef: any) => {
                     if (mapRef.current) {
@@ -151,7 +187,21 @@ const ExportPdfComponent: React.FC<ExportPdfComponentProps> = ({ exportPdfInfo }
                 })
             );
             setMapImageUrls(mapUrls.filter((url) => url !== null) as string[]);
+            setIsReady(isReady + (mapUrls.length > 0 ? 1 : 0));
+        };
 
+        captureMapImages();
+    }, [mapElements]);
+
+    useEffect(() => {
+        const captureProfilLongImages = async () => {
+            if (profilLongImageUrls.length > 0) {
+                profilLongImageUrls.forEach((url) => {
+                    URL.revokeObjectURL(url);
+                });
+                setIsReady(isReady - 1);
+                setProfilLongImageUrls([]);
+            }
             const profilLongUrls = await Promise.all(
                 profilLongElements.profilLongRefs.current.map(async (profilLong: any) => {
                     if (profilLong.current) {
@@ -161,15 +211,15 @@ const ExportPdfComponent: React.FC<ExportPdfComponentProps> = ({ exportPdfInfo }
                 })
             );
             setProfilLongImageUrls(profilLongUrls.filter((url) => url !== null) as string[]);
-            setIsReady(true);
+            setIsReady(isReady + (profilLongUrls.length > 0 ? 1 : 0));
         };
 
-        captureImages();
-    }, [exportPdfInfo]);
+        captureProfilLongImages();
+    }, [profilLongElements]);
 
     return (
         <div className="export_container">
-            {isReady ? (
+            {true ? (
                 <PDFDownloadLink
                     document={<ExportPdfDocument
                         selectionMapElements={selectionMapElements}
