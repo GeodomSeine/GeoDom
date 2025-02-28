@@ -62,21 +62,21 @@ const ListPrograms: React.FC = () => {
   }, [token]);
 
   return (
-    <div className="admin_content_container">
-      <h3 className="list-programs-title">Liste des Programmes</h3>
+    <div className="admin_content">
+      <h3>Liste des Programmes</h3>
       {loading ? (
-        <p className="list-programs-loading">Chargement...</p>
+        <p>Chargement...</p>
       ) : error ? (
-        <p className="list-programs-error">{error}</p>
+        <p className="status_message">{error}</p>
       ) : (
-        <ul className="list-programs">
+        <ul >
           {Array.isArray(programs) && programs.map((item: Program) => (
-            <li key={item.name} className="list-program-item">
-              <div className="program-info">
+            <li key={item.name}>
+              <div>
                 <h4>{item.title}</h4>
                 <p>{item.description}</p>
               </div>
-              <div className="program-actions">
+              <div>
                 <ButtonComponent txt={"Éditer"} onClick={() => openEditModal(item)}/>
                 <ButtonComponent txt={"Supprimer"} onClick={() => openDeleteModal(item)}/>
               </div>

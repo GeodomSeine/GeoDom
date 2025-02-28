@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useAuth } from "../Auth/AuthContext";
 import "../AdminContent.scss";
+import InputComponent from "../../SimpleComponents/InputComponent";
+import ButtonComponent from "../../SimpleComponents/ButtonComponent";
 
 const ChangePassword: React.FC = () => {
   const { token } = useAuth();
@@ -38,35 +40,34 @@ const ChangePassword: React.FC = () => {
     }
   };
 
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const triggerSubmit = () => {
+    if (formRef.current) {
+      if (formRef.current.requestSubmit) {
+        formRef.current.requestSubmit();
+      } else {
+        formRef.current.submit();
+      }
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
+      if (e.key === "Enter") {
+        e.preventDefault(); 
+        triggerSubmit();
+      }
+    };
+
   return (
-    <form onSubmit={handleSubmit} className="admin_content_container">
+    <form onKeyDown={handleKeyDown} ref={formRef} onSubmit={handleSubmit} className="admin_content">
       <h3>Changer de Mot de Passe</h3>
       {message && <p className="status_message">{message}</p>}
-        <label>Ancien mot de passe</label>
-        <input
-          type="password"
-          value={oldPassword}
-          onChange={(e) => setOldPassword(e.target.value)}
-          required
-        />
-        <label>Nouveau mot de passe</label>
-        <input
-          type="password"
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-          required
-        />
-        <label>Confirmer le nouveau mot de passe</label>
-        <input
-          type="password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          required
-        />
-        <button type="submit">
-          Modifier
-        </button>
-      </form>
+      <InputComponent label="Ancien mot de passe" type="password" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} required />
+      <InputComponent label="Nouveau mot de passe" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
+      <InputComponent label="Confirmer le nouveau mot de passe" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
+      <ButtonComponent txt="Modifier" onClick={triggerSubmit} />
+    </form>
   );
 };
 

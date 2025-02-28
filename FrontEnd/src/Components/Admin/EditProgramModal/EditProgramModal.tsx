@@ -1,20 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../Auth/AuthContext";
 import Modal from "../../Modal/Modal";
-import "./EditProgramModal.scss";
+import "../AdminContent.scss";
 import { Program } from "../../../services/api";
 import InputComponent from "../../SimpleComponents/InputComponent";
+import ButtonComponent from "../../SimpleComponents/ButtonComponent";
 
 interface EditProgramModalProps {
   isOpen: boolean;
   onClose: () => void;
   program: Program;
-  onUpdate: () => void; 
+  onUpdate: () => void;
 }
 
 const EditProgramModal: React.FC<EditProgramModalProps> = ({ isOpen, onClose, program, onUpdate }) => {
   const { token } = useAuth();
-  
+
   const [title, setTitle] = useState(program.title);
   const [description, setDescription] = useState(program.description);
   const [variables, setVariables] = useState(JSON.stringify(program.variables.map(variable => variable.var_code)));
@@ -27,7 +28,7 @@ const EditProgramModal: React.FC<EditProgramModalProps> = ({ isOpen, onClose, pr
     setVariables(JSON.stringify(program.variables.map(variable => variable.var_code)));
     setExutoireId(program.exutoire_id.toString());
     setIsActive(!program.is_actived);
-  }, [program]); 
+  }, [program]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,25 +58,34 @@ const EditProgramModal: React.FC<EditProgramModalProps> = ({ isOpen, onClose, pr
     }
   };
 
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const triggerSubmit = () => {
+    if (formRef.current) {
+      if (formRef.current.requestSubmit) {
+        formRef.current.requestSubmit();
+      } else {
+        formRef.current.submit();
+      }
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
+      if (e.key === "Enter") {
+        e.preventDefault(); 
+        triggerSubmit();
+      }
+    };
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Éditer le Programme">
-      <form onSubmit={handleSubmit} className="edit-program-form">
-        <label>Titre</label>
-        <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
-        
-
-        <label>Description</label>
-        <textarea value={description} onChange={(e) => setDescription(e.target.value)} />
-
-        <label>Variables (format JSON)</label>
-        <input type="text" value={variables} onChange={(e) => setVariables(e.target.value)} required />
-
-        
-        <label>Exutoire ID</label>
-        <input type="number" value={exutoireId} onChange={(e) => setExutoireId(e.target.value)} required />
-
-        <InputComponent label={"Prévisualisation"} type={"checkbox"} onChange={(e) => setIsActive(e.target.checked)}/>
-        <button type="submit" className="edit-button">Sauvegarder</button>
+      <form ref={formRef} onKeyDown={handleKeyDown} onSubmit={handleSubmit} className="modal_action_body_admin">
+        <InputComponent label={"Titre"} type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
+        <InputComponent label="Exutoire ID" type="textarea" value={description} onChange={(e) => setDescription(e.target.value)}></InputComponent>
+        <InputComponent label="Variables (format JSON)" type="text" value={variables} onChange={(e) => setVariables(e.target.value)} required />
+        <InputComponent label="Exutoire ID" type="number" value={exutoireId} onChange={(e) => setExutoireId(e.target.value)} required />
+        <InputComponent label={"Prévisualisation"} type={"checkbox"} checked={active} onChange={(e) => setIsActive((e.target as HTMLInputElement).checked)} />
+        <ButtonComponent txt="Ajouter" onClick={triggerSubmit} />
       </form>
     </Modal>
   );

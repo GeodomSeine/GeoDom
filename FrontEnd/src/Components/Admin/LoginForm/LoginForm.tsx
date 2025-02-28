@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useAuth } from "../Auth/AuthContext";
 import { useNavigate } from "react-router-dom";
-import './LoginForm.scss';
+import '../AdminContent.scss';
+import InputComponent from "../../SimpleComponents/InputComponent";
+import ButtonComponent from "../../SimpleComponents/ButtonComponent";
 
 const LoginForm: React.FC = () => {
   const { login } = useAuth();
@@ -36,19 +38,36 @@ const LoginForm: React.FC = () => {
     }
   };
 
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const triggerSubmit = () => {
+    if (formRef.current) {
+      if (formRef.current.requestSubmit) {
+        formRef.current.requestSubmit();
+      } else {
+        formRef.current.submit();
+      }
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault(); 
+      triggerSubmit();
+    }
+  };
+
   return (
-    <div className="container">
-      <h2>Connexion Admin</h2>
-      {error && <p className="error">{error}</p>}
-      <form onSubmit={handleSubmit}>
-        <label>Nom d'utilisateur</label>
-        <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} required />
-
-        <label>Mot de passe</label>
-        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-
-        <button type="submit">Se connecter</button>
-      </form>
+    <div className="admin_dashboard">
+      <div className="admin_card">
+        <form ref={formRef} onKeyDown={handleKeyDown} onSubmit={handleSubmit} className="admin_content">
+          <h3>Connexion Admin</h3>
+          {error && <p className="status_message">{error}</p>}
+          <InputComponent label="Nom d'utilisateur" type="text" value={username} onChange={(e) => setUsername(e.target.value)} required />
+          <InputComponent label="Mot de passe" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          <ButtonComponent txt="Se connecter" onClick={triggerSubmit} />
+        </form>
+      </div>
     </div>
   );
 };

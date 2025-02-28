@@ -6,16 +6,82 @@
     align-items: center;
     gap: 5px;
     width: fit-content;
+    .button_max{
+        max-width: 200px;
+        height:30px
+    }
     label {
         display: flex;
         gap: 4px;
-        input:checked + span {
+        input:checked+span {
             color: $primary_blue;
         }
     }
+
     * {
         cursor: pointer;
     }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="password"],
+    textarea,
+    select{
+        height: fit-content;
+        width: auto; 
+        border: 1px solid $basic-grey;
+        border-radius: 5px;
+        padding: 8px 10px;
+        background-color: $basic-white;
+        width: 250px;
+        transition: border-color 0.3s ease-in-out;
+        &:focus {
+            border-color: $primary-blue;
+            outline: none;
+            box-shadow: 0px 0px 5px rgba($primary-blue, 0.5);
+        }
+    }
+
+    select{
+        width: 150px;
+    }
+
+    textarea{
+        height: 50px;
+        max-height: 200px;
+        max-width: 250px;
+    }
+
+
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    input[type="text"]:hover,
+    input[type="number"]:hover,
+    input[type="password"]:hover{
+        cursor: text;
+    }
+
+    input[type="number"] {
+        -moz-appearance: textfield;
+    }
 }
 
+.input_component.type_textarea,
+.input_component.type_text,
+.input_component.type_password,
+.input_component.type_number{
+    display: flex;
+    flex-direction: column;
+    label{
+        display: flex;
+        flex-direction: column;
+    }
+}
 
+.input_component.type_file{
+    cursor: text;
+}

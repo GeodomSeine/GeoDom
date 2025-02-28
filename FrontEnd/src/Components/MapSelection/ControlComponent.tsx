@@ -70,7 +70,7 @@ const ControlComponent: React.FC<ControlComponentProps> = ({
               type={"checkbox"}
               checked={selectedVariables.includes(variable)}
               onChange={(e) => {
-                if (e.target.checked) {
+                if ((e.target as HTMLInputElement).checked) {
                   setSelectedVariables([...selectedVariables, variable]);
                 } else {
                   setSelectedVariables(selectedVariables.filter((v) => v !== variable));
@@ -90,7 +90,7 @@ const ControlComponent: React.FC<ControlComponentProps> = ({
                 type={"checkbox"}
                 checked={selectedScenarios.includes(scenario)}
                 onChange={(e) => {
-                  if (e.target.checked) {
+                  if ((e.target as HTMLInputElement).checked) {
                     setSelectedScenarios([...selectedScenarios, scenario]);
                   } else {
                     setSelectedScenarios(selectedScenarios.filter((s) => s !== scenario));
