@@ -32,7 +32,8 @@ const TutoComponent: React.FC<TutoComponentProps> = ({ isOpen, onClose, title })
   useEffect(() => {
     // Remove previous highlights
     document.querySelectorAll('.highlight').forEach(el => el.classList.remove('highlight'));
-  
+    document.querySelector('.modal_overlay_tutorial')?.classList.remove('right_bottom', 'left_bottom');
+
     if (steps[currentStep]?.targetClass) {
       const targetSelector = `.${steps[currentStep].targetClass}`;
       
@@ -48,7 +49,6 @@ const TutoComponent: React.FC<TutoComponentProps> = ({ isOpen, onClose, title })
       };
   
       if (!applyHighlight()) {
-  
         // Create a MutationObserver in order to track the dom when ready
         const observer = new MutationObserver((__, obs) => {
           if (applyHighlight()) {
