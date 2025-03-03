@@ -1,7 +1,8 @@
 @use "../../styles/main.scss" as *;
 
 .floating_card_component{
-    @include gap;
+    display: flex;
+    gap: 5px;
     flex-direction: row;
     align-items: center;
     @include card;
@@ -9,10 +10,10 @@
     width: fit-content;
     height: fit-content;
     z-index: 1000;
-    padding: 8px;
+    padding: 5px;
     background-color: $basic-white;
     right: 25px;
-    top: 23px;
+    top: 25px;
     z-index: 10000;
 }
 

@@ -61,7 +61,6 @@ const ChangePassword: React.FC = () => {
 
   return (
     <form onKeyDown={handleKeyDown} ref={formRef} onSubmit={handleSubmit} className="admin_content">
-      <h3>Changer de Mot de Passe</h3>
       {message && <p className="status_message">{message}</p>}
       <InputComponent label="Ancien mot de passe" type="password" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} required />
       <InputComponent label="Nouveau mot de passe" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />

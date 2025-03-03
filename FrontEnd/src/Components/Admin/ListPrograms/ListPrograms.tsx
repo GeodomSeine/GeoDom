@@ -61,19 +61,19 @@ const ListPrograms: React.FC = () => {
     fetchPrograms();
   }, [token]);
 
+
   return (
     <div className="admin_content">
-      <h3>Liste des Programmes</h3>
       {loading ? (
         <p>Chargement...</p>
       ) : error ? (
         <p className="status_message">{error}</p>
       ) : (
-        <ul >
+        <ul className="admin_content_list">
           {Array.isArray(programs) && programs.map((item: Program) => (
-            <li key={item.name}>
+            <li className={item.is_actived ? "is_visible" : "is_preview"} key={item.name}>
               <div>
-                <h4>{item.title}</h4>
+                <h4>{item.title}{item.is_actived ? " (actif)" : " (preview)"}</h4>
                 <p>{item.description}</p>
               </div>
               <div>

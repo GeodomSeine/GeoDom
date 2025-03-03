@@ -61,7 +61,7 @@ const LoginForm: React.FC = () => {
     <div className="admin_dashboard">
       <div className="admin_card">
         <form ref={formRef} onKeyDown={handleKeyDown} onSubmit={handleSubmit} className="admin_content">
-          <h3>Connexion Admin</h3>
+          <h3 color="var(--primary-blue)">Connexion Admin</h3>
           {error && <p className="status_message">{error}</p>}
           <InputComponent label="Nom d'utilisateur" type="text" value={username} onChange={(e) => setUsername(e.target.value)} required />
           <InputComponent label="Mot de passe" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />

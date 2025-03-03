@@ -81,20 +81,20 @@ const AddProgram: React.FC = () => {
 
   return (
     <form ref={formRef} onKeyDown={handleKeyDown} onSubmit={handleSubmit} className="admin_content">
-      <h3 >Ajouter un Programme</h3>
       {message && <p className="status_message">{message}</p>}
+      
       <InputComponent label="Nom du Programme" type="text" value={name} onChange={(e) => setName(e.target.value)} required />
       <InputComponent label={'Titre du Programme'} type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
       <InputComponent label={'Description du Programme'} type="textarea" value={description} onChange={(e) => setDescription(e.target.value)} />
       <InputComponent label={'Variables (exemple: ["flow", "no3", "nh4"])'} type="text" value={variables} onChange={(e) => setVariables(e.target.value)} required />
       <InputComponent label="Exutoire ID" type="number" value={exutoireId} onChange={(e) => setExutoireId(e.target.value)} required />
-      <InputComponent label="Prévisualisation" type="checkbox" checked={active} onChange={(e) => setIsActive((e.target as HTMLInputElement).checked)} />
       <InputComponent label="Image de fond" type="file" selectedFile={background?.name} onChange={handleFileChange(setBackground)} />
       <InputComponent label="PK map sld" type="file" selectedFile={pkMap?.name} onChange={handleFileChange(setPkMap)} />
       <InputComponent label="Seneque_aesn_hydro_basin sld" type="file" selectedFile={senequeAesnHydroBasin?.name} onChange={handleFileChange(setSenequeAesnHydroBasin)} />
-      <InputComponent label="seneque_aesn_hydro sld" type="file" selectedFile={senequeAesnHydro?.name} onChange={handleFileChange(setSenequeAesnHydro)} />
-      <InputComponent label="stations_donuts sld" type="file" selectedFile={stationsDonuts?.name} onChange={handleFileChange(setStationsDonuts)} />
-      <ButtonComponent txt="Ajouter" onClick={triggerSubmit} />
+      <InputComponent label="Seneque_aesn_hydro sld" type="file" selectedFile={senequeAesnHydro?.name} onChange={handleFileChange(setSenequeAesnHydro)} />
+      <InputComponent label="Stations_donuts sld" type="file" selectedFile={stationsDonuts?.name} onChange={handleFileChange(setStationsDonuts)} />
+      <InputComponent label="Prévisualisation" type="checkbox" checked={active} onChange={(e) => setIsActive((e.target as HTMLInputElement).checked)} />
+      <ButtonComponent txt="Ajouter" onClick={triggerSubmit}/>
     </form>
   );
 };

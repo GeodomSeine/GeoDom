@@ -81,11 +81,11 @@ const EditProgramModal: React.FC<EditProgramModalProps> = ({ isOpen, onClose, pr
     <Modal isOpen={isOpen} onClose={onClose} title="Éditer le Programme">
       <form ref={formRef} onKeyDown={handleKeyDown} onSubmit={handleSubmit} className="modal_action_body_admin">
         <InputComponent label={"Titre"} type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
-        <InputComponent label="Exutoire ID" type="textarea" value={description} onChange={(e) => setDescription(e.target.value)}></InputComponent>
+        <InputComponent label="Description" type="textarea" value={description} onChange={(e) => setDescription(e.target.value)}></InputComponent>
         <InputComponent label="Variables (format JSON)" type="text" value={variables} onChange={(e) => setVariables(e.target.value)} required />
         <InputComponent label="Exutoire ID" type="number" value={exutoireId} onChange={(e) => setExutoireId(e.target.value)} required />
         <InputComponent label={"Prévisualisation"} type={"checkbox"} checked={active} onChange={(e) => setIsActive((e.target as HTMLInputElement).checked)} />
-        <ButtonComponent txt="Ajouter" onClick={triggerSubmit} />
+        <ButtonComponent txt="Sauvegarder" onClick={triggerSubmit} />
       </form>
     </Modal>
   );

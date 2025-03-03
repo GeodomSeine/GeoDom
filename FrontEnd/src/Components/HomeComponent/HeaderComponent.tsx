@@ -37,9 +37,9 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
             </div>
             <div className='action_header right'>
                 {onSearch && <SearchComponent onSearch={onSearch} />}
-                <LogoComponent size={"30px"} Icon={Tutorial} onClick={() => setTutorialOpen && setTutorialOpen(true)}/>
+                <LogoComponent size={"25px"} Icon={Tutorial} onClick={() => setTutorialOpen && setTutorialOpen(true)}/>
                 {showImportButton && (
-                    <LogoComponent size={"35px"} Icon={Import} onClick={() => setIsModalOpen(true)} />
+                    <LogoComponent size={"30px"} Icon={Import} onClick={() => setIsModalOpen(true)} />
                 )}
             </div>
             <Modal title='Importer la session' isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>

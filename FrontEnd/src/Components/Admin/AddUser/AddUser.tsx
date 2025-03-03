@@ -57,7 +57,6 @@ const AddUser: React.FC = () => {
 
   return (
     <form ref={formRef} onKeyDown={handleKeyDown} onSubmit={handleSubmit} className="admin_content">
-      <h3>Ajouter un Utilisateur</h3>
       {message && <p className="status_message">{message}</p>}
       
         <InputComponent label="Nom d'utilisateur" type="text" value={username}  onChange={(e) => setUsername(e.target.value)} required/>

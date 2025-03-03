@@ -1,16 +1,14 @@
 @use "../../styles/main.scss" as *;
 
 .input_component {
-    @include gap;
+    display: flex;
     flex-direction: row;
-    align-items: center;
     width: fit-content;
     .button_max{
         max-width: 200px;
         height:30px
     }
     label {
-        @include gap;
         input:checked+span {
             color: $primary_blue;
         }
@@ -48,6 +46,8 @@
         height: 50px;
         max-height: 200px;
         max-width: 250px;
+        min-height: 35px;
+        min-width: 200px;
     }
 
 
@@ -82,4 +82,13 @@
 
 .input_component.type_file{
     cursor: text;
+    align-items: center;
+    @include gap;
+}
+
+.input_component.type_checkbox,
+.input_component.type_radio{
+    label {
+        @include gap;
+    }
 }
