@@ -1,6 +1,6 @@
 import React, { ReactNode, useState } from "react";
 import "./ToggleComponent.scss";
-import Arrow from "../../assets/down_arrow.svg?react";
+import Arrow from "../../assets/right_arrow.svg?react";
 import LogoComponent from "../SimpleComponents/LogoComponent";
 
 interface ToggleContainerProps {
@@ -15,19 +15,20 @@ const ToggleContainer: React.FC<ToggleContainerProps> = ({
   title,
   children,
   secondChild,
-  className = "space_container",
+  className,
   containsTile,
 }) => {
   const [isVisible, setIsVisible] = useState(true);
 
   return (
-    <div className={className}>
+    <div className={`space_container ${className}`}>
       <div className="space_header" onClick={() => setIsVisible((prev) => !prev)}>
         <h2>{title}</h2>
         <LogoComponent
           className={isVisible ? "is_visible" : "set_is_visible"}
           size={"35px"}
           Icon={Arrow}
+          customColor=""
         />
       </div>
       <div className={`space_body ${isVisible ? "" : "hidden"}`}>

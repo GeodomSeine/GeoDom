@@ -49,6 +49,7 @@ export interface Program {
   variables: ProgramVariable[];
   exutoire_id: number;
   background: string;
+  is_actived: boolean;
 }
 
 export interface ProgramVariable {
@@ -356,6 +357,21 @@ export const getPkGeom = async (
   try {
     const response = await api.get<GeoJsonResponse>(
       `/pk_geom/${program}/${obj_ord_pk}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching PK geometry:", error);
+    return null;
+  }
+};
+
+export const getPkGeomByStrahler = async (
+  program: string,
+  strahler: number
+): Promise<GeoJsonResponse | null> => {
+  try {
+    const response = await api.get<GeoJsonResponse>(
+      `/pk_geom/strahler/${program}/${strahler}`
     );
     return response.data;
   } catch (error) {

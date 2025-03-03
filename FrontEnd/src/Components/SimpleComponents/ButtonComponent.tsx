@@ -4,7 +4,7 @@ import "./ButtonComponent.scss";
 interface ButtonComponentProps {
 	disabled?: boolean;
 	link?: string;
-	txt?: string;
+	txt?: string | React.ReactNode;
 	className?:string;
 	onClick?: () => void;
 	onDark?: boolean |null;

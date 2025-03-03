@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState } from "react";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -11,7 +11,9 @@ import {
   Legend,
   Filler,
   ChartOptions,
+  LegendItem,
 } from "chart.js";
+import zoomPlugin from "chartjs-plugin-zoom";
 import { DonutsDataResponse, ProfileGraphDataResponse, ProgramVariable, Scenario } from "../../services/api";
 import { getColor } from "../../utils/mapUtils";
 
@@ -23,7 +25,8 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  Filler
+  Filler,
+  zoomPlugin
 );
 
 interface ProfileGraphProps {
@@ -37,11 +40,21 @@ interface ProfileGraphProps {
   decades: [number, number];
   profilLongs: React.RefObject<any>;
 }
+const ProfileGraph: React.FC<ProfileGraphProps> = ({
+  variable,
+  data,
+  xKey,
+  className = "profile_graph",
+  donutsData,
+  scenarioColors,
+  scenarios,
+  decades,
+  profilLongs
+}) => {
+  const [showObservations, setShowObservations] = useState(true);
 
-const ProfileGraph: React.FC<ProfileGraphProps> = ({ variable, data, xKey, className = "profile_graph" , donutsData, scenarioColors, scenarios, decades, profilLongs}) => {
-
+  // Prepare x-axis labels
   let xLabels = Object.keys(data);
-
   if (xKey === "PK") {
     xLabels.sort((a, b) => {
       const [_, ordA, pkA] = a.split('_').map(Number);
@@ -51,7 +64,6 @@ const ProfileGraph: React.FC<ProfileGraphProps> = ({ variable, data, xKey, class
   } else {
     xLabels.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
   }
-
   const xDisplayLabels = xLabels.map((_, index) => index + 1);
 
   const p5 = xLabels.map((x) => data[x]?.[`${variable.var_code.toLowerCase()}_p5`] || null);
@@ -63,7 +75,7 @@ const ProfileGraph: React.FC<ProfileGraphProps> = ({ variable, data, xKey, class
     data: (number | null)[];
     borderColor: string;
     backgroundColor: string;
-    pointStyle: 'circle';
+    pointStyle: "circle";
     pointRadius: number;
     pointBackgroundColor: string;
     order: number;
@@ -83,7 +95,7 @@ const ProfileGraph: React.FC<ProfileGraphProps> = ({ variable, data, xKey, class
           data: xLabels.map((label) => (label === x ? value : null)),
           borderColor: scenarioColors[scenario] || getColor("--success-color"),
           backgroundColor: scenarioColors[scenario] || getColor("--success-light"),
-          pointStyle: 'circle',
+          pointStyle: "circle",
           pointRadius: 4,
           pointBackgroundColor: scenarioColors[scenario] || getColor("--success-color"),
           order: 0,
@@ -99,25 +111,22 @@ const ProfileGraph: React.FC<ProfileGraphProps> = ({ variable, data, xKey, class
         label: `${variable.var_code.toUpperCase()} (P5)`,
         data: p5,
         borderColor: getColor("--danger-color"),
-        backgroundColor:  getColor("--basic-grey"),
-        fill: +2,
+        backgroundColor: getColor("--basic-grey"),
+        fill: 2,
       },
       {
         label: `${variable.var_code.toUpperCase()} (P50)`,
         data: p50,
         borderColor: getColor("--warning-color"),
-        order:-1,
+        order: -1,
       },
       {
         label: `${variable.var_code.toUpperCase()} (P90)`,
         data: p90,
         borderColor: getColor("--secondary-blue"),
-        order:-1,
+        order: -1,
       },
-      ...donutsDatasets.map((dataset) => ({
-        ...dataset,
-        order: -2,
-      })),
+      ...(showObservations ? donutsDatasets.map((dataset) => ({ ...dataset, order: -2 })) : []),
     ],
   };
 
@@ -125,29 +134,49 @@ const ProfileGraph: React.FC<ProfileGraphProps> = ({ variable, data, xKey, class
     responsive: true,
     scales: {
       x: {
-        title: {
-          display: true,
-          text: xKey,
-        },
+        title: { display: true, text: xKey },
       },
       y: {
-        title: {
-          display: true,
-          text: variable.unit_short,
-        },
+        title: { display: true, text: variable.unit_short },
       },
     },
     plugins: {
       legend: {
-        labels: {
-            filter: function(item, __) {
-                return !item.text.includes('Observation');
+        onClick: (__, legendItem, legend) => {
+          if (legendItem.datasetIndex === -1) {
+            setShowObservations(!showObservations);
+          } else {
+            const chart = legend.chart;
+            const index = legendItem.datasetIndex;
+            if (index !== undefined) {
+              const meta = chart.getDatasetMeta(index);
+              meta.hidden = !meta.hidden;
+              chart.update();
             }
-        }
+          }
+        },
+        labels: {
+          generateLabels: (chart) => {
+            const defaultLabels = ChartJS.defaults.plugins.legend.labels.generateLabels(chart);
+            const nonObservationLabels = defaultLabels.filter(
+              (label) => !label.text.includes("Observation (")
+            );
+            if (donutsDatasets.length > 0) {
+              nonObservationLabels.push({
+                text: "Observations",
+                fillStyle: getColor("--shade-light-grey"),
+                strokeStyle: getColor("--basic-black"),
+                lineWidth: 2,
+                hidden: !showObservations,
+                datasetIndex: -1, 
+                custom: true,
+              } as any as LegendItem);
+            }
+            return nonObservationLabels;
+          },
+        },
       },
-      tooltip: {
-        enabled: true,
-      },
+      tooltip: { enabled: true },
     },
   };
 

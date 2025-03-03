@@ -1,3 +1,5 @@
+@use "./variables.scss" as *;
+
 @mixin center {
     display: flex;
     justify-content: center;
@@ -22,10 +24,32 @@
     border-radius: 5px;
 }
 
+@mixin gap{
+    display: flex;
+    gap: 8px;
+}
+
+@mixin gapLarger{
+    display: flex;
+    gap: 12px;
+}
+
+
 @mixin transition{
     transition: all 200ms ease-in-out;
 }
 
 @mixin headerSpace{
-    padding: 75px 10px 10px 10px;
+    padding: 65px 10px 10px 10px;
+}
+
+@mixin blueEffect{
+    border: 1px solid $basic-grey;
+    transition: border-color 0.3s ease-in-out;
+}
+
+@mixin blueEffectFocus{
+    border-color: $primary-blue;
+    outline: none;
+    box-shadow: 0px 0px 5px rgba($primary-blue, 0.5);
 }

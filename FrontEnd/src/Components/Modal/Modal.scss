@@ -27,15 +27,14 @@ to {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 10000;
+    z-index: 10004;
     animation: overlay-fade-in 0.3s ease-out;
     .modal_action {
+        @include gap;
         background: white;
         padding: 8px;
         @include card;
-        display: flex;
-        flex-flow: column;
-        gap: 8px;
+        flex-direction: column;
         width: 300px;
         animation: modal-fade-in 0.3s ease-out;
         .modal_action_header {
@@ -45,10 +44,9 @@ to {
             align-items: center;
         }
         .modal_action_body{
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
+            @include gap;
+            flex-direction: row;
+            justify-content: center;
         }
     }
 }

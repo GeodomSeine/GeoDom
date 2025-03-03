@@ -7,10 +7,11 @@ interface PopupContentProps {
   mode: "complet" | "amont-aval";
   onSelectAmont: () => void;
   onSelectAval: () => void;
+  layer: "Hydro" | "Station";
 }
 
 const PopupContent: React.FC<PopupContentProps> = memo(
-  ({ properties, mode, onSelectAmont, onSelectAval }) => {
+  ({ properties, mode, onSelectAmont, onSelectAval, layer }) => {
     return (
       <>
         {/* Render properties dynamically */}
@@ -21,7 +22,7 @@ const PopupContent: React.FC<PopupContentProps> = memo(
         ))}
 
         {/* Buttons for "amont-aval" mode */}
-        {mode === "amont-aval" && (
+        {layer === "Hydro" && mode === "amont-aval" && (
           <div className="control_container">
             <ButtonComponent onDark={true} txt="Sélectionner Amont" onClick={onSelectAmont} />
             <ButtonComponent onDark={true} txt="Sélectionner Aval" onClick={onSelectAval} />

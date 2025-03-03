@@ -13,7 +13,7 @@ const ExportGeoPackageComponent: React.FC<HydroExportComponentProps> = ({ progra
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${program}_hydro.gpkg`;
+      a.download = `${program}.zip`;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -24,15 +24,11 @@ const ExportGeoPackageComponent: React.FC<HydroExportComponentProps> = ({ progra
   };
 
   return (
-    <div className="export_container json">
-            <div className='export_body'>
-                <ButtonComponent
-                    onClick={handleDownload}
-                    txt='Les données en GeoPackage'
-                    className='button_container'
-                />
-            </div>
-    </div>
+    <ButtonComponent
+        onClick={handleDownload}
+        txt='GeoPackage'
+        className='button_container'
+    />
   );
 };
 

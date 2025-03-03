@@ -7,6 +7,7 @@ interface ClickableCardProps {
   variables: string[];
   background: string;
   onClick?: () => void;
+  is_actived: boolean;
 }
 
 const CardComponent: React.FC<ClickableCardProps> = ({
@@ -15,11 +16,13 @@ const CardComponent: React.FC<ClickableCardProps> = ({
   variables,
   background,
   onClick,
+  is_actived
 }) => {
+
   return (
     <div onClick={onClick} className="card_component">
       <div className="card_text">
-        <h2>{title}</h2>
+        <h2>{(is_actived) ? title: title + " (Preview)"}</h2>
         <p>{description}</p>
         <div>
           <strong>Variables: </strong>

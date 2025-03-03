@@ -6,13 +6,17 @@ import HeaderComponent from './HeaderComponent';
 import { Program } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 import FooterComponent from '../SimpleComponents/FooterComponent';
+import { useAuth } from '../Admin/Auth/AuthContext';
 
-    type Props = {}
+    type Props = {
+        setTutorialOpen?: (value: boolean) => void;
+    }
 
-    export default function HomeComponent({}: Props) {
+    export default function HomeComponent({setTutorialOpen}: Props) {
         const [programs, setPrograms] = useState<ProgramResponse | null>(null);
         const [searchQuery, setSearchQuery] = useState(""); 
         const navigate = useNavigate();
+        const { isAuthenticated } = useAuth();
 
         useEffect(() => {
             const fetchPrograms = async () => {
@@ -38,11 +42,12 @@ import FooterComponent from '../SimpleComponents/FooterComponent';
         
         return (
             <div className='home_component'>
-                <HeaderComponent onSearch={setSearchQuery} showImportButton={true} visualizationData={visualizationData}></HeaderComponent>
+                <HeaderComponent onSearch={setSearchQuery} showImportButton={true} visualizationData={visualizationData} setTutorialOpen={setTutorialOpen}></HeaderComponent>
                 <div className="main_body">
                     <div className='main_scroll_area' >
+                        {/* need to add a condition in order for the tutorial to work and to recognize the "carbone dans l'orgeval" */}
                         {searchQuery ? (filteredPrograms.length > 0 ? filteredPrograms.map((item: Program) => (
-                                    item.background && (
+                                    item.background && (item.is_actived || isAuthenticated) && (
                                         <CardComponent
                                             key={item.name}
                                             title={item.title}
@@ -50,13 +55,14 @@ import FooterComponent from '../SimpleComponents/FooterComponent';
                                             variables={item.variables.map(variable => variable.var_code.toUpperCase())}
                                             background={item.background}
                                             onClick={() => handleCardClick(item)}
+                                            is_actived={item.is_actived}
                                         />
                                     )
                                 ))
                                 : <div className="no_results">Pas de résulats.</div>
                             )
                             : (Array.isArray(programs) && programs.map((item: Program) => (
-                                item.background && (
+                                item.background && (item.is_actived || isAuthenticated) && (
                                     <CardComponent
                                         key={item.name}
                                         title={item.title}
@@ -64,6 +70,7 @@ import FooterComponent from '../SimpleComponents/FooterComponent';
                                         variables={item.variables.map(variable => variable.var_code.toUpperCase())}
                                         background={item.background}
                                         onClick={() => handleCardClick(item)}
+                                        is_actived={item.is_actived}
                                     />
                                 )
                             )))

@@ -32,7 +32,8 @@ REQUIRED_KEYS = {
     "title": str,
     "description": str,
     "variables": list,
-    "exutoire_id": int
+    "exutoire_id": int,
+    "is_actived": bool
 }
 
 def initialize_database():

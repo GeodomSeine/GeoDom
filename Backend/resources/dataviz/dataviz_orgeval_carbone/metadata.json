@@ -1,7 +1,17 @@
 {
-    "name" : "dataviz_orgeval_carbone",
-    "title": "Le carbone dans l’Orgeval", 
+    "name": "dataviz_orgeval_carbone",
+    "title": "Le carbone dans l’Orgeval",
     "description": "Le carbone dans l’Orgeval",
-    "variables": ["FLOW", "NO3", "DIC",  "TA", "PH", "DOC", "DOM1", "DOM2", "DOM3"],
-    "exutoire_id": 7087
+    "variables": [
+        "DIC",
+        "DOM1",
+        "DOM2",
+        "DOM3",
+        "FLOW",
+        "NO3",
+        "PH",
+        "TA"
+    ],
+    "exutoire_id": 7087,
+    "is_actived": true
 }

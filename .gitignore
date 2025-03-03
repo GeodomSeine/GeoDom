@@ -29,6 +29,7 @@ __pycache__
 checked_folder_hashes.db
 Backend/*.log
 Backend/.env
+Backend/fastapi_admin.db
 
 # Coverage files and folders
 Backend/*coverage*

@@ -4,9 +4,9 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background-color: $basic-grey;
-    @include innerShadow;
+    background-color: $basic-white;
     border-radius: 5px;
+    @include blueEffect;
     input{
         height: 30px;
         background-color: unset;
@@ -18,6 +18,13 @@
         font-family: "Roboto-Regular";
     }
     input::placeholder{
-        color: $shade-mid-grey;
+        color: $basic-black;
+    }
+
+    &:has(input:focus) {
+        @include blueEffectFocus;
+        input::placeholder{
+            color: $primary-blue;
+        }
     }
 }

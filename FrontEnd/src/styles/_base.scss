@@ -1,4 +1,3 @@
-// Réinitialisation CSS de base
 
 @font-face {
   font-family: 'Roboto-Regular';
@@ -14,8 +13,23 @@
     
   }
   
-  // Typographie de base
   body {
     font-family: 'Roboto-Regular';
   }
+
+  .highlight {
+    position: relative;
+    z-index: 10001;
+    animation: fadeInOut 1.2s infinite alternate; 
+  }
+
+  @keyframes fadeInOut {
+      0% {
+          opacity: 0.5; 
+      }
+      100% {
+          opacity: 1; 
+      }
+  }
+
   

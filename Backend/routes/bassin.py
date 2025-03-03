@@ -6,6 +6,7 @@ from core.database import async_session_pynuts
 from models.models import SenequeAesnBasin
 from core.logger import logger
 from sqlalchemy import func
+import geopandas as gpd
 
 router = APIRouter(prefix="/bassin", tags=["Bassins hydrographiques"])
 
@@ -77,3 +78,24 @@ async def get_basin(program: str):
     }
 
     return geojson_data
+
+async def get_bassin_geopackage(program: str):
+    """
+    Exporte les données du bassin d'un programme dans un fichier GeoPackage.
+
+    Args:
+        program (str): Nom du programme (schéma).
+    """
+    async with async_session_pynuts() as session:
+        print("Export")
+        basin_data = await fetch_basin_from_db(program, session)
+        
+        return [
+            {
+                "type": "Feature",
+                "properties": {
+                },
+                "geometry": basin["geometry"]
+            }
+            for basin in basin_data if basin["geometry"] is not None
+        ]

@@ -58,7 +58,7 @@ function getColorFromSLD(value: number, rules: SLDColorRule[]): string {
       return rule.color;
     }
   }
-  return "#000000"; // Fallback color
+  return "var(--basic-black)"; // Fallback color
 }
 
 function MapBaseComponent({

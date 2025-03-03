@@ -26,12 +26,7 @@ async def fetch_pk_geom_from_db(program: str, obj_ord_pk: str, session: AsyncSes
 
     try:
         query = select(
-            DynamicPk.pk,
-            DynamicPk.strahler,
-            DynamicPk.id_obj,
-            DynamicPk.code_bas,
-            DynamicPk.obj_ord_pk,
-            func.ST_AsGeoJSON(func.ST_Transform(DynamicPk.the_geom, 4326)).label("geometry")
+            DynamicPk.geojson_feature
         ).where(DynamicPk.obj_ord_pk == obj_ord_pk)
 
         result = await session.execute(query)
@@ -39,23 +34,42 @@ async def fetch_pk_geom_from_db(program: str, obj_ord_pk: str, session: AsyncSes
 
         if not pk_data:
             raise HTTPException(status_code=404, detail="PK non trouvé.")
+        return pk_data.geojson_feature
+        
+    except Exception as e:
+        logger.error("Erreur lors de la récupération de la géométrie du PK : %s", e)
+        raise HTTPException(status_code=500, detail=str(e))
 
+
+async def fetch_pk_geom_by_strahler(program: str, strahler: int, session: AsyncSession):
+    """
+    Récupère la géométrie de tous les PK d'un programme ayant un certain niveau de Strahler.
+
+    Args:
+        program (str): Nom du programme (schéma).
+        strahler (str): Niveau de Strahler.
+        session (AsyncSession): Session SQLAlchemy asynchrone.
+
+    Returns:
+        dict: Géométrie des PK sous forme de GeoJSON.
+    """
+    DynamicPk = Pk.create(program)
+
+    try:
+        query = select(
+            DynamicPk.geojson_feature
+        ).where(DynamicPk.strahler == strahler)
+
+        result = await session.execute(query)
+        pk_data = result.fetchall()
         geojson_data = {
-            "type": "Feature",
-            "properties": {
-                "pk": pk_data.pk,
-                "strahler": pk_data.strahler,
-                "id_obj": pk_data.id_obj,
-                "code_bas": pk_data.code_bas,
-                "obj_ord_pk": pk_data.obj_ord_pk
-            },
-            "geometry": json.loads(pk_data.geometry) if pk_data.geometry else None
+            "type": "FeatureCollection",
+            "features": [row.geojson_feature for row in pk_data]
         }
-
         return geojson_data
 
     except Exception as e:
-        logger.error("Erreur lors de la récupération de la géométrie du PK : %s", e)
+        logger.error("Erreur lors de la récupération de la géométrie des PK : %s", e)
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -73,5 +87,23 @@ async def get_pk_geom(program: str, obj_ord_pk: str):
     """
     async with async_session_pynuts() as session:
         data = await fetch_pk_geom_from_db(program, obj_ord_pk, session)
+
+    return data
+
+
+@router.get("/strahler/{program}/{strahler}")
+async def get_pk_geom_by_strahler(program: str, strahler: int):
+    """
+    Récupère la géométrie de tous les PK d'un programme ayant un certain niveau de Strahler.
+
+    Args:
+        program (str): Nom du programme.
+        strahler (str): Niveau de Strahler.
+
+    Returns:
+        dict: Géométrie des PK sous forme de GeoJSON.
+    """
+    async with async_session_pynuts() as session:
+        data = await fetch_pk_geom_by_strahler(program, strahler, session)
 
     return data

@@ -4,32 +4,64 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import HomeComponent from './Components/HomeComponent/HomeComponent';
 import VisualisationPage from './Components/Visulisation/VisualisationPage';
 import ImportJsonComponent from './Components/ImportComponents/ImportJsonComponent';
+import TutoComponent from './Components/Modal/TutoComponent';
 import { getPrograms, ProgramResponse, ProgramVariable } from './services/api';
+import { getCookie, setCookie } from './utils/cookies';
+import AdminDashboard from './Components/Admin/Dashboard/AdminDashboard';
+import LoginForm from './Components/Admin/LoginForm/LoginForm';
+import { useAuth, AuthProvider} from './Components/Admin/Auth/AuthContext';
+
+
+const AdminPage: React.FC = () => {
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? <AdminDashboard /> : <LoginForm />;
+};
+
 
 const App: React.FC = () => {
   const [programs, setPrograms] = useState<ProgramResponse | null>(null);
 
+  const [tutorialOpen, setTutorialOpen] = useState(() => {
+    return getCookie("tutorial_seen") !== "true";
+  });
+
   useEffect(() => {
-      const fetchPrograms = async () => {
-          const data = await getPrograms();
-          setPrograms(data);
-      };
-      fetchPrograms();
+    if (tutorialOpen) {
+      setCookie("tutorial_seen", "true", 365);
+    }
+  }, [tutorialOpen]);
+
+  useEffect(() => {
+    const fetchPrograms = async () => {
+      const data = await getPrograms();
+      setPrograms(data);
+    };
+    fetchPrograms();
   }, []);
 
-  const visualizationData = Array.isArray(programs) ? programs.map(program => ({
-    name: program.name,
-    variables: program.variables.map((variable:ProgramVariable) => variable.var_code)
-  })) : [];
+  const visualizationData = Array.isArray(programs)
+    ? programs.map(program => ({
+        name: program.name,
+        variables: program.variables.map((variable: ProgramVariable) => variable.var_code)
+      }))
+    : [];
 
   return (
-    <Router>
+    <AuthProvider>
+      <Router>
         <Routes>
-          <Route path="/" element={<HomeComponent />} />
+          <Route path="/" element={<HomeComponent setTutorialOpen={setTutorialOpen}/>} />
           <Route path="/:program_name" element={<VisualisationPage />} />
-          <Route path="/import-json" element={<ImportJsonComponent visualizationData={visualizationData} />}/>
+          <Route path="/import-json" element={<ImportJsonComponent visualizationData={visualizationData} />} />
+          <Route path="/admin" element={<AdminPage />} />
         </Routes>
-    </Router>
+        <TutoComponent
+          title="Geodom Tutoriel"
+          isOpen={tutorialOpen}
+          onClose={() => setTutorialOpen(false)}
+        />
+      </Router>
+    </AuthProvider>
   );
 };
 

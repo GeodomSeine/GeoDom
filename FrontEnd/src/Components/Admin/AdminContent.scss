@@ -1,0 +1,144 @@
+@use "../../styles/main.scss" as *;
+
+.admin_dashboard {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  align-items: center;
+
+  .admin_card {
+    @include gap;
+    width: fit-content;
+    height: fit-content;
+    max-height: 100%;
+    flex-direction: column;
+    padding: 10px;
+    @include card;
+
+    .admin_header {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+
+      .button_container {
+        background-color: $danger_color;
+        color: $basic_white;
+        border-color: $danger_color;
+      }
+
+      .button_container:hover {
+        background-color: transparent;
+        color: $danger_color;
+        border-color: $danger_color;
+      }
+    }
+
+    .admin_nav {
+      @include gap;
+      flex-direction: row;
+
+      .button_container:not(.button_on_dark):hover {
+        background-color: $primary_blue;
+        color: $basic_white;
+      }
+    }
+
+    .admin_content {
+      @include gap;
+      flex-direction: column;
+      max-height: 100%;
+      flex-wrap: nowrap;
+      overflow-y: auto;
+      overflow-x: hidden;
+
+      .status_message {
+        font-size: 1rem;
+        color: $danger-color;
+      }
+
+      .add_file_admin {
+        @include gap;
+        align-items: center;
+      }
+
+      .admin_content_list {
+        @include gap;
+        flex-direction: column;
+        list-style-type: none;
+        width: 100%;
+
+        .is_visible, .is_preview {
+          display: flex;
+          justify-content: space-between;
+          @include card;
+          padding: 5px;
+          background-color: transparent;
+
+          :first-child {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+          }
+
+          :last-child {
+            @include gap;
+            align-items: center;
+            flex-direction: row;
+          }
+        }
+        .is_preview{
+          background-color: $basic-grey;
+        }
+      }
+
+      select {
+        width: 250px;
+        padding: 5px;
+        border-radius: 5px;
+        @include blueEffect;
+
+        &:focus {
+          @include blueEffectFocus;
+        }
+      }
+      &:has(.admin_content_list){
+        padding: 5px;
+      }
+    }
+  }
+
+  .modal_overlay {
+    .modal_action {
+      .modal_action_body {
+        flex-direction: column;
+        .modal_action_body_admin {
+          @include gap;
+          flex-direction: column;
+          width: 100%;
+          align-items: center;
+
+          .modal_action_delete {
+            @include gap;
+            flex-direction: row;
+            justify-content: center;
+
+            :last-child {
+              background-color: $danger_color;
+              color: $basic_white;
+              border-color: $danger_color;
+            }
+
+            :last-child:hover {
+              background-color: transparent;
+              color: $danger_color;
+              border-color: $danger_color;
+            }
+          }
+        }
+      }
+    }
+  }
+}

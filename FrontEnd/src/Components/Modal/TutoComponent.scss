@@ -1,0 +1,78 @@
+@use "../../styles/main.scss" as *;
+
+@keyframes modal-fade-in {
+from {
+    opacity: 0;
+    transform: translateY(-20px);
+}
+to {
+    opacity: 1;
+    transform: translateY(0);
+}
+}
+
+@keyframes overlay-fade-in {
+from {
+    opacity: 0;
+}
+to {
+    opacity: 1;
+}
+}
+
+.modal_overlay_tutorial {
+    position: fixed;
+    inset: 0;
+    background-color: rgba($shade-grey, 0.5);
+    justify-content: right;
+    align-items: flex-end;
+    display: flex;
+    z-index: 10000;
+    animation: overlay-fade-in 0.3s ease-out;
+    padding: 15px;
+    .modal_action {
+        @include gap;
+        background: white;
+        padding: 10px;
+        @include card;
+        flex-flow: column;
+        width: 500px;
+        z-index: 10002;
+        animation: modal-fade-in 0.3s ease-out; 
+        .modal_action_header {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal_action_body{
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .modal_action_footer{
+            @include gap;
+            justify-content: right;
+            align-items: center;
+            justify-content: space-between;
+        }
+    }
+}
+
+//modifying the position of the tutorial pop-up
+.modal_overlay_tutorial.left_top{
+    justify-content: left;
+    align-items: flex-start;
+}   
+.modal_overlay_tutorial.rigth_top{
+    justify-content: right;
+    align-items: flex-start;
+}
+.modal_overlay_tutorial.left_bottom{
+    justify-content: left;
+    align-items: flex-end;
+}
+.modal_overlay_tutorial.rigth_bottom{
+    justify-content: right;
+    align-items: flex-end;
+}

@@ -1,7 +1,7 @@
 import os
 import json
 import shutil
-from fastapi import APIRouter, Depends, Form, UploadFile, File, Request
+from fastapi import APIRouter, Depends, Form, UploadFile, File, Request, HTTPException
 from fastapi.templating import Jinja2Templates
 from core.auth import get_current_admin_user
 from resources.parser import is_metadata_json_valide, validate_schema_and_data, is_folder_valide, EXPECTED_FILES
@@ -14,10 +14,6 @@ templates = Jinja2Templates(directory="templates")
 DATAVIZ_DIR = "resources/dataviz"
 os.makedirs(DATAVIZ_DIR, exist_ok=True)
 
-@router.get("/admin")
-async def admin_page(request: Request):
-    return templates.TemplateResponse("admin.html", {"request": request})
-
 @router.post("/admin/add", dependencies=[Depends(get_current_admin_user)])
 async def add_program(
     name: str = Form(...),
@@ -25,6 +21,7 @@ async def add_program(
     description: str = Form(...),
     variables: str = Form(...),
     exutoire_id: int = Form(...),
+    is_actived: bool = Form(...),
     background: UploadFile = File(...),
     pk_map: UploadFile = File(...),
     seneque_aesn_hydro_basin: UploadFile = File(...),
@@ -53,7 +50,8 @@ async def add_program(
             "title": title,
             "description": description,
             "variables": json.loads(variables),
-            "exutoire_id": exutoire_id
+            "exutoire_id": exutoire_id, 
+            "is_actived": is_actived
         }
 
         metadata_path = os.path.join(program_folder, "metadata.json")
@@ -77,3 +75,72 @@ async def add_program(
         return {"message" : "Données manquantes ou invalides"}
 
     return {"message": f"Programme '{name}' ajouté avec succès !"}
+
+
+# ✅ Éditer un programme
+@router.put("/admin/edit/{program_name}", dependencies=[Depends(get_current_admin_user)])
+async def edit_program(
+    program_name: str,
+    title: str = Form(None),
+    description: str = Form(None),
+    variables: str = Form(None),
+    exutoire_id: int = Form(None),
+    is_actived: bool = Form(None),
+    background: UploadFile = File(None),
+    pk_map: UploadFile = File(None),
+    seneque_aesn_hydro_basin: UploadFile = File(None),
+    seneque_aesn_hydro: UploadFile = File(None),
+    stations_donuts: UploadFile = File(None),
+):
+    program_folder = os.path.join(DATAVIZ_DIR, program_name)
+    metadata_path = os.path.join(program_folder, "metadata.json")
+
+    if not os.path.exists(program_folder):
+        raise HTTPException(status_code=404, detail="Programme non trouvé.")
+
+    try:
+        with open(metadata_path, "r", encoding="utf-8") as f:
+            metadata = json.load(f)
+
+        if title: metadata["title"] = title
+        if description: metadata["description"] = description
+        if variables: metadata["variables"] = json.loads(variables)
+        if exutoire_id: metadata["exutoire_id"] = exutoire_id
+        metadata["is_actived"] = is_actived
+
+        with open(metadata_path, "w", encoding="utf-8") as f:
+            json.dump(metadata, f, indent=4, ensure_ascii=False)
+
+        file_map = {
+            "background.png": background,
+            "pk_map.sld": pk_map,
+            "seneque_aesn_hydro_basin.sld": seneque_aesn_hydro_basin,
+            "seneque_aesn_hydro.sld": seneque_aesn_hydro,
+            "stations_donuts.sld": stations_donuts,
+        }
+
+        for filename, file in file_map.items():
+            if file:
+                file_path = os.path.join(program_folder, filename)
+                with open(file_path, "wb") as buffer:
+                    shutil.copyfileobj(file.file, buffer)
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur lors de la modification : {str(e)}")
+
+    return {"message": f"Programme '{program_name}' mis à jour avec succès !"}
+
+
+# ✅ Supprimer un programme
+@router.delete("/admin/delete/{program_name}", dependencies=[Depends(get_current_admin_user)])
+async def delete_program(program_name: str):
+    program_folder = os.path.join(DATAVIZ_DIR, program_name)
+
+    if not os.path.exists(program_folder):
+        raise HTTPException(status_code=404, detail="Programme non trouvé.")
+
+    try:
+        shutil.rmtree(program_folder)
+        return {"message": f"Programme '{program_name}' supprimé avec succès !"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur lors de la suppression : {str(e)}")

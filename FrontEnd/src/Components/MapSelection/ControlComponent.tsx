@@ -42,23 +42,16 @@ const ControlComponent: React.FC<ControlComponentProps> = ({
       <div className='control_component'>
         {/* Sélection du mode */}
         <div className="mode_selector">
-          <InputComponent 
-              label={"Complet"}
-              type={"radio"}
-              checked={mode === "complet"}
-              onChange={() => setMode("complet")}>
-          </InputComponent>
-          <InputComponent 
-              label={"Amont-aval"}
-              type={"radio"}
-              checked={mode === "amont-aval"}
-              onChange={() => setMode("amont-aval")}>
-          </InputComponent>
+          <select value={mode} onChange={(e) => setMode(e.target.value as "complet" | "amont-aval")}>
+            <option value="complet">Complet</option>
+            <option value="amont-aval">Amont-aval</option>
+          </select>
+          {mode === "amont-aval" && (
+            <ButtonComponent txt={"Réinitialiser"} onClick={resetSelection}></ButtonComponent>
+          )}
         </div>
 
-        {mode === "amont-aval" && (
-          <ButtonComponent txt={"Réinitialiser"} onClick={resetSelection}></ButtonComponent>
-        )}
+        
 
         {/* Sélection des variables */}
         <div className='selected_indicators'>
@@ -70,7 +63,7 @@ const ControlComponent: React.FC<ControlComponentProps> = ({
               type={"checkbox"}
               checked={selectedVariables.includes(variable)}
               onChange={(e) => {
-                if (e.target.checked) {
+                if ((e.target as HTMLInputElement).checked) {
                   setSelectedVariables([...selectedVariables, variable]);
                 } else {
                   setSelectedVariables(selectedVariables.filter((v) => v !== variable));
@@ -90,7 +83,7 @@ const ControlComponent: React.FC<ControlComponentProps> = ({
                 type={"checkbox"}
                 checked={selectedScenarios.includes(scenario)}
                 onChange={(e) => {
-                  if (e.target.checked) {
+                  if ((e.target as HTMLInputElement).checked) {
                     setSelectedScenarios([...selectedScenarios, scenario]);
                   } else {
                     setSelectedScenarios(selectedScenarios.filter((s) => s !== scenario));

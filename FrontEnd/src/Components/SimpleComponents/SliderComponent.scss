@@ -30,7 +30,11 @@
 }
 
 .slider_container.doubled{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   .slider_track {
+    width: 95%;
     .slider_thumb-0{
       transform: translateX(-10px);
     }
