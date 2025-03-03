@@ -1,11 +1,10 @@
 @use "../../styles/main.scss" as *;
 .map_component {
+    @include gap;
     height: 100%;
     width: 100%;
-    display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
     .leaflet-container {
         height: 100%;
         width: 100%;
@@ -24,7 +23,7 @@
             z-index: 1000;
             display: flex;
             flex-direction: column;
-            background-color: white;
+            background-color: $basic-white;
             @include card;
             .logo_container{
                 border-bottom: solid 2px $basic-grey;
@@ -37,10 +36,6 @@
                 background-color: $basic-grey;
             }
         }
-        // .leaflet-control-container{
-        //     //tmp display none for the layer 
-        //     display: none;
-        // }
     }
 }
 

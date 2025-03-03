@@ -5,9 +5,8 @@
         height: fit-content;
         min-height: 100vh;
         .main_scroll_area{
-            display: flex;
+            @include gapLarger;
             flex-flow: row wrap;
-            gap: 15px;
             .no_results{
                 height: 50vh;
                 width: 100%;
@@ -15,11 +14,6 @@
                 align-items: center;
                 justify-content:center;
             }
-            // need to change this for the orgeval
-            // :not(.highlight) {
-            //     display: none;
-            // }
         }
-        
     }
 }

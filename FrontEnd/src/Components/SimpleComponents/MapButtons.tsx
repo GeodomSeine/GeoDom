@@ -54,7 +54,7 @@ const MapControls: React.FC<MapControlsProps> = ({ bounds, children }) => {
             </div>
 
             {children && (
-                <div ref={dynamicsControls} onClick={zoomToBounds} className={`map_buttons_children ${isVisible ? "" : "hidden"}`}>
+                <div ref={dynamicsControls} className={`map_buttons_children ${isVisible ? "" : "hidden"}`}>
                     {children}
                 </div>
             )}

@@ -10,18 +10,21 @@
     @include shadow;
     border-radius: 5px;
     color: $basic-black;
-    // calc to adjust based of the gap and padding.
-    min-width: calc(50% - 15px/2);
+    min-width: calc(50% - 6px);
     .card_text{
         padding: 10px;
         width: 20vw;
         flex-grow: 1;
+        >:first-child{
+            color: $primary-blue;
+        }
     }   
     .card_img{
         border-radius: 0 5px 5px 0;
         height: 100%;
         width: 300px; 
         flex-grow: 1;
+        object-fit: cover;
     }
 }
 

@@ -1,5 +1,4 @@
 import React from 'react';
-import './ExportComponent.scss';
 import ButtonComponent from '../SimpleComponents/ButtonComponent';
 
 interface ExportJsonComponentProps {
@@ -29,15 +28,11 @@ const ExportJsonComponent: React.FC<ExportJsonComponentProps> = ({ exportConf })
         }
     };
     return (
-        <div className="export_container json">
-            <div className='export_body'>
-                <ButtonComponent
-                onClick={handleExport}
-                txt='La session de visualisation'
-                className='button_container'
-                />
-            </div>
-        </div>
+        <ButtonComponent
+            onClick={handleExport}
+            txt='Session'
+            className='button_container'
+        />
     );
     
 };

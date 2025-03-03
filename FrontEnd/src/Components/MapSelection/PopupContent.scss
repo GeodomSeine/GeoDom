@@ -11,17 +11,15 @@
                 margin: 5px;
                 width: fit-content;
                 .leaflet-elements-container{
-                    display: flex;
+                    @include gap;
                     flex-direction: column;
-                    gap: 5px;
                     width: fit-content;
                     color: $basic-white;
                     div{
                         width: max-content;
                     }
                     .control_container{
-                        display: flex;
-                        gap: 5px;
+                        @include gap;
                         font-size: 0.7rem;
                     }
                 }

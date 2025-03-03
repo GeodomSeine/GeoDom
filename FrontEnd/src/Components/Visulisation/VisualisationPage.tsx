@@ -28,10 +28,10 @@ import ExportJsonComponent from "../ExportComponent/ExportJsonComponent";
 import ExportPdfComponent from "../ExportComponent/ExportPdfComponent";
 import PercentileSelector from "../SimpleComponents/PercentileSelector";
 import { scenarioColorPalette } from "../../utils/scenarioColorPalette";
-
-const scenarioColors: Record<number, string> = {}
 import ExportCsvComponent from "../ExportComponent/ExportCsvComponent";
 import ExportGeoPackageComponent from "../ExportComponent/ExportGeoPackageComponent";
+
+const scenarioColors: Record<number, string> = {}
 
 type ChartData = Array<{
   decade: number;
@@ -448,9 +448,9 @@ const VisualisationPage: React.FC = () => {
   return (
     <div className='home_component_visualisation'>
       <FloatingAction>
-        <ExportJsonComponent exportConf={exportConf} />
-        <ExportPdfComponent exportPdfInfo={exportPdfInfo} />
-        {data && <ExportCsvComponent exportCsvData={exportData} />}
+        <ExportJsonComponent exportConf={exportConf}/>
+        <ExportPdfComponent exportPdfInfo={exportPdfInfo}/>
+        {data && <ExportCsvComponent exportCsvData={exportData}/>}
         <ExportGeoPackageComponent program={program!.name} />
       </FloatingAction>
       <div className='home_body'>

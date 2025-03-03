@@ -1,18 +1,16 @@
 @use "../../styles/main.scss" as *;
 
 .input_component {
-    display: flex;
+    @include gap;
     flex-direction: row;
     align-items: center;
-    gap: 5px;
     width: fit-content;
     .button_max{
         max-width: 200px;
         height:30px
     }
     label {
-        display: flex;
-        gap: 4px;
+        @include gap;
         input:checked+span {
             color: $primary_blue;
         }

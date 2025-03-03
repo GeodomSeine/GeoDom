@@ -3,7 +3,6 @@ import html2canvas from 'html2canvas';
 import L from 'leaflet';
 import "leaflet-simple-map-screenshoter";
 import jsPDF from 'jspdf';
-import './ExportComponent.scss';
 import ButtonComponent from '../SimpleComponents/ButtonComponent';
 
 const getMapDimensionsFromBounds = (map: L.Map) => {
@@ -113,9 +112,7 @@ const ExportPdfComponent: React.FC<ExportPdfComponentProps> = ({ exportPdfInfo }
     };
 
     return (
-        <div className="export_container">
-            <ButtonComponent onClick={handleExportPDF} txt='Exporter en PDF' />
-        </div>
+        <ButtonComponent onClick={handleExportPDF} txt='PDF' />
     );
 };
 

@@ -1,8 +1,7 @@
 @use "../../styles/main.scss" as *;
 
 .percentile_selector {
-  display: flex;
+  @include gap;
   flex-direction: row;
-  gap: 10px;
 }
 

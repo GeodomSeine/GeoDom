@@ -31,8 +31,11 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
 
     return (
         <div className="header_component">
-            <LogoComponent size={"50px"} onClick={handleHomeClick} />
-            <div className='action_header'>
+            <div onClick={handleHomeClick} className='action_header left'>
+                <LogoComponent size={"45px"} />
+                <h1>Geodom</h1>
+            </div>
+            <div className='action_header right'>
                 {onSearch && <SearchComponent onSearch={onSearch} />}
                 <LogoComponent size={"30px"} Icon={Tutorial} onClick={() => setTutorialOpen && setTutorialOpen(true)}/>
                 {showImportButton && (

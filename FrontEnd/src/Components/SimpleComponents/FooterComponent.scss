@@ -1,19 +1,17 @@
 @use "../../styles/main.scss" as *;
 .main_footer_container{
     height: fit-content;
-    display: flex;
+    @include gap;
     flex-direction: row;
-    gap: 10px;
     align-items: flex-start;
     padding: 20px 10px 20px 10px;
     border-top: 1px solid $basic-grey;
+    div{
+        @include gap;
+        flex-direction: column;
+        justify-content: left;
+    }
     :first-child{
         width: 20vw;
-    }
-    div{
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        justify-content: left;
     }
 }

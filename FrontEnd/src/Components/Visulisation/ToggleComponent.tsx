@@ -28,6 +28,7 @@ const ToggleContainer: React.FC<ToggleContainerProps> = ({
           className={isVisible ? "is_visible" : "set_is_visible"}
           size={"35px"}
           Icon={Arrow}
+          customColor=""
         />
       </div>
       <div className={`space_body ${isVisible ? "" : "hidden"}`}>

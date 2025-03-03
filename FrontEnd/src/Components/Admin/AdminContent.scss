@@ -9,12 +9,11 @@
   align-items: center;
 
   .admin_card {
+    @include gap;
     width: fit-content;
     height: fit-content;
     max-height: 100%;
-    display: flex;
     flex-direction: column;
-    gap: 10px;
     padding: 10px;
     @include card;
 
@@ -38,9 +37,8 @@
     }
 
     .admin_nav {
-      display: flex;
+      @include gap;
       flex-direction: row;
-      gap: 5px;
 
       .button_container:not(.button_on_dark):hover {
         background-color: $primary_blue;
@@ -49,13 +47,12 @@
     }
 
     .admin_content {
-      display: flex;
+      @include gap;
       flex-direction: column;
       max-height: 100%;
       flex-wrap: nowrap;
       overflow-y: auto;
       overflow-x: hidden;
-      gap: 10px;
       padding: 5px;
 
       .status_message {
@@ -64,15 +61,13 @@
       }
 
       .add_file_admin {
-        display: flex;
+        @include gap;
         align-items: center;
-        gap: 10px;
       }
 
       ul {
-        display: flex;
+        @include gap;
         flex-direction: column;
-        gap: 7px;
         list-style-type: none;
         width: 100%;
 
@@ -90,26 +85,26 @@
           }
 
           :last-child {
-            display: flex;
+            @include gap;
             align-items: center;
             flex-direction: row;
-            gap: 5px;
           }
         }
       }
 
       select {
         width: 250px;
-        padding: 8px;
-        border: 1px solid $basic-grey;
+        padding: 5px;
         border-radius: 5px;
-        transition: border-color 0.3s ease-in-out;
+        @include blueEffect;
 
         &:focus {
-          border-color: $primary-blue;
-          outline: none;
-          box-shadow: 0px 0px 5px rgba($primary-blue, 0.5);
+          @include blueEffectFocus;
         }
+      }
+
+      >:first-child{
+        color: $primary-blue;
       }
     }
   }
@@ -117,17 +112,16 @@
   .modal_overlay {
     .modal_action {
       .modal_action_body {
+        flex-direction: column;
         .modal_action_body_admin {
-          display: flex;
+          @include gap;
           flex-direction: column;
-          gap: 15px;
           max-width: 85%;
 
           .modal_action_delete {
-            display: flex;
+            @include gap;
             flex-direction: row;
             justify-content: center;
-            gap: 15px;
 
             :last-child {
               background-color: $danger_color;

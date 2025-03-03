@@ -5,15 +5,22 @@
     justify-content: space-between;
     padding: 0 15px 0 15px;
     @include shadow;
+    //important to avoid the different display durring the tutorial
     position: fixed !important;
     width: 100%;
-    height: 65px;
+    height: 55px;
     background-color: white;
     z-index: 10000;
     .action_header{
-        display: flex;
+        @include gap;
         width: fit-content;
         align-items: center;
-        gap: 15px;
+        &.left{
+            cursor: pointer;
+            @include transition;
+            &:hover{
+                color: $primary-blue;
+            }
+        }
     }
 }

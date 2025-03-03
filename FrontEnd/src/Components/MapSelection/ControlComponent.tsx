@@ -42,23 +42,16 @@ const ControlComponent: React.FC<ControlComponentProps> = ({
       <div className='control_component'>
         {/* Sélection du mode */}
         <div className="mode_selector">
-          <InputComponent 
-              label={"Complet"}
-              type={"radio"}
-              checked={mode === "complet"}
-              onChange={() => setMode("complet")}>
-          </InputComponent>
-          <InputComponent 
-              label={"Amont-aval"}
-              type={"radio"}
-              checked={mode === "amont-aval"}
-              onChange={() => setMode("amont-aval")}>
-          </InputComponent>
+          <select value={mode} onChange={(e) => setMode(e.target.value as "complet" | "amont-aval")}>
+            <option value="complet">Complet</option>
+            <option value="amont-aval">Amont-aval</option>
+          </select>
+          {mode === "amont-aval" && (
+            <ButtonComponent txt={"Réinitialiser"} onClick={resetSelection}></ButtonComponent>
+          )}
         </div>
 
-        {mode === "amont-aval" && (
-          <ButtonComponent txt={"Réinitialiser"} onClick={resetSelection}></ButtonComponent>
-        )}
+        
 
         {/* Sélection des variables */}
         <div className='selected_indicators'>

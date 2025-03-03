@@ -1,17 +1,16 @@
 @use "../../styles/main.scss" as *;
 
 .map_buttons {
+    @include gap;
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 8px;
+    right: 8px;
     z-index: 1000;
-    display: flex;
     flex-direction: column;
     align-items: end;
-    gap: 8px;
     .map_buttons_default{
         @include card;
-        background-color: white;
+        background-color: $basic-white;
         .logo_container{
             border-bottom: solid 2px $basic-grey;
             cursor: pointer;
@@ -29,15 +28,21 @@
     }
     .map_buttons_children {
         @include card;
-        background-color: white;
+        background-color: $basic-white;
         padding: 8px;
         cursor: default;
-        .input_component{
-            cursor: pointer;
+        overflow: hidden; 
+        transition: opacity 0.25s ease-out, max-height 0.3s ease-out;
+        max-height: 70%; 
+        .input_component {
+          cursor: pointer;
         }
     }
+      
     .map_buttons_children.hidden {
-        display: none;
+        opacity: 0;
+        max-height: 0;
+        pointer-events: none;
     }
 }
 

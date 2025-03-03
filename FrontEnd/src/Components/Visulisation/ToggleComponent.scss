@@ -6,19 +6,22 @@
         display: flex;
         flex-direction: row;
         justify-content: space-between;
+        align-items: center;    
         writing-mode: vertical-rl;
         cursor: pointer;
-        .set_is_visible, .is_visible {
-            transform: rotate(-180deg);
+        *{
+            @include transition;
+        }
+        &:has(.is_visible){
+            color: $primary-blue;
         }
         .set_is_visible {
-            transform: rotate(180deg);
+            transform: rotate(90deg);
         }
     }
     .space_body {
+        @include gap;
         width: calc(100% - 45px);
-        display: flex;
-        gap: 8px;
         flex-direction: column;
         .space_body_tile {
             background-color: $shade-light-grey;
@@ -33,14 +36,13 @@
             overflow-y: auto;
             align-items: center;
             .variable_element {
+                @include gap;
                 flex: 0 1;  
                 min-height: 50%; 
                 box-sizing: border-box;
                 overflow: hidden;
-                display:flex;
                 align-items: center;
                 justify-content: center;
-                gap: 8px;
                 padding: 5px;
                 width: clamp(200px, 100%, 45vw);
                 canvas{
@@ -53,24 +55,22 @@
         .space_body_block{
             height: calc(100% - 55px);
         }
-        // change
         .space_body_footer{
-            display: flex;
+            @include gap;
             justify-content: center;
-            padding: 8px;
             .decade_percentile_selection{
                 display: flex;
                 flex-direction: column;
                 justify-content: space-between;
                 align-items: center;
                 width: 100%;
-                gap: 8px;
             }
         }
     }
     .space_body.hidden {
         display: none;  
-    }   
+    } 
+      
 }
 .space_container:has(.space_body.hidden){
     flex: 0 0 50px;

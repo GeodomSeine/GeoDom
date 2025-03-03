@@ -1,7 +1,6 @@
 import ButtonComponent from '../SimpleComponents/ButtonComponent';
 import React from 'react';
 import Papa from 'papaparse';
-import './ExportComponent.scss';
 import { DataResponse, DonutsDataResponse, Scenario } from '../../services/api';
 import { transformData } from '../../utils/dataTransform';
 
@@ -33,15 +32,11 @@ const ExportCsvComponent: React.FC<ExportCsvComponentProps> = ({ exportCsvData }
     }
 
     return (
-        <div className="export_container CSV">
-            <div className='export_body'>
-                <ButtonComponent
-                    onClick={handleExport}
-                    txt='Les données en CSV'
-                    className='button_container'
-                />
-            </div>
-        </div>
+        <ButtonComponent
+            onClick={handleExport}
+            txt='CSV'
+            className='button_container'
+        />
     );
 }
 
