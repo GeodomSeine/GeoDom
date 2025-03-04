@@ -1,7 +1,6 @@
 import ButtonComponent from '../SimpleComponents/ButtonComponent';
 import React from 'react';
 import Papa from 'papaparse';
-import './ExportComponent.scss';
 import { DataResponse, DonutsDataResponse, Scenario } from '../../services/api';
 import { transformData } from '../../utils/dataTransform';
 import JSZip from 'jszip';
@@ -24,26 +23,23 @@ const ExportCsvComponent: React.FC<ExportCsvComponentProps> = ({ exportCsvData }
         const zip = new JSZip();
 
         const transformedData = transformData(exportCsvData.pynutsData, exportCsvData.donutsData, exportCsvData.scenarios, exportCsvData.mode);
+        //CSV
         const csv = Papa.unparse(transformedData);
-
         zip.file(`${exportCsvData.name}.csv`, csv);
         
+        //Metadata
         const metadata = {
             name: exportCsvData.name,
             date: new Date().toISOString(),
             variables: exportCsvData.variables,
             annees: exportCsvData.scenarios.map((s) => s.year),
         };
-
-        zip.file("metadata.json", JSON.stringify(metadata, null, 2));       
-
+        zip.file("metadata.json", JSON.stringify(metadata, null, 2));  
         const zipBlob = await zip.generateAsync({ type: "blob" });
-        
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
+        const url = URL.createObjectURL(zipBlob);
+        const link = document.createElement("a");
         link.href = url;
-        link.setAttribute('download', `${exportCsvData.name}.csv`);
+        link.setAttribute("download", `${exportCsvData.name || "export"}.zip`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
