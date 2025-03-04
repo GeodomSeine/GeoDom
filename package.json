@@ -12,6 +12,7 @@
   "devDependencies": {
     "@types/react-pdf": "^6.2.0",
     "nx": "20.2.2",
+    "playwright": "^1.50.1",
     "prettier": "3.4.2"
   }
 }

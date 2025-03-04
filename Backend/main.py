@@ -8,7 +8,7 @@ from fastapi.staticfiles import StaticFiles
 from core.user_database import init_db
 
 from core.config import settings
-from routes import programs, pk, hydro, bassin, scenarios, data, sld, stationsnap, amont_aval, pk_geom, fulldata, data_donuts, profile_en_long, varcompartment, admin
+from routes import programs, pk, hydro, bassin, scenarios, data, sld, stationsnap, amont_aval, pk_geom, fulldata, data_donuts, profile_en_long,pdf, varcompartment, admin
 from core.logger import logger
 from core.auth import auth_router
 from scheduler.scheduler import lifespan
@@ -45,7 +45,8 @@ app.include_router(pk_geom.router)
 app.include_router(fulldata.router)
 app.include_router(data_donuts.router)
 app.include_router(profile_en_long.router)
-app.include_router(admin.router, prefix="") 
+app.include_router(pdf.router)
+app.include_router(admin.router, prefix="")
 app.include_router(auth_router, prefix="/auth")
 
 # Front
@@ -59,7 +60,9 @@ class SPAStaticFiles(StaticFiles):
             else:
                 raise ex
 
-app.mount("/", SPAStaticFiles(directory="./static", html=True), name="spa-static-files")
+
+app.mount("/", SPAStaticFiles(directory="./static",
+                              html=True), name="spa-static-files")
 
 
 if __name__ == "__main__":
