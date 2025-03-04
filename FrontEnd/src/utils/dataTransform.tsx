@@ -21,7 +21,9 @@ export const transformData = (PynutsData: DataResponse, DonutsData: DonutsDataRe
                         Object.keys(DonutsData[key]).forEach(variable => {
                             DonutsData[key][variable][dataPoint.decade]?.forEach(scenarioValue => {
                                 const year = DonutsScenario.find(scenario => scenario.id === scenarioValue.scenario)?.year;
-                                transformedPoint[`${variable} (Observation ${year})`] = scenarioValue.value;
+                                transformedPoint[`${variable} (Observation ${year} P5)`] = scenarioValue.p5;
+                                transformedPoint[`${variable} (Observation ${year} P50)`] = scenarioValue.p50;
+                                transformedPoint[`${variable} (Observation ${year} P90)`] = scenarioValue.p90;
                             });
                         });
                     }
@@ -38,7 +40,9 @@ export const transformData = (PynutsData: DataResponse, DonutsData: DonutsDataRe
                         Object.keys(DonutsData[key]).forEach(variable => {
                             DonutsData[key][variable][dataPoint.decade]?.forEach(scenarioValue => {
                                 const year = DonutsScenario.find(scenario => scenario.id === scenarioValue.scenario)?.year;
-                                transformedPoint[`${variable} (Observation ${year})`] = scenarioValue.value;
+                                transformedPoint[`${variable} (Observation ${year} P5)`] = scenarioValue.p5;
+                                transformedPoint[`${variable} (Observation ${year} P50)`] = scenarioValue.p50;
+                                transformedPoint[`${variable} (Observation ${year} P90)`] = scenarioValue.p90;
                             });
                         });
                     }

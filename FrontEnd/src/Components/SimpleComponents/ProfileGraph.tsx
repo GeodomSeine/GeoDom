@@ -89,16 +89,18 @@ const ProfileGraph: React.FC<ProfileGraphProps> = ({
       const decadeNumber = parseInt(decade, 10);
       if (decadeNumber < decades[0] || decadeNumber > decades[1]) return;
 
-      variableData[decade].forEach(({ scenario, value }) => {
-        donutsDatasets.push({
-          label: `Observation (Scenario ${scenarios.find(s => s.id === scenario)?.year}, Décade ${decade})`,
-          data: xLabels.map((label) => (label === x ? value : null)),
-          borderColor: scenarioColors[scenario] || getColor("--success-color"),
-          backgroundColor: scenarioColors[scenario] || getColor("--success-light"),
-          pointStyle: "circle",
-          pointRadius: 4,
-          pointBackgroundColor: scenarioColors[scenario] || getColor("--success-color"),
-          order: 0,
+      variableData[decade].forEach(({ scenario, values }) => {
+        values.forEach(value => {
+          donutsDatasets.push({
+            label: `Observation (Scenario ${scenarios.find(s => s.id === scenario)?.year}, Décade ${decade})`,
+            data: xLabels.map((label) => (label === x ? value : null)),
+            borderColor: scenarioColors[scenario] || getColor("--success-color"),
+            backgroundColor: scenarioColors[scenario] || getColor("--success-light"),
+            pointStyle: "circle",
+            pointRadius: 4,
+            pointBackgroundColor: scenarioColors[scenario] || getColor("--success-color"),
+            order: 0,
+          });
         });
       });
     });

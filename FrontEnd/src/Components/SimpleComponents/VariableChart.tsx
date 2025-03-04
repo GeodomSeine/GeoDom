@@ -53,12 +53,12 @@ const VariableChart: React.FC<VariableChartProps> = ({
 
   // Build donuts (observation) datasets with detailed labels (including the scenario year)
   const scenarioDatasets = Object.entries(donutsData ?? {}).flatMap(([decade, values]) =>
-    values.map(({ scenario, value }) => ({
+    values.map(({ scenario, p50 }) => ({
       label:
         "Observation (" +
         (scenarios.find(s => s.id === scenario)?.year || "N/A") +
         ")",
-      data: decades.map((d) => (d.toString() === decade ? value : null)),
+      data: decades.map((d) => (d.toString() === decade ? p50 : null)),
       borderColor: scenarioColors[scenario] || getColor("--basic-black"),
       backgroundColor: scenarioColors[scenario] || getColor("--basic-grey"),
       pointRadius: 5,
