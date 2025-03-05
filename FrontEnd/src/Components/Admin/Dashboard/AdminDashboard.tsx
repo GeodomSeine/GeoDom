@@ -7,6 +7,8 @@ import AddProgram from "../AddProgram/AddProgram";
 import ListPrograms from "../ListPrograms/ListPrograms";
 import "../AdminContent.scss";
 import ButtonComponent from "../../SimpleComponents/ButtonComponent";
+import AddVariableStyle from "../AddVariableStyle/AddVariableStyle";
+import ListVariableStyles from "../ListVariableStyles/ListVariableStyles";
 
 const AdminDashboard: React.FC = () => {
   const { logout } = useAuth();
@@ -43,15 +45,27 @@ const AdminDashboard: React.FC = () => {
             onDark={activeSection !== "add-program"}
           />
           <ButtonComponent
+            txt="Ajouter style de variable"
+            onClick={() => setActiveSection("add-variable-style")}
+            onDark={activeSection !== "add-variable-style"}
+          />
+          <ButtonComponent
             txt="Gérer Programmes"
             onClick={() => setActiveSection("list-programs")}
             onDark={activeSection !== "list-programs"}
+          />
+          <ButtonComponent
+            txt="Gérer styles de variables"
+            onClick={() => setActiveSection("list-variables")}
+            onDark={activeSection !== "list-variables"}
           />
         </div>
         {activeSection === "change-password" && <ChangePassword />}
         {activeSection === "add-user" && <AddUser />}
         {activeSection === "add-program" && <AddProgram />}
         {activeSection === "list-programs" && <ListPrograms />}
+        {activeSection === "add-variable-style" && <AddVariableStyle/>}
+        {activeSection === "list-variables" && <ListVariableStyles />}
       </div>
     </div>
   );
