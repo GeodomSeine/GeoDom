@@ -49,7 +49,7 @@ async def fetch_station_snap_from_db(program: str, session_pynuts: AsyncSession,
                 StationSnap.code,
                 StationSnap.cntry_iso,
                 StationSnap.upstream_km2,
-                func.ST_AsGeoJSON(func.ST_Transform(StationSnap.geom3035, 4326)).label("geometry")
+                func.ST_AsGeoJSON(func.ST_Transform(StationSnap.geom3035snap, 4326)).label("geometry")
             )
             .where(StationSnap.station_id.in_(station_ids))
         )

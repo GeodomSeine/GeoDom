@@ -21,7 +21,6 @@ const ListPrograms: React.FC = () => {
       const response = await getPrograms();
       setPrograms(response);
     } catch (err) {
-      console.log("errer : ", err)
       setError("Impossible de récupérer les programmes.");
     } finally {
       setLoading(false);

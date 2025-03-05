@@ -3,6 +3,7 @@ import React from 'react';
 import Papa from 'papaparse';
 import { DataResponse, DonutsDataResponse, Scenario } from '../../services/api';
 import { transformData } from '../../utils/dataTransform';
+import JSZip from 'jszip';
 
 interface ExportCsvComponentProps {
     exportCsvData: {
@@ -10,33 +11,61 @@ interface ExportCsvComponentProps {
         mode: string;
         pynutsData: DataResponse | null;
         donutsData: DonutsDataResponse | null;
+        variables: string[]; 
         scenarios: Scenario[]
     }
 }
 
 const ExportCsvComponent: React.FC<ExportCsvComponentProps> = ({ exportCsvData }) => {
-    const handleExport = () => {
-        if (!exportCsvData.pynutsData || !exportCsvData.donutsData) return;
+    const handleExport = async () => {
+        if (!exportCsvData.pynutsData || !exportCsvData.donutsData || exportCsvData.variables.length==0) return;
 
-        const transformedData = transformData(exportCsvData.pynutsData, exportCsvData.donutsData, exportCsvData.scenarios, exportCsvData.mode);
-
-        const csv = Papa.unparse(transformedData);
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
+        const zip = new JSZip();
+        
+        //CSV
+        for(let i = 0; i < exportCsvData.variables.length; i++){
+            const variable = exportCsvData.variables[i];
+            console.log(variable);
+            const transformedData = transformData(exportCsvData.pynutsData, exportCsvData.donutsData, exportCsvData.scenarios, variable, exportCsvData.mode);
+            const csv = Papa.unparse(transformedData);
+            zip.file(`${exportCsvData.name}_${variable}.csv`, csv);
+        }        
+        //Metadata
+        const metadata = {
+            name: exportCsvData.name,
+            date: new Intl.DateTimeFormat('fr-FR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                timeZone: 'Europe/Paris'
+            }).format(new Date()),
+            variables: exportCsvData.variables,
+            annees: exportCsvData.scenarios.map((s) => s.year),
+        };
+        zip.file("metadata.json", JSON.stringify(metadata, null, 2));  
+        const zipBlob = await zip.generateAsync({ type: "blob" });
+        const url = URL.createObjectURL(zipBlob);
+        const link = document.createElement("a");
         link.href = url;
-        link.setAttribute('download', `${exportCsvData.name}.csv`);
+        link.setAttribute("download", `${exportCsvData.name || "export"}.zip`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
     }
 
     return (
-        <ButtonComponent
-            onClick={handleExport}
-            txt='CSV'
-            className='button_container'
-        />
+        <div className="export_container CSV">
+            <div className='export_body'>
+                <ButtonComponent
+                    onClick={handleExport}
+                    txt='CSV'
+                    className='button_container'
+                />
+            </div>
+        </div>
     );
 }
 

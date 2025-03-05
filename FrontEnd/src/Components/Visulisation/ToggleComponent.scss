@@ -24,7 +24,7 @@
         width: calc(100% - 45px);
         flex-direction: column;
         .space_body_tile {
-            background-color: $shade-light-grey;
+            background-color: $shade-lighter-grey;
             @include reverseCard;
             padding: 8px;
             box-sizing: border-box;

@@ -132,6 +132,33 @@ const MapSelection: React.FC<MapSelectionProps> = ({
     fetchData();
   }, [program]);
 
+  //force leaflet to update its size if the containers change width
+  useEffect(() => {
+    if (!mapRef.current) return;
+    const mapContainer = mapRef.current.getContainer().parentElement;
+    if (!mapContainer) return;
+    let lastWidth = mapContainer.offsetWidth;
+  
+    //observe the width change of the container
+    const observer = new ResizeObserver(() => {
+      if (!mapRef.current || !mapContainer) return;
+      const newWidth = mapContainer.offsetWidth;
+  
+      if (newWidth !== lastWidth) { 
+        lastWidth = newWidth;
+        // timeout to avoid multiple invalidation
+        setTimeout(() => {
+          mapRef.current.invalidateSize(); 
+          mapRef.current.setView(mapRef.current.getCenter(), mapRef.current.getZoom()); 
+        }, 300);
+      }
+    });
+  
+    observer.observe(mapContainer);
+    return () => observer.disconnect();
+  }, [mapRef.current]); 
+  
+
 const [layerVisibility, setLayerVisibility] = useState<Record<string, boolean>>({
   baseLayer: true,
   hydrographie: true,
@@ -201,7 +228,6 @@ return (
       zoom={6} 
       minZoom={6} 
       zoomControl={false}
-      
   >
     {/* className pour cacher les controles pour l'export  */}
     <div className="leaflet-control-container"> 

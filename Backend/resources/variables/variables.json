@@ -1,44 +1,77 @@
 {
-    "default":{
-        "classification" : "quantile",
-        "nb_classes" : 5,
-        "colors": ["#f7fcb9", "#d9f0a3", "#addd8e", "#41ab5d", "#238443"]
+    "default": {
+        "classification": "quantile",
+        "nb_classes": 5,
+        "colors": [
+            "#f7fcb9",
+            "#d9f0a3",
+            "#addd8e",
+            "#41ab5d",
+            "#238443"
+        ]
     },
-    "flow" : {
-        "classification" : "quantile", 
-        "nb_classes" : 5, 
-        "colors" : ["#c6dbef", "#4292c6", "#2171b5", "#08519c", "#08306b"]
-    }, 
-    "dic" : {
-        "classification" : "quantile", 
-        "nb_classes" : 5, 
-        "colors" : ["#ffd6aa", "#cca381", "#956d56", "#956d56", "#280000"]
+    "flow": {
+        "classification": "quantile",
+        "nb_classes": 5,
+        "colors": [
+            "#c6dbef",
+            "#4292c6",
+            "#2171b5",
+            "#08519c",
+            "#08306b"
+        ]
     },
-    "ta" : {
-        "classification" : "quantile",
-        "nb_classes" : 2,
-        "colors" : ["#bfbdbd", "#797979"]
-    }, 
-    "doc":{
-        "classification" : "quantile",
-        "nb_classes" : 5, 
-        "colors": ["#ffd6aa", "#cca381", "#956d56", "#956d56", "#280000"]
+    "dic": {
+        "classification": "quantile",
+        "nb_classes": 5,
+        "colors": [
+            "#ffd6aa",
+            "#cca381",
+            "#956d56",
+            "#956d56",
+            "#280000"
+        ]
     },
-    "phy":{
-        "classification" : "quantile",
-        "nb_classes" : 5,
-        "colors": ["#f7fcb9", "#d9f0a3", "#addd8e", "#41ab5d", "#238443"]
+    "ta": {
+        "classification": "quantile",
+        "nb_classes": 2,
+        "colors": [
+            "#bfbdbd",
+            "#797979"
+        ]
     },
-    "no3":{
-        "classification" : "sld"
-    }, 
-    "ph":{
-        "classification" : "sld"
-    }, 
-    "nh4" : {
-        "classification" : "sld"
-    }, 
-    "oxy" : {
-        "classification" : "sld"
+    "doc": {
+        "classification": "quantile",
+        "nb_classes": 5,
+        "colors": [
+            "#ffd6aa",
+            "#cca381",
+            "#956d56",
+            "#956d56",
+            "#280000"
+        ]
+    },
+    "phy": {
+        "classification": "quantile",
+        "nb_classes": 5,
+        "colors": [
+            "#f7fcb9",
+            "#d9f0a3",
+            "#addd8e",
+            "#41ab5d",
+            "#238443"
+        ]
+    },
+    "no3": {
+        "classification": "sld"
+    },
+    "ph": {
+        "classification": "sld"
+    },
+    "nh4": {
+        "classification": "sld"
+    },
+    "oxy": {
+        "classification": "sld"
     }
 }

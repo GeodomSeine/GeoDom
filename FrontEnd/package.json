@@ -16,12 +16,18 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/material": "^6.2.1",
+<<<<<<< HEAD
     "@react-pdf/renderer": "^4.2.2",
+=======
+    "@sgratzl/chartjs-chart-boxplot": "^4.4.4",
+>>>>>>> origin/Developpement
     "axios": "^1.7.9",
+    "chart.js": "^4.4.8",
     "chartjs-plugin-zoom": "^2.2.0",
     "framer-motion": "^11.15.0",
     "front": "file:",
     "jspdf": "^2.5.2",
+    "jszip": "^3.10.1",
     "leaflet": "^1.9.4",
     "leaflet-simple-map-screenshoter": "^0.5.0",
     "lucide-react": "^0.468.0",

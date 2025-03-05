@@ -89,10 +89,10 @@ const ProfileGraph: React.FC<ProfileGraphProps> = ({
       const decadeNumber = parseInt(decade, 10);
       if (decadeNumber < decades[0] || decadeNumber > decades[1]) return;
 
-      variableData[decade].forEach(({ scenario, value }) => {
+      variableData[decade].forEach(({ scenario, p50 }) => {
         donutsDatasets.push({
           label: `Observation (Scenario ${scenarios.find(s => s.id === scenario)?.year}, Décade ${decade})`,
-          data: xLabels.map((label) => (label === x ? value : null)),
+          data: xLabels.map((label) => (label === x ? p50 : null)),
           borderColor: scenarioColors[scenario] || getColor("--success-color"),
           backgroundColor: scenarioColors[scenario] || getColor("--success-light"),
           pointStyle: "circle",
@@ -110,20 +110,19 @@ const ProfileGraph: React.FC<ProfileGraphProps> = ({
       {
         label: `${variable.var_code.toUpperCase()} (P5)`,
         data: p5,
-        borderColor: getColor("--danger-color"),
-        backgroundColor: getColor("--basic-grey"),
+        borderColor: getColor("--shade-light-grey"),
         fill: 2,
       },
       {
         label: `${variable.var_code.toUpperCase()} (P50)`,
         data: p50,
-        borderColor: getColor("--warning-color"),
+        borderColor: getColor("--secondary-blue"),
         order: -1,
       },
       {
         label: `${variable.var_code.toUpperCase()} (P90)`,
         data: p90,
-        borderColor: getColor("--secondary-blue"),
+        borderColor: getColor("--shade-mid-grey"),
         order: -1,
       },
       ...(showObservations ? donutsDatasets.map((dataset) => ({ ...dataset, order: -2 })) : []),
@@ -164,7 +163,7 @@ const ProfileGraph: React.FC<ProfileGraphProps> = ({
             if (donutsDatasets.length > 0) {
               nonObservationLabels.push({
                 text: "Observations",
-                fillStyle: getColor("--shade-light-grey"),
+                fillStyle: getColor("--basic-grey"),
                 strokeStyle: getColor("--basic-black"),
                 lineWidth: 2,
                 hidden: !showObservations,

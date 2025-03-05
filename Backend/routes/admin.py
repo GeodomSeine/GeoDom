@@ -6,13 +6,17 @@ from fastapi.templating import Jinja2Templates
 from core.auth import get_current_admin_user
 from resources.parser import is_metadata_json_valide, validate_schema_and_data, is_folder_valide, EXPECTED_FILES
 import shutil
-
+from core.logger import logger
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
 DATAVIZ_DIR = "resources/dataviz"
+VARIABLES_DIR = "resources/variables"
+VARIABLES_JSON_PATH = os.path.join(VARIABLES_DIR, "variables.json")
+
 os.makedirs(DATAVIZ_DIR, exist_ok=True)
+os.makedirs(VARIABLES_DIR, exist_ok=True)
 
 @router.post("/admin/add", dependencies=[Depends(get_current_admin_user)])
 async def add_program(
@@ -77,7 +81,6 @@ async def add_program(
     return {"message": f"Programme '{name}' ajouté avec succès !"}
 
 
-# ✅ Éditer un programme
 @router.put("/admin/edit/{program_name}", dependencies=[Depends(get_current_admin_user)])
 async def edit_program(
     program_name: str,
@@ -131,7 +134,6 @@ async def edit_program(
     return {"message": f"Programme '{program_name}' mis à jour avec succès !"}
 
 
-# ✅ Supprimer un programme
 @router.delete("/admin/delete/{program_name}", dependencies=[Depends(get_current_admin_user)])
 async def delete_program(program_name: str):
     program_folder = os.path.join(DATAVIZ_DIR, program_name)
@@ -144,3 +146,183 @@ async def delete_program(program_name: str):
         return {"message": f"Programme '{program_name}' supprimé avec succès !"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur lors de la suppression : {str(e)}")
+
+
+@router.post("/admin/variable/add", dependencies=[Depends(get_current_admin_user)])
+async def add_variable_style(
+    code: str = Form(...),
+    classification: str = Form(...),
+    nb_classes: int = Form(None),
+    colors: str = Form(None),
+    sld: UploadFile = File(None),
+):
+    try:
+        os.makedirs(VARIABLES_DIR, exist_ok=True)
+
+        file_path = os.path.join(VARIABLES_DIR, f"{code.lower()}.sld") if sld else None
+
+        logger.info(f"file_path: {file_path}")
+        logger.info(f"code: {code}, classification: {classification}, nb_classes: {nb_classes}, colors: {colors}")
+
+        # Vérifier et charger variables.json
+        if not os.path.exists(VARIABLES_JSON_PATH):
+            with open(VARIABLES_JSON_PATH, "w") as f:
+                json.dump({}, f)
+
+        with open(VARIABLES_JSON_PATH, "r") as f:
+            variables = json.load(f)
+
+        if classification == "quantile":
+            if not nb_classes:
+                raise HTTPException(status_code=400, detail="Le nombre de classes est requis pour une classification en quantile")
+            if not colors:
+                raise HTTPException(status_code=400, detail="Les couleurs sont requises pour une classification en quantile")
+
+            colors = colors.split(",")
+            if len(colors) != nb_classes:
+                raise HTTPException(status_code=400, detail="Le nombre de couleurs doit correspondre au nombre de classes")
+
+            for color in colors:
+                if not color.startswith("#"):
+                    raise HTTPException(status_code=400, detail="Les couleurs doivent être au format hexadécimal")
+
+            variables[code] = {
+                "classification": classification,
+                "nb_classes": nb_classes,
+                "colors": colors
+            }
+
+        elif classification == "sld":
+            if not sld:
+                raise HTTPException(status_code=400, detail="Le fichier SLD est requis pour une classification en SLD")
+
+            with open(file_path, "wb") as buffer:
+                shutil.copyfileobj(sld.file, buffer)
+
+            variables[code] = {
+                "classification": classification
+            }
+
+        # Écrire dans variables.json
+        with open(VARIABLES_JSON_PATH, "w") as f:
+            json.dump(variables, f, indent=4)
+
+        return {"message": f"Style pour la variable '{code}' ajouté avec succès !"}
+
+    except Exception as e:
+        logger.error(f"Erreur lors de l'ajout du style : {e}")
+        if file_path and os.path.exists(file_path):
+            os.remove(file_path)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.put("/admin/variable/edit", dependencies=[Depends(get_current_admin_user)])
+async def edit_variable_style(
+    code: str = Form(...),
+    classification: str = Form(...),
+    nb_classes: int = Form(None),
+    colors: str = Form(None),
+    sld: UploadFile = File(None)
+):  
+    try:
+        os.makedirs(VARIABLES_DIR, exist_ok=True)
+
+        file_path = os.path.join(VARIABLES_DIR, f"{code.lower()}.sld") if sld else None
+
+        logger.info(f"Modification du style de la variable: {code}")
+
+        # Vérifier et charger variables.json
+        if not os.path.exists(VARIABLES_JSON_PATH):
+            with open(VARIABLES_JSON_PATH, "w") as f:
+                json.dump({}, f)
+
+        with open(VARIABLES_JSON_PATH, "r") as f:
+            variables = json.load(f)
+
+        if classification == "quantile":
+            if not nb_classes:
+                raise HTTPException(status_code=400, detail="Le nombre de classes est requis pour une classification en quantile")
+            if not colors:
+                raise HTTPException(status_code=400, detail="Les couleurs sont requises pour une classification en quantile")
+
+            colors = colors.split(",")
+            if len(colors) != nb_classes:
+                raise HTTPException(status_code=400, detail="Le nombre de couleurs doit correspondre au nombre de classes")
+
+            for color in colors:
+                if not color.startswith("#"):
+                    raise HTTPException(status_code=400, detail="Les couleurs doivent être au format hexadécimal")
+
+            variables[code] = {
+                "classification": classification,
+                "nb_classes": nb_classes,
+                "colors": colors
+            }
+
+        elif classification == "sld":
+            if not sld:
+                raise HTTPException(status_code=400, detail="Le fichier SLD est requis pour une classification en SLD")
+
+            with open(file_path, "wb") as buffer:
+                shutil.copyfileobj(sld.file, buffer)
+
+            variables[code] = {
+                "classification": classification
+            }
+
+        # Écrire dans variables.json
+        with open(VARIABLES_JSON_PATH, "w") as f:
+            json.dump(variables, f, indent=4)
+
+        return {"message": f"Style pour la variable '{code}' modifié avec succès !"}
+
+    except Exception as e:
+        logger.error(f"Erreur lors de la modification de la variable: {e}")
+        if file_path and os.path.exists(file_path):
+            os.remove(file_path)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/admin/variable/list", dependencies=[Depends(get_current_admin_user)])
+async def get_variables():
+    try:
+        if not os.path.exists(VARIABLES_JSON_PATH):
+            raise HTTPException(status_code=404, detail="Aucune variable trouvée.")
+
+        with open(VARIABLES_JSON_PATH, "r") as f:
+            variables = json.load(f)
+
+        return variables
+
+    except Exception as e:
+        logger.error(f"Erreur lors de la récupération des variables: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/admin/variable/delete/{code}", dependencies=[Depends(get_current_admin_user)])
+async def delete_variable(code: str):
+    try:
+        if not os.path.exists(VARIABLES_JSON_PATH):
+            raise HTTPException(status_code=404, detail="Aucune variable trouvée.")
+
+        with open(VARIABLES_JSON_PATH, "r") as f:
+            variables = json.load(f)
+
+        if code not in variables:
+            raise HTTPException(status_code=404, detail="Variable non trouvée.")
+
+        if variables[code]["classification"] == "sld":
+            sld_path = os.path.join(VARIABLES_DIR, f"{code.lower()}.sld")
+            if os.path.exists(sld_path):
+                os.remove(sld_path)
+
+        del variables[code]
+
+        with open(VARIABLES_JSON_PATH, "w") as f:
+            json.dump(variables, f, indent=4)
+
+        return {"message": f"Style pour la variable '{code}' supprimé avec succès !"}
+
+    except Exception as e:
+        logger.error(f"Erreur lors de la suppression de la variable: {e}")
+        raise HTTPException(status_code=500, detail=str(e))

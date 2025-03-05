@@ -40,7 +40,6 @@ const TutoComponent: React.FC<TutoComponentProps> = ({ isOpen, onClose, title })
       const applyHighlight = () => {
         const target = document.querySelector(targetSelector);
         if (target) {
-          console.log("Element found, highlighting:", target);
           target.classList.add('highlight');
           target.scrollIntoView({ behavior: 'smooth', block: 'center' });
           return true; 

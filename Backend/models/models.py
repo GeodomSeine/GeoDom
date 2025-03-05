@@ -133,7 +133,7 @@ class StationSnap(Base):
     code: Mapped[str] = mapped_column(String(30), nullable=True)
     cntry_iso: Mapped[str] = mapped_column(String(2), nullable=True)
     upstream_km2: Mapped[float] = mapped_column(Numeric(11, 4), nullable=True)
-    geom3035: Mapped[Geometry] = mapped_column(Geometry("POINT", srid=3035), nullable=True)
+    geom3035snap: Mapped[Geometry] = mapped_column(Geometry("POINT", srid=3035), nullable=True)
 
 
 class PkStation:

@@ -150,7 +150,7 @@ export interface ProfileGraphDataResponse{
 // Donuts data interfaces and types
 interface ScenarioAndValue {
   scenario: number;
-  value: number;
+  p50: number;
 }
 
 export interface DecadeScenarioValue {

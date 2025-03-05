@@ -24,3 +24,15 @@
         }
     }
 }
+
+@media (max-width: 760px) {
+    .header_component{
+        .action_header{
+            &.left{
+                h1{
+                    display: none;
+                }
+            }
+        }
+    }
+}
