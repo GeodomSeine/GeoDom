@@ -8,7 +8,8 @@ $secondary-light-pink: rgb(205, 135, 166);
 // shades of grey
 $shade-grey: rgb(64, 64, 64);
 $shade-mid-grey: rgb(102, 102, 102);
-$shade-light-grey:rgba(251, 251, 251);
+$shade-light-grey: rgb(155, 155, 155);
+$shade-lighter-grey:rgba(251, 251, 251);
 
 // color for text, logo
 $basic-black: rgb(46, 46, 46);
@@ -30,6 +31,7 @@ $success-color: rgb(18, 212, 0);
   --shade-grey: #{$shade-grey};
   --shade-mid-grey: #{$shade-mid-grey};
   --shade-light-grey: #{$shade-light-grey};
+  --shade-lighter-grey: #{$shade-lighter-grey};
 
   --basic-black: #{$basic-black};
   --basic-grey: #{$basic-grey};

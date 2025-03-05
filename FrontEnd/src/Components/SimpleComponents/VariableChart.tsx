@@ -75,20 +75,19 @@ const VariableChart: React.FC<VariableChartProps> = ({
       {
         label: `${variable.var_code.toUpperCase()} (P5)`,
         data: data.p5,
-        borderColor: getColor("--danger-color"),
-        backgroundColor: getColor("--basic-grey"),
+        borderColor: getColor("--shade-light-grey"),
         fill: 2,
       },
       {
         label: `${variable.var_code.toUpperCase()} (P50)`,
         data: data.p50,
-        borderColor: getColor("--warning-color"),
+        borderColor: getColor("--secondary-blue"),
         order: -1,
       },
       {
         label: `${variable.var_code.toUpperCase()} (P90)`,
         data: data.p90,
-        borderColor: getColor("--secondary-blue"),
+        borderColor: getColor("--shade-mid-grey"),
         order: -1,
       },
       ...(showObservations ? scenarioDatasets : []),
@@ -134,7 +133,7 @@ const VariableChart: React.FC<VariableChartProps> = ({
             if (scenarioDatasets.length > 0) {
               nonObservationLabels.push({
                 text: "Observations",
-                fillStyle: getColor("--shade-light-grey"),
+                fillStyle: getColor("--basic-grey"),
                 strokeStyle: getColor("--basic-black"),
                 lineWidth: 2,
                 hidden: !showObservations,
