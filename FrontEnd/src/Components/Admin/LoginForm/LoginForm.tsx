@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import '../AdminContent.scss';
 import InputComponent from "../../SimpleComponents/InputComponent";
 import ButtonComponent from "../../SimpleComponents/ButtonComponent";
+import LogoComponent from "../../SimpleComponents/LogoComponent";
 
 const LoginForm: React.FC = () => {
   const { login } = useAuth();
@@ -57,11 +58,18 @@ const LoginForm: React.FC = () => {
     }
   };
 
+  const handleHomeClick = () => {
+    navigate('/');
+  };
+
   return (
     <div className="admin_dashboard">
       <div className="admin_card">
         <form ref={formRef} onKeyDown={handleKeyDown} onSubmit={handleSubmit} className="admin_content">
-          <h3 color="var(--primary-blue)">Connexion Admin</h3>
+          <div className="admin_header">
+            <h3 color="var(--primary-blue)">Connexion Admin </h3>
+            <LogoComponent onClick={handleHomeClick} size={"35px"} />
+          </div>
           {error && <p className="status_message">{error}</p>}
           <InputComponent label="Nom d'utilisateur" type="text" value={username} onChange={(e) => setUsername(e.target.value)} required />
           <InputComponent label="Mot de passe" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />

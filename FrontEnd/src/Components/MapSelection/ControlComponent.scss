@@ -3,13 +3,8 @@
 .control_component {
   @include gap;
   flex-direction: column;
-  width: max-content;
-  flex: 1;
-}
-
-.control_component {
-  @include gap;
-  flex-direction: column;
+  flex-wrap: wrap;
+  overflow-x: auto;
   .mode_selector{
     @include gap;
     flex-direction: column;
@@ -29,23 +24,4 @@
       width: 105px;
     }
   }
-}
-
-@media (max-width: 760px) {
-  .control_component{
-    flex-direction: row;
-    gap: 8px;
-  }
-}
-
-.scenario_container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.scenario_color {
-  width: 14px;
-  height: 14px;
-  border-radius: 5px;
 }
