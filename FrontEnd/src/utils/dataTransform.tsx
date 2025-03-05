@@ -39,9 +39,7 @@ export const transformData = (
                     DonutsData[key][variable][dataPoint.decade]?.forEach(scenarioValue => {
                         const scenario = DonutsScenario.find(s => s.id === scenarioValue.scenario);
                         if (scenario) {
-                            transformedPoint[`${variable} (Observation ${scenario.year} P5)`] = scenarioValue.p5;
                             transformedPoint[`${variable} (Observation ${scenario.year} P50)`] = scenarioValue.p50;
-                            transformedPoint[`${variable} (Observation ${scenario.year} P90)`] = scenarioValue.p90;
                         }
                     });
                 });

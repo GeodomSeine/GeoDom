@@ -226,13 +226,10 @@ async def get_data_strahler(session_donuts: AsyncSession, station_data: dict[int
                             
                             if values:
                                 values_float = [float(v) if isinstance(v, Decimal) else v for v in values]
-                                percentiles = np.percentile(values_float, [5, 50, 90])
+                                percentiles_50 = np.percentile(values_float, 50)
                                 measurements[strahler][var][decade].append({
                                     "scenario": scenario,
-                                    "p5": percentiles[0],
-                                    "p50": percentiles[1],
-                                    "p90": percentiles[2],
-                                    "values": set(values)
+                                    "p50": percentiles_50,
                                 })
 
         return measurements 
@@ -303,13 +300,10 @@ async def get_data(session_donuts: AsyncSession, station_data: dict[str, int], s
                             
                             if values:
                                 values_float = [float(v) if isinstance(v, Decimal) else v for v in values]
-                                percentiles = np.percentile(values_float, [5, 50, 90])
+                                percentiles_50 = np.percentile(values_float, 50)
                                 measurements[obj_ord_pk][var][decade].append({
                                     "scenario": scenario,
-                                    "p5": percentiles[0],
-                                    "p50": percentiles[1],
-                                    "p90": percentiles[2], 
-                                    "values": set(values)
+                                    "p50": percentiles_50,
                                 })
         
         return measurements 
