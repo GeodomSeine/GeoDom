@@ -16,11 +16,8 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/material": "^6.2.1",
-<<<<<<< HEAD
     "@react-pdf/renderer": "^4.2.2",
-=======
     "@sgratzl/chartjs-chart-boxplot": "^4.4.4",
->>>>>>> origin/Developpement
     "axios": "^1.7.9",
     "chart.js": "^4.4.8",
     "chartjs-plugin-zoom": "^2.2.0",
