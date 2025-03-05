@@ -23,7 +23,7 @@ redis_url = os.getenv("REDIS_URL", "redis://redis:6379")
 redis_client = redis.from_url(redis_url)
 DATAVIZ_PATH = "./resources/dataviz"
 
-locale.setlocale(locale.LC_ALL, 'C.UTF-8')
+locale.setlocale(locale.LC_ALL, 'C') #Remplacer par C.UTF-8
 
 async def fetch_hydro_from_db(program: str, session: AsyncSession):
     """Récupère les données hydrographiques depuis PostgreSQL en streaming."""
