@@ -34,7 +34,7 @@ const AddVariableStyle: React.FC = () => {
     e.preventDefault();
 
     const formData = new FormData();
-    formData.append("code", code);
+    formData.append("code", code.toLowerCase());
     formData.append("classification", classification);
 
     if (classification === "quantile") {

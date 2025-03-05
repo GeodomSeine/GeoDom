@@ -281,3 +281,48 @@ async def edit_variable_style(
         if file_path and os.path.exists(file_path):
             os.remove(file_path)
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/admin/variable/list", dependencies=[Depends(get_current_admin_user)])
+async def get_variables():
+    try:
+        if not os.path.exists(VARIABLES_JSON_PATH):
+            raise HTTPException(status_code=404, detail="Aucune variable trouvée.")
+
+        with open(VARIABLES_JSON_PATH, "r") as f:
+            variables = json.load(f)
+
+        return variables
+
+    except Exception as e:
+        logger.error(f"Erreur lors de la récupération des variables: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/admin/variable/delete/{code}", dependencies=[Depends(get_current_admin_user)])
+async def delete_variable(code: str):
+    try:
+        if not os.path.exists(VARIABLES_JSON_PATH):
+            raise HTTPException(status_code=404, detail="Aucune variable trouvée.")
+
+        with open(VARIABLES_JSON_PATH, "r") as f:
+            variables = json.load(f)
+
+        if code not in variables:
+            raise HTTPException(status_code=404, detail="Variable non trouvée.")
+
+        if variables[code]["classification"] == "sld":
+            sld_path = os.path.join(VARIABLES_DIR, f"{code.lower()}.sld")
+            if os.path.exists(sld_path):
+                os.remove(sld_path)
+
+        del variables[code]
+
+        with open(VARIABLES_JSON_PATH, "w") as f:
+            json.dump(variables, f, indent=4)
+
+        return {"message": f"Style pour la variable '{code}' supprimé avec succès !"}
+
+    except Exception as e:
+        logger.error(f"Erreur lors de la suppression de la variable: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
