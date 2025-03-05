@@ -21,6 +21,7 @@
     "framer-motion": "^11.15.0",
     "front": "file:",
     "jspdf": "^2.5.2",
+    "jszip": "^3.10.1",
     "leaflet": "^1.9.4",
     "leaflet-simple-map-screenshoter": "^0.5.0",
     "lucide-react": "^0.468.0",

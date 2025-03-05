@@ -67,8 +67,8 @@ const AddVariableStyle: React.FC = () => {
       {message && <p className="status_message">{message}</p>}
       
       <InputComponent label="Code de la variable" type="text" value={code} onChange={(e) => setCode(e.target.value)} required />
-      <div className="input_component">
-        <span>Classification</span>
+      <div>
+        <p>Classification</p>
         <select value={classification} onChange={(e) => setClassification(e.target.value)} required>
           <option value="quantile">Quantile</option>
           <option value="sld">SLD</option>
