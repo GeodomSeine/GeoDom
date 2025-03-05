@@ -6,6 +6,8 @@ import { GeoJsonObject } from "geojson";
 import "./MapBaseComponent.scss";
 import MapButtons from "../SimpleComponents/MapButtons";
 import { getVariableSld } from "../../services/api";
+import PopupContent from "../MapSelection/PopupContent";
+import { createRoot } from 'react-dom/client';
 
 const { BaseLayer, Overlay } = LayersControl;
 
@@ -115,6 +117,35 @@ function MapBaseComponent({
     return baseStyle;
   }
 
+  const handleFeatureClick = (feature: { properties: { [key: string]: any } }, layer: any) => {
+    if(!data || !data.data) return;
+
+    const properties = feature.properties;
+  
+    const popupContent = document.createElement("div");
+    popupContent.setAttribute("class", "leaflet-elements-container");
+    
+    const root = createRoot(popupContent);
+    const obj_ord_pk = properties.obj_ord_pk;
+    const popupProperties = {
+      "percentile 5" : data.data[obj_ord_pk]?.[`${variable.var_code.toLowerCase()}_p5`],
+      "percentile 50": data.data[obj_ord_pk]?.[`${variable.var_code.toLowerCase()}_p50`],
+      "percentile 90": data.data[obj_ord_pk]?.[`${variable.var_code.toLowerCase()}_p90`],
+    }
+
+    root.render(
+      <PopupContent
+        layer="PK"
+        properties={popupProperties}
+        mode="complet" 
+        onSelectAmont={() => {}} 
+        onSelectAval={() => {}}       
+      />
+    );
+  
+    layer.bindPopup(popupContent).openPopup();
+  };
+
   return (
     <div className="map_base">
       <MapContainer
@@ -153,6 +184,12 @@ function MapBaseComponent({
                 data={pkData as GeoJsonObject}
                 style={getFeatureStyle}
                 interactive={true}
+                onEachFeature={(feature, layer) => {
+                  layer.off();
+                  layer.on({
+                      click: () => handleFeatureClick(feature, layer),
+                  });
+              }}
               />
             </Overlay>
           )}
