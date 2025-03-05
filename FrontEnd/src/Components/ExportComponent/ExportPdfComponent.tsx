@@ -73,7 +73,6 @@ const ExportPdfComponent: React.FC<ExportPdfComponentProps> = ({ exportPdfInfo }
                 // Utiliser les bounds pour calculer le ratio
                 const { mapWidth, mapHeight } = getMapDimensionsFromBounds(selectionMapElements.mapRef.current);
                 const aspectRatio = mapWidth / mapHeight;
-                console.log("Dimensions de la carte:", mapWidth, mapHeight, aspectRatio);
 
                 // Définir les dimensions de l'image en conservant les proportions (certain cas encore buggé..)
                 const imgMaxWidth = 180;

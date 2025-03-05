@@ -18,19 +18,22 @@ interface ExportCsvComponentProps {
 
 const ExportCsvComponent: React.FC<ExportCsvComponentProps> = ({ exportCsvData }) => {
     const handleExport = async () => {
-        if (!exportCsvData.pynutsData || !exportCsvData.donutsData) return;
+        if (!exportCsvData.pynutsData || !exportCsvData.donutsData || exportCsvData.variables.length==0) return;
 
         const zip = new JSZip();
-
-        const transformedData = transformData(exportCsvData.pynutsData, exportCsvData.donutsData, exportCsvData.scenarios, exportCsvData.mode);
-        //CSV
-        const csv = Papa.unparse(transformedData);
-        zip.file(`${exportCsvData.name}.csv`, csv);
         
+        //CSV
+        for(let i = 0; i < exportCsvData.variables.length; i++){
+            const variable = exportCsvData.variables[i];
+            console.log(variable);
+            const transformedData = transformData(exportCsvData.pynutsData, exportCsvData.donutsData, exportCsvData.scenarios, variable, exportCsvData.mode);
+            const csv = Papa.unparse(transformedData);
+            zip.file(`${exportCsvData.name}_${variable}.csv`, csv);
+        }        
         //Metadata
         const metadata = {
             name: exportCsvData.name,
-            date: new Date().toISOString(),
+            date: new Date().toLocaleDateString(),
             variables: exportCsvData.variables,
             annees: exportCsvData.scenarios.map((s) => s.year),
         };

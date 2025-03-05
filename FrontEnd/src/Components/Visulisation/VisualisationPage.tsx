@@ -195,7 +195,7 @@ const VisualisationPage: React.FC = () => {
   }, [program, selectedScenarios, selectedVariables, mode]);
 
   const requestColoredMap: ColorMapRequest | null = useMemo(() => {
-    if (!program) return null;
+    if (!program || !program.name || selectedScenarios.length==0|| selectedVariables.length==0 || selectedDecades.length==0) return null;
     return {
       program: program.name,
       scenarios: selectedScenarios.map((scenario) => scenario.id),
@@ -257,7 +257,7 @@ const VisualisationPage: React.FC = () => {
           const keys = Object.keys(response);
           if (keys.length > 0) {
             setSelectedKey(keys[0]);
-            setChartData(response[keys[0]].data);
+            setChartData(response[keys[0]].data as ChartData);
           }
         } else {
           setData(null);
@@ -291,7 +291,7 @@ const VisualisationPage: React.FC = () => {
 
   useEffect(() => {
     if (!data || !selectedKey || !program) return;
-    setChartData(data[selectedKey].data);
+    setChartData(data[selectedKey].data as ChartData);
 
     const fetchPk = async () => {
       const response = await getPkGeom(program.name, selectedKey);
