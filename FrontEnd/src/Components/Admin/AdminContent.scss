@@ -22,18 +22,23 @@
       flex-direction: row;
       justify-content: space-between;
       align-items: center;
-
-      .button_container {
-        background-color: $danger_color;
-        color: $basic_white;
-        border-color: $danger_color;
+      .admin_title{
+        @include gap;
+        align-items: center;
+        .button_container {
+          background-color: $danger_color;
+          color: $basic_white;
+          border-color: $danger_color;
+        }
+  
+        .button_container:hover {
+          background-color: transparent;
+          color: $danger_color;
+          border-color: $danger_color;
+        }
       }
 
-      .button_container:hover {
-        background-color: transparent;
-        color: $danger_color;
-        border-color: $danger_color;
-      }
+      
     }
 
     .admin_nav {
