@@ -7,7 +7,7 @@ interface PopupContentProps {
   mode: "complet" | "amont-aval";
   onSelectAmont: () => void;
   onSelectAval: () => void;
-  layer: "Hydro" | "Station";
+  layer: "Hydro" | "Station" | "PK";
 }
 
 const PopupContent: React.FC<PopupContentProps> = memo(

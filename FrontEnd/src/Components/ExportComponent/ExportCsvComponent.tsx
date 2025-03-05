@@ -33,7 +33,15 @@ const ExportCsvComponent: React.FC<ExportCsvComponentProps> = ({ exportCsvData }
         //Metadata
         const metadata = {
             name: exportCsvData.name,
-            date: new Date().toLocaleDateString(),
+            date: new Intl.DateTimeFormat('fr-FR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                timeZone: 'Europe/Paris'
+            }).format(new Date()),
             variables: exportCsvData.variables,
             annees: exportCsvData.scenarios.map((s) => s.year),
         };
