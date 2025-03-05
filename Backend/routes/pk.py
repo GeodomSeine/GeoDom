@@ -54,3 +54,25 @@ async def get_pks(program: str):
         geojson_stream(program),
         media_type="application/json"
     )
+
+async def get_pk_features(program: str):
+    """Récupère les données pkmap d'un programme.
+    
+    Args:
+        program (str): Nom du programme (schéma).
+        
+    Returns:
+        list: Liste des données hydro
+    """
+    async with async_session_pynuts() as session:
+        DynamicPk = Pk.create(program) 
+        try:
+            query = select(DynamicPk.geojson_feature)
+            result = await session.execute(query)
+            geo_features = result.fetchall()
+            if not geo_features:
+                raise HTTPException(status_code=404, detail="Aucune donnée pkmap trouvée pour ce programme")
+        except Exception:
+            raise HTTPException(status_code=500, detail="Erreur interne du serveur")
+
+        return [feature.geojson_feature for feature in geo_features]

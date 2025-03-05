@@ -87,9 +87,7 @@ async def get_bassin_geopackage(program: str):
         program (str): Nom du programme (schéma).
     """
     async with async_session_pynuts() as session:
-        print("Export")
         basin_data = await fetch_basin_from_db(program, session)
-        
         return [
             {
                 "type": "Feature",
