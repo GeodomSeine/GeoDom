@@ -14,8 +14,7 @@ import { useAuth, AuthProvider} from './Components/Admin/Auth/AuthContext';
 
 const AdminPage: React.FC = () => {
   const { isAuthenticated } = useAuth();
-  // return isAuthenticated ? <AdminDashboard /> : <LoginForm />;
-  return <AdminDashboard /> ;
+  return isAuthenticated ? <AdminDashboard /> : <LoginForm />;
 };
 
 
