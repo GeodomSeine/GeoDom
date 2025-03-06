@@ -89,6 +89,7 @@
             .space_body_tile{
                 .variable_element{
                     min-width: calc(100vw - 32px);
+                    min-height: 100%;
                 }
             }
         }
