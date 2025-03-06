@@ -44,7 +44,7 @@
                 align-items: center;
                 justify-content: center;
                 padding: 5px;
-                width: clamp(200px, 100%, 45vw);
+                width: clamp(200px, 100%, calc(50vw - 75px));
                 canvas{
                     height: 100%;
                     width: 100%;
@@ -87,7 +87,7 @@
             width: 100%;
             .space_body_tile{
                 .variable_element{
-                    min-width: 95vw;
+                    min-width: calc(100vw - 32px);
                 }
             }
         }

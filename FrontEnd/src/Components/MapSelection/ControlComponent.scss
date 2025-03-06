@@ -3,9 +3,7 @@
 .control_component {
   @include gap;
   flex-direction: column;
-  flex-wrap: wrap;
-  overflow-x: auto;
-  .mode_selector{
+  .selected_mode{
     @include gap;
     flex-direction: column;
     select {
@@ -22,6 +20,19 @@
       font-size: 0.9rem;
       height: 30px;
       width: 105px;
+    }
+  }
+  .selected_scenario{
+    .scenario_container{
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      .scenario_color{
+        height: 14px;
+        width: 14px;
+        border-radius: 5px;
+      }
     }
   }
 }

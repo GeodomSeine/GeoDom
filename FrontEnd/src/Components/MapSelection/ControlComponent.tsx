@@ -41,7 +41,7 @@ const ControlComponent: React.FC<ControlComponentProps> = ({
     return (
       <div className='control_component'>
         {/* Sélection du mode */}
-        <div className="mode_selector">
+        <div className="selected_mode">
           <select value={mode} onChange={(e) => setMode(e.target.value as "complet" | "amont-aval")}>
             <option value="complet">Complet</option>
             <option value="amont-aval">Amont-aval</option>
@@ -74,7 +74,7 @@ const ControlComponent: React.FC<ControlComponentProps> = ({
         </div>
   
         {/* Sélection des scénarios */}
-        <div>
+        <div className='selected_scenario'>
           <h3>Scénarios</h3>
           {scenarios.map((scenario) => (
             <div key={scenario.id} className="scenario_container">
