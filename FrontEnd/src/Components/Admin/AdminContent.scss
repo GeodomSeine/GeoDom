@@ -43,8 +43,7 @@
 
     .admin_nav {
       @include gap;
-      flex-direction: row;
-
+      flex-flow: row wrap;
       .button_container:not(.button_on_dark):hover {
         background-color: $primary_blue;
         color: $basic_white;

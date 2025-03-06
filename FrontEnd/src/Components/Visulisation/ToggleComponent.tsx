@@ -23,13 +23,13 @@ const ToggleContainer: React.FC<ToggleContainerProps> = ({
   return (
     <div className={`space_container ${className}`}>
       <div className="space_header" onClick={() => setIsVisible((prev) => !prev)}>
-        <h2>{title}</h2>
         <LogoComponent
           className={isVisible ? "is_visible" : "set_is_visible"}
           size={"35px"}
           Icon={Arrow}
           customColor=""
         />
+        <h2>{title}</h2>
       </div>
       <div className={`space_body ${isVisible ? "" : "hidden"}`}>
         {containsTile && secondChild && (
