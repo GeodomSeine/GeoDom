@@ -43,7 +43,7 @@ const ExportCsvComponent: React.FC<ExportCsvComponentProps> = ({ exportCsvData }
                 timeZone: 'Europe/Paris'
             }).format(new Date()),
             variables: exportCsvData.variables,
-            annees: exportCsvData.scenarios.map((s) => s.year),
+            year: exportCsvData.scenarios.map((s) => s.year),
         };
         zip.file("metadata.json", JSON.stringify(metadata, null, 2));  
         const zipBlob = await zip.generateAsync({ type: "blob" });
