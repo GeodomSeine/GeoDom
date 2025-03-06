@@ -17,19 +17,10 @@
     font-family: 'Roboto-Regular';
   }
 
+  // in order to highlight the element you want to show in the tutoriel, this class is added
   .highlight {
     position: relative;
     z-index: 10001;
-    animation: fadeInOut 1.2s infinite alternate; 
-  }
-
-  @keyframes fadeInOut {
-      0% {
-          opacity: 0.5; 
-      }
-      100% {
-          opacity: 1; 
-      }
   }
 
   

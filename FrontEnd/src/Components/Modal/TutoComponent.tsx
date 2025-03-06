@@ -11,10 +11,9 @@ import { steps } from '../../utils/tutorialSteps';
 interface TutoComponentProps {
   isOpen?: boolean;
   onClose?: () => void;
-  title?: string;
 }
 
-const TutoComponent: React.FC<TutoComponentProps> = ({ isOpen, onClose, title }) => {
+const TutoComponent: React.FC<TutoComponentProps> = ({ isOpen, onClose }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const navigate = useNavigate();
   const location = useLocation();
@@ -101,7 +100,7 @@ const TutoComponent: React.FC<TutoComponentProps> = ({ isOpen, onClose, title })
     <div className="modal_overlay_tutorial" onClick={(e) => e.stopPropagation()}>
       <div className="modal_action" onClick={(e) => e.stopPropagation()}>
         <div className="modal_action_header">
-          <h3>{title}</h3>
+          <h3>{steps[currentStep]?.title}</h3>
           <LogoComponent Icon={Cross} onClick={() => {onClose && onClose(); setCurrentStep(0);}} size="30px" />
         </div>
         <div className="modal_action_body">

@@ -37,7 +37,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
             </div>
             <div className='action_header right'>
                 {onSearch && <SearchComponent onSearch={onSearch} />}
-                <LogoComponent size={"25px"} Icon={Tutorial} onClick={() => setTutorialOpen && setTutorialOpen(true)}/>
+                <LogoComponent className={"test"} size={"25px"} Icon={Tutorial} onClick={() => setTutorialOpen && setTutorialOpen(true)}/>
                 {showImportButton && (
                     <LogoComponent size={"30px"} Icon={Import} onClick={() => setIsModalOpen(true)} />
                 )}

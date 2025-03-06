@@ -56,7 +56,6 @@ const App: React.FC = () => {
           <Route path="/admin" element={<AdminPage />} />
         </Routes>
         <TutoComponent
-          title="Geodom Tutoriel"
           isOpen={tutorialOpen}
           onClose={() => setTutorialOpen(false)}
         />
