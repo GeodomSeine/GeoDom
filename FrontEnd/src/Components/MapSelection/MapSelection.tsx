@@ -18,7 +18,9 @@ const { BaseLayer, Overlay } = LayersControl;
 
 
 interface MapSelectionProps {
+  // map ref used by the pdf export
   mapRef: any;
+  // program name
   program: string;
   exutoire_id: number;
   idHydStart: number | null;
@@ -158,7 +160,7 @@ const MapSelection: React.FC<MapSelectionProps> = ({
     return () => observer.disconnect();
   }, [mapRef.current]); 
   
-
+//  define the layer, and if they are visible
 const [layerVisibility, setLayerVisibility] = useState<Record<string, boolean>>({
   baseLayer: true,
   hydrographie: true,
@@ -167,6 +169,7 @@ const [layerVisibility, setLayerVisibility] = useState<Record<string, boolean>>(
   pk: true,
 });
 
+// set the style of the pk, or worm
 const getHydroStyle = (feature: any): PathOptions => {
   const strahler = feature.properties?.strahler;
   const id = feature.properties?.id_hyd;
@@ -175,35 +178,35 @@ const getHydroStyle = (feature: any): PathOptions => {
     return { color: "var(--danger-color)", weight: 3 };
   if (idHydStart === id || idHydEnd === id)
     return { color: "var(--success-color)", weight: 4 };
-
   for (const rule of hydroStyles) {
     if (strahler >= rule.min && strahler <= rule.max)
       return { color: rule.color, weight: rule.weight };
   }
-
   return { color: "var(--basic-black)", weight: 1 };
 };
 
-// handle click on a pk, to create a selection pop-up
+// handle click on a pk, to create a selection pop-up on the map
 const handleFeatureClick = (feature: { properties: { [key: string]: any } }, layer: any, popUpLayer: "Hydro" | "Station") => {
   const properties = feature.properties;
 
+  // create an element when to render the elements in the pop-up
   const popupContent = document.createElement("div");
   popupContent.setAttribute("class", "leaflet-elements-container");
 
+  // handle the click of the selected amont
   const onSelectAmont = () => {
     setIdHydStart(properties.id_hyd);
     setIdHydEnd(exutoire_id);
     layer.closePopup();
   };
-
+  // handle the click of the selected aval
   const onSelectAval = () => {
     setIdHydEnd(properties.id_hyd);
     layer.closePopup();
   };
 
   const root = createRoot(popupContent);
-  // here unfotunatly for the moment, leaflet only accept pre-render html element, 
+  // here unfotunatly, leaflet only accept pre-render html element, 
   // so we need to prerender element in order for them to appear in the pop-up, removing the advantages of React
   root.render(
     <PopupContent
@@ -220,7 +223,6 @@ const handleFeatureClick = (feature: { properties: { [key: string]: any } }, lay
 
 return (
 <div className="map_component">
-  
   <MapContainer
       ref={mapRef}
       attributionControl={false}
@@ -229,7 +231,6 @@ return (
       minZoom={6} 
       zoomControl={false}
   >
-    {/* className pour cacher les controles pour l'export  */}
     <div className="leaflet-control-container"> 
     <MapButtons bounds={bounds}>
         <ControlComponent
@@ -280,7 +281,7 @@ return (
       {hydroData && hydroStyles && (
           <Overlay {...(layerVisibility.hydrographie ? { checked: true } : { checked: false })} name="Hydrographie">
               <GeoJSON
-                  key={`hydro-${mode}-${hydroData.features.length}`} // 🟢 Forçage de mise à jour
+                  key={`hydro-${mode}-${hydroData.features.length}`} 
                   data={hydroData as GeoJsonObject}
                   style={getHydroStyle}
                   interactive={true}

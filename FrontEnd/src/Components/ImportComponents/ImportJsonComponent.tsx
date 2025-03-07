@@ -5,20 +5,25 @@ import { useNavigate } from "react-router";
 import InputComponent from "../SimpleComponents/InputComponent";
 
 interface ImportJsonComponentProps {
+    // all data related to visualisations
     visualizationData: { name: string; variables: string[] }[];
 }
 
 const ImportJsonComponent: React.FC<ImportJsonComponentProps> = ({ visualizationData }) => {
+    // current selected file
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    // current error message
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const navigate = useNavigate();
 
+    // handle when the file is changed
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0] || null;
         setSelectedFile(file);
         setErrorMessage(null);
     };
 
+    // handle when the user submit his file (verifications)
     const handleImport = () => {
         if (selectedFile) {
             const reader = new FileReader();

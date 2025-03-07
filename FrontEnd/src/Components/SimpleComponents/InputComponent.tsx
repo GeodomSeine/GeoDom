@@ -2,25 +2,22 @@ import React, { FC, useRef } from "react";
 import "./InputComponent.scss";
 import ButtonComponent from "./ButtonComponent";
 
-interface SelectOption {
-  value: string;
-  label: string;
-}
-
 interface InputComponentProps {
+  // type of the input wanted (warning some of them are doesnt have style, only checkbox, radio, text, password, number, file and also textarea supported)
   type?: React.HTMLInputTypeAttribute | "textarea" | "select";
+  // label, if the element is disable, checked by default
   label?: string;
   disabled?: boolean;
   checked?: boolean;
   className?: string;
-  onChange?: React.ChangeEventHandler<
-    HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-  >;
+  // on change function
+  onChange?: React.ChangeEventHandler< HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement >;
+  // the name of the selected file
   selectedFile?: string | null;
+  // required fields in case of a form
   required?: boolean;
+  // default value of the input
   value?: string | number | readonly string[];
-  selectOptions?: SelectOption[];
-  children?: React.ReactNode;
 }
 
 const InputComponent: FC<InputComponentProps> = ({
@@ -33,9 +30,8 @@ const InputComponent: FC<InputComponentProps> = ({
   selectedFile = null,
   required,
   value,
-  // selectOptions,
-  // children,
 }) => {
+  // used to mimic the behavior of an input type file, but here with a better visual, using a ButtonComponent
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleButtonClick = () => {
@@ -73,26 +69,6 @@ const InputComponent: FC<InputComponentProps> = ({
           />
         </div>
       );
-    // case "select":
-    //   return (
-    //     <div className={`input_component type_${className}`}>
-    //       {label && <span>{label}</span>}
-    //       <select
-    //         disabled={disabled}
-    //         required={required}
-    //         value={value as string}
-    //         onChange={onChange as React.ChangeEventHandler<HTMLSelectElement>}
-    //       >
-    //         {selectOptions?.map((option) => (
-    //           <option key={option.value} value={option.value}>
-    //             {option.label}
-    //           </option>
-    //         ))}
-    //       </select>
-    //       {/* only when select */}
-    //       {children}
-    //     </div>
-    //   );
     default:
       return (
         <div className={`input_component type_${className}`}>

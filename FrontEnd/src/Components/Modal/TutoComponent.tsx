@@ -14,11 +14,15 @@ interface TutoComponentProps {
 }
 
 const TutoComponent: React.FC<TutoComponentProps> = ({ isOpen, onClose }) => {
+  // rememeber the current step in the tutorial
   const [currentStep, setCurrentStep] = useState(0);
+  // const used to navigate
   const navigate = useNavigate();
+  // gettting the current location path (example home page its '/') 
   const location = useLocation();
   const lastPathRef = useRef<string | null>(null);
 
+  // check if the path name correspond the current path when lastPathRef or location.current changes, in order to correctly track where the user is through the pages
   useEffect(() => {
     if (lastPathRef.current && lastPathRef.current === location.pathname) {
       lastPathRef.current = null;
@@ -28,11 +32,13 @@ const TutoComponent: React.FC<TutoComponentProps> = ({ isOpen, onClose }) => {
     }
   }, [lastPathRef, location.pathname]);
 
+  // update a lot of things when the current path is changed
   useEffect(() => {
     // Remove previous highlights
     document.querySelectorAll('.highlight').forEach(el => el.classList.remove('highlight'));
     document.querySelector('.modal_overlay_tutorial')?.classList.remove('right_bottom', 'left_bottom');
 
+    // apply the highlight of the currentStep
     if (steps[currentStep]?.targetClass) {
       const targetSelector = `.${steps[currentStep].targetClass}`;
       
@@ -46,8 +52,9 @@ const TutoComponent: React.FC<TutoComponentProps> = ({ isOpen, onClose }) => {
         return false; 
       };
   
+      // track the applied highlight
       if (!applyHighlight()) {
-        // Create a MutationObserver in order to track the dom when ready
+        // create a MutationObserver in order to track the dom when ready
         const observer = new MutationObserver((__, obs) => {
           if (applyHighlight()) {
             obs.disconnect(); 
@@ -61,6 +68,7 @@ const TutoComponent: React.FC<TutoComponentProps> = ({ isOpen, onClose }) => {
   
         setTimeout(() => observer.disconnect(), 2000);
       }
+      // Remove previous position of the tutorial window, in order to update it correctly
       const targetClass = document.querySelector(".modal_overlay_tutorial");
       if(currentStep>0){
         targetClass?.classList.remove(steps[currentStep-1].position!);
@@ -70,8 +78,14 @@ const TutoComponent: React.FC<TutoComponentProps> = ({ isOpen, onClose }) => {
   }, [currentStep]);
   
 
+  // return and clean all highlights, if the tutorial is closed
   if (!isOpen) {document.querySelectorAll('.highlight').forEach(el => el.classList.remove('highlight')); return null;};
 
+   /**
+   * set the next step and update it
+   * @param void
+   * @returns void
+   */
   const nextStep = () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep(prev => prev + 1);
@@ -81,6 +95,11 @@ const TutoComponent: React.FC<TutoComponentProps> = ({ isOpen, onClose }) => {
     }
   };
 
+  /**
+   * set the previous step, if the user go back, and checking the current back-Path
+   * @param void
+   * @returns void
+   */
   const prevStep = () => {
     if (currentStep > 0) {
       const prevRoute = steps[currentStep - 1]?.route;
@@ -97,15 +116,19 @@ const TutoComponent: React.FC<TutoComponentProps> = ({ isOpen, onClose }) => {
   };
 
   return (
+    
     <div className="modal_overlay_tutorial" onClick={(e) => e.stopPropagation()}>
+      {/* Copy of the modal action, behave slightly different */}
       <div className="modal_action" onClick={(e) => e.stopPropagation()}>
         <div className="modal_action_header">
           <h3>{steps[currentStep]?.title}</h3>
+          {/* Quit logo */}
           <LogoComponent Icon={Cross} onClick={() => {onClose && onClose(); setCurrentStep(0);}} size="30px" />
         </div>
         <div className="modal_action_body">
           {steps[currentStep]?.content}
         </div>
+        {/* Back or continue button */}
         <div className="modal_action_footer">
           <ButtonComponent
             txt={

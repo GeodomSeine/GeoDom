@@ -3,8 +3,10 @@ import ButtonComponent from "../SimpleComponents/ButtonComponent";
 import "./PopupContent.scss";
 
 interface PopupContentProps {
-  properties: { [key: string]: any }; // Adjust based on your feature properties
+  properties: { [key: string]: any }; 
+  // selected mode
   mode: "complet" | "amont-aval";
+  // function called depending on the current mode
   onSelectAmont: () => void;
   onSelectAval: () => void;
   layer: "Hydro" | "Station" | "PK";

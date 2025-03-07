@@ -3,7 +3,9 @@ import "./PercentileSelector.scss";
 import InputComponent from "./InputComponent";
 
 interface PercentileSelectorProps {
+  // default percentile
   selectedPercentile: "p5" | "p50" | "p90";
+  // argument function in order to update the selected percentile 
   onChange: (value: "p5" | "p50" | "p90") => void;
 }
 

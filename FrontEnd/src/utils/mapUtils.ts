@@ -27,6 +27,11 @@ export const calculateBounds = (bassin: GeoJsonResponse): LatLngBounds => {
     return new LatLngBounds([minLat, minLng], [maxLat, maxLng]);
 };
 
+/**
+ * get the color from the DOM, because of chartjs and other thing.
+ * @param string - (example --primary-blue)
+ * @returns string - that correspond to the coolor in param.
+ */
 export const getColor = (name: string) =>{
     return getComputedStyle(document.documentElement).getPropertyValue(name);
 };
