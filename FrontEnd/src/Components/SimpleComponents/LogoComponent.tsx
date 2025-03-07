@@ -1,6 +1,7 @@
 import React, { FC } from "react";
 import HomeLogo from "../../assets/logo.svg?react";
 import "../../styles/main.scss";
+import "./LogoComponent.scss";
 
 interface LogoComponentProps {
     containerSize?: string | number;
@@ -24,9 +25,6 @@ const LogoComponent: FC<LogoComponentProps> = ({
     const containerStyle: React.CSSProperties = {
         width: containerSize,
         height: containerSize,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
         cursor: cursor, 
         color: "inherit",
     };
@@ -43,7 +41,6 @@ const LogoComponent: FC<LogoComponentProps> = ({
         <div className={className || "logo_container"} style={containerStyle}>
             <Icon color={`${customColor}`} style={svgStyle}/>
         </div>
-        
     );
 };
 

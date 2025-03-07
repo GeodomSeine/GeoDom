@@ -212,7 +212,7 @@ export const steps: TutoStep[] = [
           Ici, le <strong>logo</strong> permet de revenir à l’<strong>accueil</strong>, tandis que le <strong>bouton situé à droite</strong> offre plusieurs options d’exportation des données.
         </p>
       ),
-      position : "rigth_bottom",
+      position : "left_bottom",
     },
     {
       title:"Formats d'exportation disponibles",
@@ -226,6 +226,6 @@ export const steps: TutoStep[] = [
           ou la partager avec un collègue afin qu’il puisse visualiser les mêmes données que vous.
         </p>
       ),
-      position : "rigth_bottom",
+      position : "left_bottom",
     },
 ];

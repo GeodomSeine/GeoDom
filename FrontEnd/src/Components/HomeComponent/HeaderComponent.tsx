@@ -22,11 +22,14 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
     visualizationData = [],
     setTutorialOpen,
 }) => {
-    const navigate = useNavigate();
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleHomeClick = () => {
-        navigate('/');
+        // scroll on top is needed
+        window.scroll({
+            top: 0,
+            behavior: 'smooth'
+        });
     };
 
     return (
@@ -37,7 +40,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
             </div>
             <div className='action_header right'>
                 {onSearch && <SearchComponent onSearch={onSearch} />}
-                <LogoComponent className={"test"} size={"25px"} Icon={Tutorial} onClick={() => setTutorialOpen && setTutorialOpen(true)}/>
+                <LogoComponent className={"logo_container tuto"} size={"25px"} Icon={Tutorial} onClick={() => setTutorialOpen && setTutorialOpen(true)}/>
                 {showImportButton && (
                     <LogoComponent size={"30px"} Icon={Import} onClick={() => setIsModalOpen(true)} />
                 )}

@@ -17,7 +17,6 @@ const AdminPage: React.FC = () => {
   return isAuthenticated ? <AdminDashboard /> : <LoginForm />;
 };
 
-
 const App: React.FC = () => {
   const [programs, setPrograms] = useState<ProgramResponse | null>(null);
 
@@ -45,7 +44,6 @@ const App: React.FC = () => {
         variables: program.variables.map((variable: ProgramVariable) => variable.var_code)
       }))
     : [];
-
   return (
     <AuthProvider>
       <Router>
