@@ -71,7 +71,11 @@
     .space_body.hidden {
         display: none;  
     } 
-      
+    &.highlight{
+        .space_header {
+            pointer-events: none;
+        }   
+    }
 }
 .space_container:has(.space_body.hidden){
     flex: 0 0 50px;

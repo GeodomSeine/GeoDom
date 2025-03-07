@@ -16,4 +16,9 @@
     bottom: 0;
     right: 0;
     z-index: 10000;
+    &.highlight{
+        .home_logo{
+            pointer-events: none;
+        }   
+    }
 }
