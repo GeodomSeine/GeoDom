@@ -1,56 +1,54 @@
-name: Release Production
+name: Push in Production
 
 on:
   push:
     branches:
-      - Production
-
+      - Production  
 jobs:
-  create-release:
+  release:
+    name: Create Release
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    outputs:
-      new_tag: ${{ steps.bump_version.outputs.new_tag }}  # Passez NEW_TAG comme output du job
+
     steps:
-      - name: Checkout Repository
+      - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Get latest tag
         id: get_tag
         run: |
-          LATEST_TAG=$(git describe --tags --abbrev=0 || echo "v0.0.0")
-          echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
-
-      - name: Bump version
-        id: bump_version
-        run: |
-          LATEST_TAG=${{ env.LATEST_TAG }}
-          VERSION_PARTS=(${LATEST_TAG//./ })
-          MAJOR=${VERSION_PARTS[0]//[!0-9]/}
-          MINOR=${VERSION_PARTS[1]}
-          PATCH=${VERSION_PARTS[2]}
-          if [ "$PATCH" == "0" ]; then
-            PATCH=1
+          LATEST_TAG=$(git tag --sort=-v:refname | head -n 1)
+          echo "Latest tag: $LATEST_TAG"
+          if [[ -z "$LATEST_TAG" ]]; then
+            NEW_VERSION="v1.0.0"
           else
-            PATCH=$((PATCH + 1))
-          fi         
-          NEW_TAG="v$MAJOR.$MINOR.$PATCH"
-          echo "new_tag=$NEW_TAG" >> $GITHUB_ENV
+            NEW_VERSION=$(echo $LATEST_TAG | awk -F. '{print $1"."$2"."$3+1}')
+          fi
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
+      - name: Create and push new tag
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git tag ${{ env.NEW_VERSION }}
+          git push origin ${{ env.NEW_VERSION }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.bump_version.outputs.new_tag }}
-          name: Release ${{ steps.bump_version.outputs.new_tag }}
+          tag_name: ${{ env.NEW_VERSION }}
+          name: "Release ${{ env.NEW_VERSION }}"
+          body: "Automatic release of version ${{ env.NEW_VERSION }} 🎉"
           draft: false
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   deploy-to-vps:
     runs-on: ubuntu-latest
-    needs: create-release
+    needs: release
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
