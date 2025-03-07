@@ -36,20 +36,22 @@
           color: $danger_color;
           border-color: $danger_color;
         }
-      }
-
-      
+      } 
     }
-
     .admin_nav {
       @include gap;
       flex-flow: row wrap;
-      .button_container:not(.button_on_dark):hover {
+      .button_container {
+        color: $primary-blue;
+        &:hover{
+          color: $basic_white;
+        }
+      }
+      .button_container:not(.button_on_dark) {
         background-color: $primary_blue;
         color: $basic_white;
       }
     }
-
     .admin_content {
       @include gap;
       flex-direction: column;
@@ -57,17 +59,14 @@
       flex-wrap: nowrap;
       overflow-y: auto;
       overflow-x: hidden;
-
       .status_message {
         font-size: 1rem;
         color: $danger-color;
       }
-
       .add_file_admin {
         @include gap;
         align-items: center;
       }
-
       .admin_content_list {
         @include gap;
         flex-direction: column;
