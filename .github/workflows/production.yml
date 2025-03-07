@@ -10,7 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-
+    outputs:
+      new_tag: ${{ steps.get_tag.outputs.NEW_VERSION }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -28,6 +29,7 @@ jobs:
             NEW_VERSION=$(echo $LATEST_TAG | awk -F. '{print $1"."$2"."$3+1}')
           fi
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_OUTPUT
 
       - name: Create and push new tag
         run: |
@@ -63,7 +65,7 @@ jobs:
           debug: true
           script: |
             # Variables
-            NEW_TAG="${{ needs.create-release.outputs.new_tag }}"  # Utilisation de l'output du job précédent
+            NEW_TAG="${{ needs.release.outputs.new_tag }}"  # Utilisation de l'output du job précédent
             DOWNLOAD_URL="https://github.com/${{ github.repository }}/archive/refs/tags/${NEW_TAG}.tar.gz"
             
             echo "🚀 Téléchargement de la release ${NEW_TAG} sur le VPS..."
