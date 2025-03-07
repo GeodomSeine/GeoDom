@@ -5,7 +5,6 @@ import { GeoJsonObject } from 'geojson';
 import 'leaflet/dist/leaflet.css';
 import {streamHydroData, getBassin, getStationSnap, getStationSnapSld, getHydroSLD, getBassinSLD, GeoJsonResponse, AmontAvalResponse, Scenario, ProgramVariable } from '../../services/api';
 import { parseSLDToStyles } from '../../mapstyles/mapStyles';
-import "leaflet/dist/leaflet.css";
 import "./MapSelection.scss";
 import "../../styles/main.scss";
 import { createRoot } from 'react-dom/client';

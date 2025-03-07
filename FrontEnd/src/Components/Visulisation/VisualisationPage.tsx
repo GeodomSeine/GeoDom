@@ -18,7 +18,7 @@ import VariableChart from "../SimpleComponents/VariableChart";
 import MapSelection from "../MapSelection/MapSelection";
 import ColoredMapComponent from "../ColoredMapComponent/ColoredMapComponent";
 import DecadeRangeComponent from "../SimpleComponents/DecadeRangeComponent";
-import { LatLngBounds, PathOptions } from "leaflet";
+import L, { LatLngBounds, PathOptions } from "leaflet";
 import { calculateBounds } from "../../utils/mapUtils";
 import { parseSLDToStyles } from "../../mapstyles/mapStyles";
 import SliderComponent from "../SimpleComponents/SliderComponent";
@@ -195,7 +195,7 @@ const VisualisationPage: React.FC = () => {
   }, [program, selectedScenarios, selectedVariables, mode]);
 
   const requestColoredMap: ColorMapRequest | null = useMemo(() => {
-    if (!program || !program.name || selectedScenarios.length==0|| selectedVariables.length==0 || selectedDecades.length==0) return null;
+    if (!program || !program.name || selectedScenarios.length == 0 || selectedVariables.length == 0 || selectedDecades.length == 0) return null;
     return {
       program: program.name,
       scenarios: selectedScenarios.map((scenario) => scenario.id),
@@ -309,7 +309,7 @@ const VisualisationPage: React.FC = () => {
 
     if (mode === "amont-aval") {
       fetchPk();
-    }else {
+    } else {
       fetchPkByStrahler();
     }
   }, [selectedKey]);
@@ -386,12 +386,12 @@ const VisualisationPage: React.FC = () => {
   );
 
   const sharedDecade = (
-      <DecadeRangeComponent
-        value={selectedDecades}
-        onChange={handleDecadeChange}
-        min={1}
-        max={36}
-      />
+    <DecadeRangeComponent
+      value={selectedDecades}
+      onChange={handleDecadeChange}
+      min={1}
+      max={36}
+    />
   )
 
   const decades = chartData?.length ? chartData.map((entry) => entry.decade) : [];
@@ -413,20 +413,50 @@ const VisualisationPage: React.FC = () => {
     }
   });
 
-  const selectionMapRef = useRef<null>(null);
+  const selectionMapRef = useRef<any>(null);
   const chartRefs = useRef<Array<React.RefObject<HTMLDivElement>>>(Array(4).fill(null).map(() => React.createRef()));
-  const mapRefs = useRef<Array<React.RefObject<HTMLDivElement>>>(Array(4).fill(null).map(() => React.createRef()));
+  const mapRefs = useRef<Array<React.RefObject<any>>>(Array(4).fill(null).map(() => React.createRef()));
   const profilLongRefs = useRef<Array<React.RefObject<HTMLDivElement>>>(Array(4).fill(null).map(() => React.createRef()));
-  
+
 
 
   const exportPdfInfo = {
     selectionMapElements: { mapRef: selectionMapRef, program_name: program_name, selectedVariables: selectedVariables, selectedScenarios: selectedScenarios },
     mapElements: { mapRefs: mapRefs },
     chartElements: { chartRefs: chartRefs },
-    profilLongElements: {profilLongRefs: profilLongRefs}
+    profilLongElements: { profilLongRefs: profilLongRefs }
   };
 
+  const getPlugin = (mapRef: any) => {
+    return (L as any).simpleMapScreenshoter({
+      cropImageByInnerWH: true,
+      hidden: false,
+      preventDownload: false,
+      mimeType: "image/png",
+      hideElementsWithSelectors: [".leaflet-control-container"],
+    }).addTo(mapRef.current);
+  };
+
+  useEffect(() => {
+    const mapRefs = exportPdfInfo.mapElements.mapRefs;
+
+    mapRefs.current.forEach((mapRef: any) => {
+      if (mapRef.current && !mapRef.current.plugin) {
+        console.log("Adding plugin to mapRef");
+        mapRef.current.plugin = getPlugin(mapRef);
+      }
+    });
+
+  }, [exportPdfInfo.mapElements.mapRefs.current[0].current, exportPdfInfo.mapElements.mapRefs.current[1].current, exportPdfInfo.mapElements.mapRefs.current[2].current, exportPdfInfo.mapElements.mapRefs.current[3].current]);
+
+  useEffect(() => {
+    const mapRef = exportPdfInfo.selectionMapElements.mapRef;
+
+    if (mapRef.current && !mapRef.current.plugin) {
+      console.log("Adding plugin to mapRef");
+      mapRef.current.plugin = getPlugin(mapRef);
+    }
+  }, [exportPdfInfo.selectionMapElements.mapRef.current]);
 
   if (!program) {
     return null;
@@ -455,9 +485,9 @@ const VisualisationPage: React.FC = () => {
   return (
     <div className='home_component_visualisation'>
       <FloatingAction>
-        <ExportJsonComponent exportConf={exportConf}/>
-        <ExportPdfComponent exportPdfInfo={exportPdfInfo}/>
-        {data && <ExportCsvComponent exportCsvData={exportData}/>}
+        <ExportJsonComponent exportConf={exportConf} />
+        <ExportPdfComponent exportPdfInfo={exportPdfInfo} />
+        {data && <ExportCsvComponent exportCsvData={exportData} />}
         <ExportGeoPackageComponent program={program!.name} />
       </FloatingAction>
       <div className='home_body'>
@@ -472,7 +502,7 @@ const VisualisationPage: React.FC = () => {
             setIdHydStart={setIdHydStart}
             setIdHydEnd={setIdHydEnd}
             amontAvalResponse={amontAvalResponse}
-            selectedPk={mode === "amont-aval" ? selectedPk: undefined}
+            selectedPk={mode === "amont-aval" ? selectedPk : undefined}
             mode={mode}
             resetSelection={resetSelection}
             variables={program!.variables}
@@ -482,7 +512,7 @@ const VisualisationPage: React.FC = () => {
             setSelectedScenarios={setSelectedScenarios}
             scenarios={scenarios}
             setMode={setMode}
-            pkByStrahler={mode === "complet" ? pkByStrahler: undefined}
+            pkByStrahler={mode === "complet" ? pkByStrahler : undefined}
           />
         </ToggleContainer>
         {chartData?.length && (
@@ -547,7 +577,7 @@ const VisualisationPage: React.FC = () => {
                 scenarioColors={scenarioColors}
                 scenarios={selectedScenarios}
                 decades={selectedDecades && selectedDecades.length == 2 ? [selectedDecades[0], selectedDecades[1]] : [1, 10]}
-                profilLongs = {profilLongRefs.current[index]}
+                profilLongs={profilLongRefs.current[index]}
               />
             ))}
           </ToggleContainer>
