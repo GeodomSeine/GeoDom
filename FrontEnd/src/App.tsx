@@ -9,7 +9,7 @@ import { getPrograms, ProgramResponse, ProgramVariable } from './services/api';
 import { getCookie, setCookie } from './utils/cookies';
 import AdminDashboard from './Components/Admin/Dashboard/AdminDashboard';
 import LoginForm from './Components/Admin/LoginForm/LoginForm';
-import { useAuth, AuthProvider} from './Components/Admin/Auth/AuthContext';
+import { useAuth, AuthProvider } from './Components/Admin/Auth/AuthContext';
 
 
 const AdminPage: React.FC = () => {
@@ -40,23 +40,23 @@ const App: React.FC = () => {
 
   const visualizationData = Array.isArray(programs)
     ? programs.map(program => ({
-        name: program.name,
-        variables: program.variables.map((variable: ProgramVariable) => variable.var_code)
-      }))
+      name: program.name,
+      variables: program.variables.map((variable: ProgramVariable) => variable.var_code)
+    }))
     : [];
   return (
     <AuthProvider>
       <Router>
         <Routes>
-          <Route path="/" element={<HomeComponent setTutorialOpen={setTutorialOpen}/>} />
+          <Route path="/" element={<HomeComponent setTutorialOpen={setTutorialOpen} />} />
           <Route path="/:program_name" element={<VisualisationPage />} />
           <Route path="/import-json" element={<ImportJsonComponent visualizationData={visualizationData} />} />
           <Route path="/admin" element={<AdminPage />} />
         </Routes>
-        <TutoComponent
+        {(window.innerWidth > 760) && <TutoComponent
           isOpen={tutorialOpen}
           onClose={() => setTutorialOpen(false)}
-        />
+        />}
       </Router>
     </AuthProvider>
   );
