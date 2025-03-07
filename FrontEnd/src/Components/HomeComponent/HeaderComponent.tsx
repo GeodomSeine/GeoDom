@@ -5,7 +5,6 @@ import Tutorial from "../../assets/question.svg?react";
 
 import "./HeaderComponent.scss";
 import SearchComponent from '../SimpleComponents/SearchComponent';
-import { useNavigate } from 'react-router';
 import Modal from '../Modal/Modal';
 import ImportJsonComponent from '../ImportComponents/ImportJsonComponent';
 
