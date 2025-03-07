@@ -73,13 +73,12 @@ jobs:
             # Téléchargement de l'archive tar.gz directement sur le VPS
             wget --header="Authorization: token ${{ secrets.GITHUB_TOKEN }}" -O ~/production/geodom.tar.gz $DOWNLOAD_URL
             
-            echo "📦 Archive téléchargée, décompression..."
-            # Extraction de l'archive tar.gz
-            tar -xzf ~/production/geodom.tar.gz -C ~/production
             echo "🔧 Déploiement de la release sur le VPS..."
             script: |
             export DATABASE_PYNUTS_URL="${{ secrets.DATABASE_PYNUTS_URL }}"
             export DATABASE_DONUTS_URL="${{ secrets.DATABASE_DONUTS_URL }}"
             export TESTING="${{ secrets.TESTING }}"
             export LOG_LEVEL="${{ secrets.LOG_LEVEL }}"
+            export SECRET_ADMIN_KEY="${{ secrets.SECRET_ADMIN_KEY }}"
+            export ALGORITHM="${{ secrets.ALGORITHM }}" 
             bash deploy.sh production
