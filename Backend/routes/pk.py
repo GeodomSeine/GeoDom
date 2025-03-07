@@ -9,7 +9,18 @@ import orjson
 router = APIRouter(prefix="/pk", tags=["PK"])
 
 async def fetch_pks_from_db(program: str, session: AsyncSession):
-    """Récupère les PKs depuis PostgreSQL sous forme de flux GeoJSON."""
+    """Récupère les PKs depuis PostgreSQL sous forme de flux GeoJSON.
+    
+    Args:
+        program (str): Nom du programme (schéma).
+        session (AsyncSession): Session de base de données.
+        
+    Exceptions:
+        HTTPException: Erreur interne du serveur.
+        
+    Yields:
+        bytes: Données GeoJSON
+    """
     DynamicPk = Pk.create(program) 
 
     try:
@@ -31,7 +42,14 @@ async def fetch_pks_from_db(program: str, session: AsyncSession):
 
 
 async def geojson_stream(program: str):
-    """Générateur asynchrone pour streamer un GeoJSON."""
+    """Générateur asynchrone pour streamer un GeoJSON.
+    
+    Args:
+        program (str): Nom du programme (schéma).
+        
+    Yields:
+        bytes
+    """
     async with async_session_pynuts() as session:
         first = True
         yield b'{"type": "FeatureCollection", "features": ['
@@ -49,7 +67,14 @@ async def geojson_stream(program: str):
 
 @router.get("/{program}")
 async def get_pks(program: str):
-    """Retourne les PKs sous forme de GeoJSON en streaming."""
+    """Retourne les PKs sous forme de GeoJSON en streaming.
+    
+    Args:
+        program (str): Nom du programme (schéma).
+        
+    Returns:
+        StreamingResponse: Données GeoJSON
+    """
     return StreamingResponse(
         geojson_stream(program),
         media_type="application/json"
@@ -60,6 +85,10 @@ async def get_pk_features(program: str):
     
     Args:
         program (str): Nom du programme (schéma).
+        
+    Exceptions:
+        HTTPException: Aucune donnée pkmap trouvée pour ce programme.
+        HTTPException: Erreur interne du serveur.
         
     Returns:
         list: Liste des données hydro

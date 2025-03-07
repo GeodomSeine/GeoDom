@@ -13,6 +13,9 @@ async def fetch_varcompartment_from_db(session: AsyncSession, variables: list[st
         session (AsyncSession): Session SQLAlchemy asynchrone.
         variable (str): Nom de la variable.
 
+    Exceptions:
+        Exception: Erreur lors de la récupération des compartiments.
+
     Returns:
         list[dict]: Liste des compartiments sous forme de dictionnaires.
     """

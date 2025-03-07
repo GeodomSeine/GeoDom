@@ -43,7 +43,11 @@ async def lifespan(app: FastAPI):
 
 # Endpoint pour vérifier le statut des tâches planifiées
 async def get_scheduler_status():
-    """Retourne le statut des tâches planifiées"""
+    """Retourne le statut des tâches planifiées
+    
+    Returns:
+        Json: Statut des tâches planifiées
+    """
     jobs = []
     for job in scheduler.get_jobs():
         jobs.append({

@@ -17,6 +17,8 @@ async def fetch_pks(program: str, id_hyd_list: list[int]):
         program (str): Nom du programme (schéma).
         id_hyd_list (list[int]): Liste des id_hyd.
 
+    Exceptions:
+        Exception: Error fetching PKs.
     Returns:
         list[dict]: Liste des PK avec leurs propriétés.
     """
@@ -62,6 +64,17 @@ async def fetch_pks(program: str, id_hyd_list: list[int]):
 async def get_amont_aval(program: str, id_hyd_start: int, id_hyd_end: int):
     """
     Récupère les id_hyd entre `id_hyd_start` et `id_hyd_end` pour un programme donné.
+    
+    Args:
+        program (str): Nom du programme (schéma).
+        id_hyd_start (int): Id_hyd de départ.
+        id_hyd_end (int): Id_hyd de fin.
+    
+    Exceptions:
+        HTTPException: Error fetching amont_aval data.
+    
+    Returns:
+        dict: Liste des id_hyd et leurs PK.
     """
     DynamicSenequeAesnHydro = SenequeAesnHydro.create(program)
 

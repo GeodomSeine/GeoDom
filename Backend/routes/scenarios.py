@@ -14,6 +14,9 @@ async def fetch_scenarios_from_db(session: AsyncSession):
 
     Args:
         session (AsyncSession): Session SQLAlchemy asynchrone.
+        
+    Exceptions:
+        HTTPException: Erreur lors de la récupération des scénarios.
 
     Returns:
         list[dict]: Liste des scénarios sous forme de dictionnaires.
@@ -46,6 +49,9 @@ async def fetch_scenarios_from_db(session: AsyncSession):
 async def get_scenarios():
     """
     Récupère la liste de tous les scénarios disponibles.
+    
+    Exceptions:
+        HTTPException: Aucun scénario trouvé.
 
     Returns:
         dict: Liste des scénarios.

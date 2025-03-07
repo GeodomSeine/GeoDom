@@ -17,6 +17,13 @@ async def get_data(body: dict):
     
     Args:
         body (dict): Contient les clés `program`, `scenarios`, `variables`, et `pk`.
+        
+    Exceptions :
+        HTTPException: Missing required fields: program, scenarios, variables, pk.
+        HTTPException: Variable '{variable}' does not exist in the table.
+        HTTPException: No data found for program '{program}', scenarios {scenarios}, variables {variables}, and pk list.
+        HTTPException: No data found : Scenarios '{scenarios}' does not exist in the table.
+        HTTPException: Internal server error
 
     Returns:
         dict: Les données regroupées par `obj_ord_pk`.

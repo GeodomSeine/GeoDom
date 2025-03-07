@@ -18,7 +18,10 @@ async def fetch_station_snap_from_db(program: str, session_pynuts: AsyncSession,
         program (str): Le schéma à utiliser.
         session_pynuts (AsyncSession): Session pour la base PYNUTS.
         session_donuts (AsyncSession): Session pour la base DONUTS.
-
+    
+    Exceptions:
+        HTTPException: Si aucune station n'est trouvée.
+        HTTPException: Erreur lors de la récupération des stations snap.
     Returns:
         list[dict]: Liste des stations au format GeoJSON.
     """

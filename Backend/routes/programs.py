@@ -15,7 +15,11 @@ import sqlite3
 DB_PATH = os.path.join(".", "resources", "checked_folder_hashes.db")
 
 def get_valid_dataviz():
-    """Récupère la liste des dataviz valides depuis la base de données SQLite."""
+    """Récupère la liste des dataviz valides depuis la base de données SQLite.
+    
+    Exceptions:
+        sqlite3.Error: Erreur lors de la récupération des données.
+    """
     
     query = """
         SELECT folder_name FROM folder_hashes;
@@ -38,6 +42,9 @@ def get_valid_dataviz():
 async def get_programs(request: Request):
     """
     Récupère la liste des programmes de visualisation disponibles.
+    
+    Args:
+        request (Request): Requête HTTP.
 
     Returns:
         JSONResponse: Liste des programmes avec leurs métadonnées.
@@ -73,6 +80,9 @@ async def serve_background(program: str):
 
     Args:
         program (str): Nom du programme.
+        
+    Exceptions:
+        HTTPException: Background image not found.
 
     Returns:
         FileResponse: Image de fond du programme.
