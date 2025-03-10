@@ -15,6 +15,14 @@ sync_session_pynuts = sessionmaker(sync_engine_pynuts, expire_on_commit=False, c
 
 
 def load_output_table_sync(program: str) -> Table:
+    """ Charge la table d'output dans la base de données Pynuts de manière synchrone
+
+    Args:
+        program (str): Nom du programme
+
+    Returns:
+        Table: Table d'output_edl_240912
+    """
     metadata = MetaData()
     with sync_engine_pynuts.connect() as conn:
         table = Table(

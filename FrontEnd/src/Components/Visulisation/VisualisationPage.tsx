@@ -373,6 +373,7 @@ const VisualisationPage: React.FC = () => {
     return { color: "var(--basic-black)", weight: 1 };
   };
 
+  // sharedSlider
   const sharedSlider = (
     <SliderComponent
       value={sliderValue}
@@ -385,6 +386,7 @@ const VisualisationPage: React.FC = () => {
     />
   );
 
+  // sharedDecadeSlider
   const sharedDecade = (
     <DecadeRangeComponent
       value={selectedDecades}

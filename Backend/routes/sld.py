@@ -46,6 +46,9 @@ async def get_bassin_sld(program: str):
     Args:
         program (str): Nom du programme.
 
+    Exceptions:
+        HTTPException: Fichier SLD introuvable.
+        
     Returns:
         FileResponse: Le fichier SLD du bassin.
     """
@@ -64,6 +67,9 @@ async def get_hydro_sld(program: str):
 
     Args:
         program (str): Nom du programme.
+        
+    Exceptions:
+        HTTPException: Fichier SLD introuvable.
 
     Returns:
         FileResponse: Le fichier SLD de l'hydrographie.
@@ -83,6 +89,9 @@ async def get_stationsnap_sld(program: str):
 
     Args:
         program (str): Nom du programme.
+        
+    Exceptions:
+        HTTPException: Fichier SLD introuvable.
 
     Returns:
         FileResponse: Le fichier SLD de StationSnap.
@@ -102,6 +111,9 @@ async def get_pk_sld(program: str):
 
     Args:
         program (str): Nom du programme.
+    
+    Exceptions:
+        HTTPException: Fichier SLD introuvable.
 
     Returns:
         FileResponse: Le fichier SLD de PK.
@@ -121,6 +133,9 @@ async def get_pk_sld(variable: str):
 
     Args:
         variable (str): Nom de la variable.
+        
+    Exceptions:
+        HTTPException: Fichier SLD introuvable.
 
     Returns:
         FileResponse: Le fichier SLD de la variable.

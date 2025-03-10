@@ -33,6 +33,11 @@
                     display: none;
                 }
             }
+            &.right{
+                >:nth-child(2){
+                    display: none;
+                }
+            }
         }
     }
 }

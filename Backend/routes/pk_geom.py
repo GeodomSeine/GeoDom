@@ -19,6 +19,10 @@ async def fetch_pk_geom_from_db(program: str, obj_ord_pk: str, session: AsyncSes
         obj_ord_pk (str): Identifiant unique du PK.
         session (AsyncSession): Session SQLAlchemy asynchrone.
 
+    Exceptions:
+        HTTPException: Si le PK n'est pas trouvé.
+        HTTPException: Erreur lors de la récupération de la géométrie du PK.
+        
     Returns:
         dict: Géométrie du PK sous forme de GeoJSON.
     """
@@ -49,6 +53,9 @@ async def fetch_pk_geom_by_strahler(program: str, strahler: int, session: AsyncS
         program (str): Nom du programme (schéma).
         strahler (str): Niveau de Strahler.
         session (AsyncSession): Session SQLAlchemy asynchrone.
+        
+    Exceptions:
+        HTTPException: Erreur lors de la récupération de la géométrie des PK.
 
     Returns:
         dict: Géométrie des PK sous forme de GeoJSON.

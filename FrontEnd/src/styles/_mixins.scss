@@ -1,5 +1,7 @@
 @use "./variables.scss" as *;
 
+//scss short cut that you can create or import in .scss files
+
 @mixin center {
     display: flex;
     justify-content: center;
@@ -40,7 +42,7 @@
 }
 
 @mixin headerSpace{
-    padding: 65px 10px 10px 10px;
+    padding: 63px 8px 8px 8px;
 }
 
 @mixin blueEffect{

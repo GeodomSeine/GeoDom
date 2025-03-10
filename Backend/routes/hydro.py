@@ -23,10 +23,22 @@ redis_url = os.getenv("REDIS_URL", "redis://redis:6379")
 redis_client = redis.from_url(redis_url)
 DATAVIZ_PATH = "./resources/dataviz"
 
-locale.setlocale(locale.LC_ALL, 'C.UTF-8')
+locale.setlocale(locale.LC_ALL, 'C')
 
 async def fetch_hydro_from_db(program: str, session: AsyncSession):
-    """Récupère les données hydrographiques depuis PostgreSQL en streaming."""
+    """ Récupère les données hydrographiques depuis PostgreSQL en streaming.
+    
+    Args:
+        program (str): Nom du programme (schéma).
+        session (AsyncSession): Session PostgreSQL.
+        
+    Exceptions:
+        HTTPException: Erreur interne du serveur.
+        
+    Yields:
+        bytes: Données GeoJSON
+        
+    """
     DynamicHydro = SenequeAesnHydro.create(program)
 
     try:
@@ -46,7 +58,14 @@ async def fetch_hydro_from_db(program: str, session: AsyncSession):
         raise HTTPException(status_code=500, detail="Erreur interne du serveur")
 
 async def geojson_stream(program: str):
-    """Générateur asynchrone pour envoyer un flux GeoJSON depuis PostgreSQL ou depuis le cache Redis."""
+    """Générateur asynchrone pour envoyer un flux GeoJSON depuis PostgreSQL ou depuis le cache Redis.
+    
+    Args:
+        program (str): Nom du programme (schéma).
+        
+    Yields:
+        bytes
+    """
     if redis_client:
         try:
             cached_data = redis_client.get(program)
@@ -78,7 +97,14 @@ async def geojson_stream(program: str):
 
 @router.get("/{program}")
 async def get_hydro(program: str):
-    """Retourne les données hydrographiques d'un programme sous forme de GeoJSON en streaming."""
+    """Retourne les données hydrographiques d'un programme sous forme de GeoJSON en streaming.
+    
+    Args:
+        program (str): Nom du programme (schéma).
+        
+    Returns:
+        StreamingResponse: Données GeoJSON
+    """
     return StreamingResponse(
         geojson_stream(program),
         media_type="application/json"
@@ -89,6 +115,10 @@ async def get_geojson_features(program: str):
     
     Args:
         program (str): Nom du programme (schéma).
+        
+    Exceptions:
+        HTTPException: Aucune donnée trouvée ou erreur interne du serveur.
+        HTTPException: Erreur interne du serveur.
         
     Returns:
         list: Liste des données hydro

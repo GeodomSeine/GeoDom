@@ -17,6 +17,11 @@ VARIABLE_FOLDER = "variables"
 JSON_FILENAME = "variables.json"
 
 def load_variable_config():
+    """ Charge la configuration des variables depuis un fichier JSON.
+
+    Returns:
+        dict: La configuration des variables.
+    """
     file_path = os.path.join(RESOURCES_PATH, VARIABLE_FOLDER, JSON_FILENAME)
 
     with open(file_path, "r") as file:
@@ -24,6 +29,16 @@ def load_variable_config():
 
 
 def generate_class_intervals(values, nb_classes, colors):
+    """ Génère les intervalles de classes pour les valeurs spécifiées.
+
+    Args:
+        values : Valeurs à classer.
+        nb_classes : Nombre de classes.
+        colors : Couleurs des classes.
+
+    Returns:
+        list: Liste des intervalles de classes.
+    """
     if len(values) < nb_classes:
         nb_classes = len(values) 
     classes_bins = pd.qcut(values, q=nb_classes, retbins=True)[1]
@@ -47,6 +62,15 @@ async def get_data_order_by_strahler(body: dict):
 
     Args:
         body (dict): Contient les clés  `program`, `scenarios`, `variables`, `decades`.
+        
+    Exceptions:
+        HTTPException: Missing required fields: program, scenarios, variables.
+        HTTPException: Variable '{variable}' does not exist in the table.
+        HTTPException: No data found for program '{program}', scenarios {scenarios}, and variables {variables}.
+        HTTPException: Erreur interne du serveur.
+        
+    Returns:
+        dict: Les données regroupées par strahler.
     """
     try:
         program = body.get("program")
@@ -121,6 +145,12 @@ async def get_data(body: dict):
     
     Args:
         body (dict): Contient les clés `program`, `scenarios`, `variables`, et `pk`.
+        
+    Exceptions:
+        HTTPException: Missing required fields: program, scenarios, variables, pk.
+        HTTPException: Variable '{variable}' does not exist in the table.
+        HTTPException: No data found for program '{program}', scenarios {scenarios}, variables {variables}, and pk list.
+        HTTPException: Error fetching data: {error}
 
     Returns:
         dict: Les données regroupées par `obj_ord_pk`.
@@ -225,6 +255,12 @@ async def get_data_formap(body: dict):
     
     Args:
         body (dict): Contient les clés `program`, `scenarios`, `variables`, et `decades`.
+        
+    Exceptions:
+        HTTPException: Missing required fields: program, scenarios, variables, decades.
+        HTTPException: Variable '{variable}' does not exist in the table.
+        HTTPException: No data found for program '{program}', scenarios {scenarios}, and variables {variables}.
+        HTTPException: Error fetching data: {error}
 
     Returns:
         dict: Les données regroupées par `obj_ord_pk` avec une légende des classes de valeurs.

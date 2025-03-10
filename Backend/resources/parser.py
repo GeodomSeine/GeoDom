@@ -7,10 +7,9 @@ import json
 import sqlite3
 import logging
 
-import asyncio
 import os
-from sqlalchemy import create_engine, MetaData, Table, select, text
-from core.database import sync_engine_pynuts 
+from sqlalchemy import text
+from core.database import sync_engine_pynuts
 
 PATH_CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 PATH_DB_FILE = os.path.join(PATH_CURRENT_DIR, "checked_folder_hashes.db")
@@ -84,13 +83,11 @@ def calculate_hash_for_folder(folder_path):
     # Parcourir les dossiers, sous-dossiers et fichiers par ordre alphabétique pour cohérence
     for root, dirs, files in sorted(os.walk(folder_path)):
         folder_name = os.path.basename(root)
-        print(f"Hashing du dossier : {folder_name}")
         sha256.update(folder_name.encode('utf-8'))
         
         # Trier et parcourir les fichiers pour cohérence
         for file in sorted(files):
             file_path = os.path.join(root, file)
-            # print(f"Hashing du fichier : {file_path}")
             
             # Ajouter le nom du fichier au hash
             sha256.update(file.encode('utf-8'))
@@ -102,10 +99,10 @@ def calculate_hash_for_folder(folder_path):
                         while chunk := f.read(8192):  # Lecture par blocs pour gros fichiers
                             sha256.update(chunk)
                 except Exception as e:
-                    print(f"Impossible de lire {file_path}: {e}")
+                    logger = setup_logger(folder_name)
+                    logger.error(f"Impossible de lire {file_path}: {e}")
 
     # Retourner le hash global
-    print(f"Hash global du dossier : {sha256.hexdigest()}")
     return sha256.hexdigest()
 
 
@@ -150,6 +147,7 @@ def remove_invalid_hash(folder_name):
 
 
 def update_changes():
+    """Vérifie les dossiers et met à jour les hashes si nécessaire."""
     for item in os.listdir(DATA_FOLDER):
         item_path = path_from_folder_name(item)
         if os.path.isdir(item_path):
@@ -240,9 +238,6 @@ def is_metadata_json_valide(folder_path):
                 logger.error(msg)
             remove_invalid_hash(folder_name)
             return False
-
-
-        print(f"Le fichier '{json_path}' est valide.")
         return True
 
     except json.JSONDecodeError as e:
@@ -251,9 +246,6 @@ def is_metadata_json_valide(folder_path):
     except Exception as e:
         logger = setup_logger(folder_name)
         logger.error(f"Erreur inattendue lors de la vérification de metadata.json : {e}")
-        
-
-    
     return False
 
 def validate_schema_and_data(schema_name, variables, exutoire_id):
@@ -338,7 +330,6 @@ def validate_schema_and_data(schema_name, variables, exutoire_id):
 def main():
     initialize_database()
     update_changes()
-    print("\nHashing terminé. Les résultats ont été sauvegardés dans la base de données.")
   
 if __name__ == "__main__":
     main()

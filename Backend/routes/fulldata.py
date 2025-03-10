@@ -12,10 +12,17 @@ router = APIRouter(prefix="/fulldata", tags=["Données - Strahler"])
 async def get_data_order_by_strahler(body: dict):
     """
     Récupère les données pour tous les PK du programme spécifié. Les données 
-    seront regroupées par strahler. 
+    seront regroupées par strahler.
 
     Args:
         body (dict): Contient les clés  `program`, `scenarios`, `variables`.
+        
+    Exceptions :
+        HTTPException: No data found for program '{program}', scenarios {scenarios}, and variables {variables}.
+        HTTPException: Internal server error
+    
+    Returns:
+        dict: Les données regroupées par `strahler`.
     """
     try:
         program = body.get("program")

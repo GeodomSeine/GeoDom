@@ -1,0 +1,8 @@
+@use "../../styles/main.scss" as *;
+
+//forced to put this style here, cause we cant overridde it if its in the component
+.logo_container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

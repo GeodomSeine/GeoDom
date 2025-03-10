@@ -9,6 +9,7 @@ import "../AdminContent.scss";
 import ButtonComponent from "../../SimpleComponents/ButtonComponent";
 import AddVariableStyle from "../AddVariableStyle/AddVariableStyle";
 import ListVariableStyles from "../ListVariableStyles/ListVariableStyles";
+import LogoComponent from "../../SimpleComponents/LogoComponent";
 
 const AdminDashboard: React.FC = () => {
   const { logout } = useAuth();
@@ -20,12 +21,19 @@ const AdminDashboard: React.FC = () => {
     navigate("/admin"); // Retourne à la page de login après déconnexion
   };
 
+  const handleHomeClick = () => {
+    navigate('/');
+  };
+
   return (
     <div className="admin_dashboard">
       <div className="admin_card">
         <div className="admin_header">
-          <h2 className="admin_title">Administration</h2>
-          <ButtonComponent txt="Déconnexion" onClick={handleLogout} />
+          <h2>Administration</h2>
+          <div className="admin_title">
+            <ButtonComponent txt="Déconnexion" onClick={handleLogout} />
+            <LogoComponent onClick={handleHomeClick} size={"35px"} />
+          </div>
         </div>
 
         <div className="admin_nav">

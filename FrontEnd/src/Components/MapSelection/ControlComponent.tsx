@@ -5,18 +5,24 @@ import ButtonComponent from '../SimpleComponents/ButtonComponent';
 import InputComponent from '../SimpleComponents/InputComponent';
 
 interface ControlComponentProps {
+    // reset the seleted pk
     resetSelection: () => void;
+    // all variables of the program + selected variables + change selected variables
     variables: ProgramVariable[];
-    scenarios: Scenario[];
     selectedVariables: ProgramVariable[];
     setSelectedVariables: (variables: ProgramVariable[]) => void;
+    // all scenarios of the program + selected scenarios + change scenarios variables + scenarios colors
+    scenarios: Scenario[];
     selectedScenarios: Scenario[];
     setSelectedScenarios: (scenarios: Scenario[]) => void;
+    scenarioColors: Record<number, string>;
+    // selected mode + change selected mode
     mode: "complet" | "amont-aval";
     setMode: (mode: "complet" | "amont-aval") => void;
+    // availables layers + current visible layers 
     layerVisibility?: Record<string, boolean>;
     setLayerVisibility?: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
-    scenarioColors: Record<number, string>;
+    
 }
 
 const ControlComponent: React.FC<ControlComponentProps> = ({
@@ -34,14 +40,15 @@ const ControlComponent: React.FC<ControlComponentProps> = ({
     scenarioColors
 }) => {
 
+    // reset the selection when the mode is changed
     useEffect(() => {
         resetSelection();
     }, [mode]);
         
     return (
       <div className='control_component'>
-        {/* Sélection du mode */}
-        <div className="mode_selector">
+        {/* mode selection */}
+        <div className="selected_mode">
           <select value={mode} onChange={(e) => setMode(e.target.value as "complet" | "amont-aval")}>
             <option value="complet">Complet</option>
             <option value="amont-aval">Amont-aval</option>
@@ -51,9 +58,7 @@ const ControlComponent: React.FC<ControlComponentProps> = ({
           )}
         </div>
 
-        
-
-        {/* Sélection des variables */}
+        {/* variables selection */}
         <div className='selected_indicators'>
           <h3>Indicateurs</h3>
           {variables.map((variable) => (
@@ -73,8 +78,8 @@ const ControlComponent: React.FC<ControlComponentProps> = ({
           ))}
         </div>
   
-        {/* Sélection des scénarios */}
-        <div>
+        {/* scenarios selection */}
+        <div className='selected_scenario'>
           <h3>Scénarios</h3>
           {scenarios.map((scenario) => (
             <div key={scenario.id} className="scenario_container">
@@ -95,6 +100,7 @@ const ControlComponent: React.FC<ControlComponentProps> = ({
           ))}
         </div>
 
+        {/* layer selection */}
         {layerVisibility && setLayerVisibility && 
           <div className="selected_layer">
             <h3>Couches</h3>

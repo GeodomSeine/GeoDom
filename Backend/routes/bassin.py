@@ -18,6 +18,9 @@ async def fetch_basin_from_db(program: str, session: AsyncSession):
     Args:
         program (str): Nom du programme (schéma).
         session (AsyncSession): Session SQLAlchemy asynchrone.
+        
+    Exceptions:
+        HTTPException: Erreur lors de la récupération des bassins hydrographiques.
 
     Returns:
         list[dict]: Liste des bassins sous forme de dictionnaires.

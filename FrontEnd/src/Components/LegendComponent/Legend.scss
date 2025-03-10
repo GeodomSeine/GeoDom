@@ -1,7 +1,7 @@
 @use "../../styles/main.scss" as *;
 
 .legend_container {
-    height: 15%;
+    height: 50px;
     width: 100%;
     @include gap;
     flex-direction: column;
@@ -29,9 +29,9 @@
 
 @media (max-width: 760px) {
     .legend_container {
-        .legend_header {
-            display: none;
-        }
+        @include gap;
+        flex-direction: row;
+        align-items: center;
     }    
 }
 

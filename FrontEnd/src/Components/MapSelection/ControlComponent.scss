@@ -3,14 +3,7 @@
 .control_component {
   @include gap;
   flex-direction: column;
-  width: max-content;
-  flex: 1;
-}
-
-.control_component {
-  @include gap;
-  flex-direction: column;
-  .mode_selector{
+  .selected_mode{
     @include gap;
     flex-direction: column;
     select {
@@ -29,23 +22,17 @@
       width: 105px;
     }
   }
-}
-
-@media (max-width: 760px) {
-  .control_component{
-    flex-direction: row;
-    gap: 8px;
+  .selected_scenario{
+    .scenario_container{
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      .scenario_color{
+        height: 14px;
+        width: 14px;
+        border-radius: 5px;
+      }
+    }
   }
-}
-
-.scenario_container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.scenario_color {
-  width: 14px;
-  height: 14px;
-  border-radius: 5px;
 }

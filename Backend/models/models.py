@@ -6,8 +6,8 @@ from sqlalchemy.dialects.postgresql import JSONB
 
 Base = declarative_base()
 
-
 class SenequeAesnHydro:
+    """ Classe dynamique pour accéder aux tables seneque_aesn_hydro dans les différents schémas."""
     _class_cache = {}
 
     @staticmethod
@@ -25,6 +25,11 @@ class SenequeAesnHydro:
             return SenequeAesnHydro._class_cache[program]
 
         class DynamicSenequeAesnHydro(Base):
+            """ Classe dynamique pour accéder à la table seneque_aesn_hydro.
+
+            Args:
+                Base: Base Déclarative
+            """
             __tablename__ = "seneque_aesn_hydro"
             __table_args__ = {"schema": program}
 
@@ -53,6 +58,7 @@ class SenequeAesnHydro:
 
 
 class SenequeAesnBasin:
+    """ Classe dynamique pour accéder aux tables seneque_aesn_hydro_basin dans les différents schémas."""
     _class_cache = {}
 
     @staticmethod
@@ -70,6 +76,11 @@ class SenequeAesnBasin:
             return SenequeAesnBasin._class_cache[program]
 
         class DynamicSenequeAesnBasin(Base):
+            """ Classe dynamique pour accéder à la table seneque_aesn_hydro_basin.
+
+            Args:
+                Base :  Base Déclarative
+            """
             __tablename__ = "seneque_aesn_hydro_basin"
             __table_args__ = {"schema": program}
 
@@ -82,6 +93,7 @@ class SenequeAesnBasin:
 
 
 class Pk:
+    """ Classe dynamique pour accéder aux tables pk_map dans les différents schémas."""
     _class_cache = {}
 
     @staticmethod
@@ -99,6 +111,11 @@ class Pk:
             return Pk._class_cache[program]
 
         class DynamicPk(Base):
+            """ Classe dynamique pour accéder à la table pk_map.
+
+            Args:
+                Base : Base Déclarative
+            """
             __tablename__ = "pk_map"
             __table_args__ = {"schema": program}
 
@@ -116,6 +133,11 @@ class Pk:
 
 
 class Scenario(Base):
+    """ Classe pour accéder à la table scenario dans le schéma zone_aesn_seneque_aesn_me_edl2025_qgis.
+
+    Args:
+        Base: Base déclarative
+    """
     __tablename__ = "scenario"
     __table_args__ = {"schema": "zone_aesn_seneque_aesn_me_edl2025_qgis"}
 
@@ -126,6 +148,11 @@ class Scenario(Base):
 
 
 class StationSnap(Base):
+    """ Classe pour accéder à la table station_snap dans le schéma aesn_network.
+
+    Args:
+        Base: Base déclarative
+    """
     __tablename__ = "station_snap"
     __table_args__ = {"schema": "aesn_network"}
 
@@ -137,6 +164,7 @@ class StationSnap(Base):
 
 
 class PkStation:
+    """ Classe dynamique pour accéder aux tables pk_station dans les différents schémas."""
     _class_cache = {}
 
     @staticmethod
@@ -170,6 +198,7 @@ class PkStation:
 
 
 class Measurement:
+    """ Classe dynamique pour accéder aux tables measurement_chemical, measurement_biological ou measurement_physical dans le schéma 'data'."""
     _class_cache = {}
 
     @staticmethod
@@ -188,6 +217,11 @@ class Measurement:
             return Measurement._class_cache[measurement_type]
 
         class DynamicMeasurement(Base):
+            """ Classe dynamique pour accéder à la table measurement_chemical, measurement_biological ou measurement_physical.
+
+            Args:
+                Base: Base Déclarative
+            """
             __tablename__ = measurement_type
             __table_args__ = {"schema": "data"}
 
@@ -209,6 +243,11 @@ class Measurement:
         return DynamicMeasurement
 
 class VarCompartment(Base):
+    """ Classe pour accéder à la table varcompartment_full_view dans le schéma zone_aesn_seneque_aesn_me_edl2025_qgis.
+
+    Args:
+        Base: Base déclarative
+    """
     __tablename__ = "varcompartment_full_view"
     __table_args__ = {"schema": "zone_aesn_seneque_aesn_me_edl2025_qgis"}
     

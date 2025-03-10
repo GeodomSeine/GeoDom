@@ -25,6 +25,9 @@ async def get_station_data_with_strahler(program: str, session_pynuts: AsyncSess
     """
     Récupère les stations associées aux PKs d'un programme et retourne 
     un dictionnaire associant chaque station_id à son obj_ord_pk, pk et strahler.
+    
+    Exception:
+        HTTPException: Erreur lors de la récupération des PKs et stations avec strahler
 
     Returns:
         dict: {station_id: {"obj_ord_pk": ..., "pk": ..., "strahler": ...}}
@@ -71,6 +74,9 @@ async def get_all_station_data_by_pk(program: str, session_pynuts: AsyncSession)
     Récupère tous les PKs et leurs stations associées pour un programme donné.
     Associe chaque obj_ord_pk à son station_id et strahler.
 
+    Exception:
+        HTTPException: Erreur lors de la récupération des PKs et stations
+
     Returns:
         dict: {obj_ord_pk: {"station_id": station_id, "strahler": strahler}}
     """
@@ -113,6 +119,9 @@ async def get_station_id_by_pk(program: str, session_pynuts: AsyncSession, pk_li
         session_pynuts (AsyncSession): Session pour la base PYNUTS.
         pk_list (list): Liste des PKs à traiter.
 
+    Exception:
+        HTTPException: Erreur lors de la récupération des stations snap.
+        
     Returns:
         dict: Dictionnaire associant chaque obj_ord_pk à son station_id le plus proche.
     """
@@ -162,6 +171,15 @@ async def get_scenario_year(session_pynuts: AsyncSession, scenarios: list[int]):
 async def get_data_strahler(session_donuts: AsyncSession, station_data: dict[int, dict], scenario_years: dict[int, int], variables: list[str]):
     """
     Récupère les données pour les stations et les regroupe par strahler avec les percentiles 5, 50 et 90.
+    
+    Args:
+        session_donuts (AsyncSession): Session pour la base de données DONUTS.
+        station_data (dict): Dictionnaire associant chaque station_id à son obj_ord_pk et strahler.
+        scenario_years (dict): Dictionnaire associant chaque scenario_id à son année.
+        variables (list): Liste des variables à traiter.
+        
+    Exception:
+        HTTPException: Erreur lors de la récupération des données d'observation (par strahler).
     
     Returns:
         dict: {strahler: {variable: {décade: [{"scenario": ..., "percentile_5": ..., "percentile_50": ..., "percentile_90": ...}]}}}
@@ -240,6 +258,20 @@ async def get_data_strahler(session_donuts: AsyncSession, station_data: dict[int
 
 
 async def get_data(session_donuts: AsyncSession, station_data: dict[str, int], scenario_years: dict[int, int], variables: list[str]):
+    """ Récupère les données d'observation pour les stations et les variables spécifiées.
+
+    Args:
+        session_donuts (AsyncSession): Session pour la base de données DONUTS.
+        station_data (dict[str, int]): Dictionnaire associant chaque obj_ord_pk à son station_id.
+        scenario_years (dict[int, int]): Dictionnaire associant chaque scenario_id à son année.
+        variables (list[str]): Liste des variables à traiter.
+
+    Raises:
+        HTTPException: Erreur lors de la récupération des données d'observation.
+
+    Returns:
+        dict: Dictionnaire associant chaque obj_ord_pk à ses données d'observation.
+    """
     try:
         measurements = {obj_ord_pk: {} for obj_ord_pk in station_data.keys()}
 
@@ -314,6 +346,17 @@ async def get_data(session_donuts: AsyncSession, station_data: dict[str, int], s
 
 @router.post("/data")
 async def get_data_donuts(body: dict):
+    """ Récupère les données d'observation pour un programme, des scénarios, des variables et des PKs spécifiés
+
+    Args:
+        body (dict): Dictionnaire contenant les clés program, scenarios, variables et pk_list.
+
+    Raises:
+        HTTPException: Error fetching data.
+
+    Returns:
+        dict: Dictionnaire associant chaque obj_ord_pk à ses données d'observation.
+    """
     try:
         program = body.get("program")
         scenarios = body.get("scenarios", [])
@@ -341,6 +384,16 @@ async def get_full_data_donuts(body: dict):
     """
     Récupère toutes les données pour un programme donné, sans filtrer par pk_list,
     et retourne les résultats ordonnés par strahler.
+    
+    Args:
+        body (dict): Dictionnaire contenant les clés program, scenarios et variables.
+        
+    Exception:
+        HTTPException: Missing required fields: program, scenarios, variables.
+        HTTPException: Error fetching full data (grouped by strahler).
+        
+    Returns:
+        dict: Dictionnaire associant chaque strahler à ses données d'observation.
     """
     try:
         program = body.get("program")

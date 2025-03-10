@@ -8,6 +8,7 @@
     z-index: 1000;
     flex-direction: column;
     align-items: end;
+    max-height: calc(100% - 16px);
     .map_buttons_default{
         @include card;
         background-color: $basic-white;
@@ -34,6 +35,8 @@
         overflow: hidden; 
         transition: opacity 0.25s ease-out, max-height 0.3s ease-out;
         max-height: 70%; 
+        flex-wrap: wrap;
+        overflow-y: auto;
         .input_component {
           cursor: pointer;
         }
@@ -43,11 +46,5 @@
         opacity: 0;
         max-height: 0;
         pointer-events: none;
-    }
-}
-
-@media (max-width: 760px) {
-    .map_buttons{
-        top: 12px;
     }
 }

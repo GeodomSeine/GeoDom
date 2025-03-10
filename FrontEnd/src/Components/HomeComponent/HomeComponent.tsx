@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { getPrograms, ProgramResponse, ProgramVariable } from '../../services/api'; 
 import CardComponent from './CardComponent'; 
 import "./HomeComponent.scss";
@@ -17,7 +17,9 @@ import { useAuth } from '../Admin/Auth/AuthContext';
         const [searchQuery, setSearchQuery] = useState(""); 
         const navigate = useNavigate();
         const { isAuthenticated } = useAuth();
+        const scrollRef = useRef(null); 
 
+        // fetch all the programs (visualisations available)
         useEffect(() => {
             const fetchPrograms = async () => {
                 const data = await getPrograms();
@@ -27,10 +29,17 @@ import { useAuth } from '../Admin/Auth/AuthContext';
             fetchPrograms();
         }, []);
 
+        // in order to stay on top of the window when going back to the home
+        useEffect(() => {
+            window.scroll(0, 0);
+        }, []);
+
+        // loading the corresponding visualisation when clicking on its card
         const handleCardClick = (selectedProgram: Program) => {
-            navigate(`/${selectedProgram.name}`);
+            navigate(`/${selectedProgram.name}`);   
         };
 
+        // filter the programs when doing research in the header, with the data associated
         const filteredPrograms = Array.isArray(programs) ? programs.filter((item) =>
             item.title.toLowerCase().includes(searchQuery.toLowerCase())
         ):( [] );
@@ -44,8 +53,8 @@ import { useAuth } from '../Admin/Auth/AuthContext';
             <div className='home_component'>
                 <HeaderComponent onSearch={setSearchQuery} showImportButton={true} visualizationData={visualizationData} setTutorialOpen={setTutorialOpen}></HeaderComponent>
                 <div className="main_body">
-                    <div className='main_scroll_area' >
-                        {/* need to add a condition in order for the tutorial to work and to recognize the "carbone dans l'orgeval" */}
+                    <div ref={scrollRef} className='main_scroll_area'>
+                        {/* card elements (visualisations)*/}
                         {searchQuery ? (filteredPrograms.length > 0 ? filteredPrograms.map((item: Program) => (
                                     item.background && (item.is_actived || isAuthenticated) && (
                                         <CardComponent

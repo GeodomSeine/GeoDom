@@ -2,6 +2,7 @@ from sqlalchemy import create_engine, Column, Integer, String, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from passlib.context import CryptContext
+from core.logger import logger
 
 DATABASE_URL = "sqlite:///./fastapi_admin.db"
 
@@ -13,9 +14,22 @@ BaseAdmin = declarative_base()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def hash_password(password: str):
+    """Hasher un mot de passe
+
+    Args:
+        password (str): Mot de passe à hasher
+
+    Returns:
+        str: _description_
+    """
     return pwd_context.hash(password)
 
 class User(BaseAdmin):
+    """Classe de la table des utilisateurs
+
+    Args:
+        BaseAdmin (): Base déclarative
+    """
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -29,10 +43,10 @@ def init_db():
 
     db = SessionLocal()
     if not db.query(User).filter(User.username == "admin").first():
-        admin = User(username="admin", password=hash_password("admin123"), is_admin=True)
+        admin = User(username="admin", password=hash_password("admin123"), is_admin=True) # admin123 est le mot de passe par défaut (A changer)
         db.add(admin)
         db.commit()
-        print("✅ Admin 'admin' créé avec le mot de passe 'admin123'")
+        logger.info("✅ Admin 'admin' créé avec le mot de passe 'admin123'")
     db.close()
 
 def get_db():

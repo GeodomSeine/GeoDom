@@ -32,6 +32,27 @@ async def add_program(
     seneque_aesn_hydro: UploadFile = File(...),
     stations_donuts: UploadFile = File(...),
 ):
+    """ Ajout d'une nouveau programme de visualisation de données
+
+    Args:
+        name (str, optional): Nom du programme. Defaults to Form(...).
+        title (str, optional): Titre du programme. Defaults to Form(...).
+        description (str, optional): Description du programme. Defaults to Form(...).
+        variables (str, optional): Variables. Defaults to Form(...).
+        exutoire_id (int, optional): Exutoire id. Defaults to Form(...).
+        is_actived (bool, optional): Visualisation en preview ou non. Defaults to Form(...).
+        background (UploadFile, optional): Image de Fond de la visualisation. Defaults to File(...).
+        pk_map (UploadFile, optional): Fichier pour les pk_map. Defaults to File(...).
+        seneque_aesn_hydro_basin (UploadFile, optional): Fichier pour le bassin hydro. Defaults to File(...).
+        seneque_aesn_hydro (UploadFile, optional): Fichier pour l'hydro. Defaults to File(...).
+        stations_donuts (UploadFile, optional): Fichier de station donuts. Defaults to File(...).
+
+    Exceptions:
+        Exception: Création du fichier metadata.json
+    
+    Returns:
+        Json: Message de succès ou d'erreur
+    """
     try:
         program_folder = os.path.join(DATAVIZ_DIR, name)
         os.makedirs(program_folder, exist_ok=True)
@@ -95,6 +116,28 @@ async def edit_program(
     seneque_aesn_hydro: UploadFile = File(None),
     stations_donuts: UploadFile = File(None),
 ):
+    """Modification d'un programme de visualisation de données
+
+    Args:
+        name (str, optional): Nom du programme. Defaults to Form(...).
+        title (str, optional): Titre du programme. Defaults to Form(...).
+        description (str, optional): Description du programme. Defaults to Form(...).
+        variables (str, optional): Variables. Defaults to Form(...).
+        exutoire_id (int, optional): Exutoire id. Defaults to Form(...).
+        is_actived (bool, optional): Visualisation en preview ou non. Defaults to Form(...).
+        background (UploadFile, optional): Image de Fond de la visualisation. Defaults to File(...).
+        pk_map (UploadFile, optional): Fichier pour les pk_map. Defaults to File(...).
+        seneque_aesn_hydro_basin (UploadFile, optional): Fichier pour le bassin hydro. Defaults to File(...).
+        seneque_aesn_hydro (UploadFile, optional): Fichier pour l'hydro. Defaults to File(...).
+        stations_donuts (UploadFile, optional): Fichier de station donuts. Defaults to File(...).
+
+    Exceptions:
+        HTTPException: Programme non trouvé
+        HTTPException: Erreur lors de la modification
+
+    Returns:
+        Json: Message de succès ou d'erreur
+    """
     program_folder = os.path.join(DATAVIZ_DIR, program_name)
     metadata_path = os.path.join(program_folder, "metadata.json")
 
@@ -136,6 +179,18 @@ async def edit_program(
 
 @router.delete("/admin/delete/{program_name}", dependencies=[Depends(get_current_admin_user)])
 async def delete_program(program_name: str):
+    """ Suppression d'un programme de visualisation de données
+
+    Args:
+        program_name (str): Nom du programme
+
+    Raises:
+        HTTPException: Programme non trouvé
+        HTTPException: Erreur lors de la suppression
+
+    Returns:
+        Json: Message de succès
+    """
     program_folder = os.path.join(DATAVIZ_DIR, program_name)
 
     if not os.path.exists(program_folder):
@@ -156,6 +211,26 @@ async def add_variable_style(
     colors: str = Form(None),
     sld: UploadFile = File(None),
 ):
+    """ Ajout d'un style pour une variable
+
+    Args:
+        code (str, optional): Code de la variable. Defaults to Form(...).
+        classification (str, optional): Classification des variables. Defaults to Form(...).
+        nb_classes (int, optional): Nombre de classes . Defaults to Form(None).
+        colors (str, optional): Couleur de la variable. Defaults to Form(None).
+        sld (UploadFile, optional): Fichier SLD correspondant. Defaults to File(None).
+
+    Raises:
+        HTTPException: Le nombre de classes est requis pour une classification en quantile
+        HTTPException: Les couleurs sont requises pour une classification en quantile
+        HTTPException: Le nombre de couleurs doit correspondre au nombre de classes
+        HTTPException: Les couleurs doivent être au format hexadécimal
+        HTTPException: Le fichier SLD est requis pour une classification en SLD
+        HTTPException: Erreur lors de l'ajout du style
+
+    Returns:
+        Json: Message de succès
+    """
     try:
         os.makedirs(VARIABLES_DIR, exist_ok=True)
 
@@ -223,7 +298,27 @@ async def edit_variable_style(
     nb_classes: int = Form(None),
     colors: str = Form(None),
     sld: UploadFile = File(None)
-):  
+):
+    """Modification d'un style pour une variable
+
+    Args:
+        code (str, optional): Code de la variable. Defaults to Form(...).
+        classification (str, optional): Classification des variables. Defaults to Form(...).
+        nb_classes (int, optional): Nombre de classes . Defaults to Form(None).
+        colors (str, optional): Couleur de la variable. Defaults to Form(None).
+        sld (UploadFile, optional): Fichier SLD correspondant. Defaults to File(None).
+
+    Raises:
+        HTTPException: Le nombre de classes est requis pour une classification en quantile
+        HTTPException: Les couleurs sont requises pour une classification en quantile
+        HTTPException: Le nombre de couleurs doit correspondre au nombre de classes
+        HTTPException: Les couleurs doivent être au format hexadécimal
+        HTTPException: Le fichier SLD est requis pour une classification en SLD
+        HTTPException: Erreur lors de la modification de la variable
+
+    Returns:
+        Json: Message de succès
+    """
     try:
         os.makedirs(VARIABLES_DIR, exist_ok=True)
 
@@ -285,6 +380,15 @@ async def edit_variable_style(
 
 @router.get("/admin/variable/list", dependencies=[Depends(get_current_admin_user)])
 async def get_variables():
+    """Récupération de la liste des variables
+
+    Raises:
+        HTTPException: Aucune variable trouvée
+        HTTPException: Erreur lors de la récupération des variables
+
+    Returns:
+       str : Liste des variables
+    """
     try:
         if not os.path.exists(VARIABLES_JSON_PATH):
             raise HTTPException(status_code=404, detail="Aucune variable trouvée.")
@@ -301,6 +405,19 @@ async def get_variables():
 
 @router.delete("/admin/variable/delete/{code}", dependencies=[Depends(get_current_admin_user)])
 async def delete_variable(code: str):
+    """Suppression d'un style pour une variable
+
+    Args:
+        code (str): Code de la variable
+
+    Raises:
+        HTTPException: Variable non trouvée
+        HTTPException: Aucune variable trouvée
+        HTTPException: Erreur lors de la suppression de la variable
+
+    Returns:
+        Json: Message de succès
+    """
     try:
         if not os.path.exists(VARIABLES_JSON_PATH):
             raise HTTPException(status_code=404, detail="Aucune variable trouvée.")

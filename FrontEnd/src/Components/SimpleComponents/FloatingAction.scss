@@ -6,20 +6,19 @@
     flex-direction: row;
     align-items: center;
     @include card;
+    border-radius: 5px 0 0 0;
     position: fixed !important;
     width: fit-content;
     height: fit-content;
     z-index: 1000;
     padding: 5px;
     background-color: $basic-white;
-    right: 25px;
-    top: 25px;
+    bottom: 0;
+    right: 0;
     z-index: 10000;
-}
-
-@media (max-width: 1160px) {
-    .floating_card_component{
-        top: inherit;
-        bottom: 23px;      
+    &.highlight{
+        .home_logo{
+            pointer-events: none;
+        }   
     }
 }
