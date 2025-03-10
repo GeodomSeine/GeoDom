@@ -27,11 +27,18 @@ python install -r requirements.txt
 Dans `Backend`, créez un fichier **`.env`** contenant les accès aux bases de données et les paramètres du projet :
 
 ```ini
-DATABASE_PYNUTS_URL=<URL_de_connexion_PYNUTS>
-DATABASE_DONUTS_URL=<URL_de_connexion_DONUTS>
-TESTING=<True or False>
-LOG_LEVEL=<niveau_de_log>
-DB_ENGINE_LOG=<True or False>
+# Les bases de données.
+DATABASE_PYNUTS_URL=postgresql+asyncpg://USER:PASSWORD@DB_PYNUTS_HOST:DB_PYNUTS_PORT/DB_PYNUTS_NAME
+DATABASE_DONUTS_URL=postgresql+asyncpg://USER:PASSWORD@DB_DONUTS_HOST:DB_DONUTS_PORT/DB_DONUTS_NAME
+
+# Variable de test et debug
+TESTING=True # False en production
+LOG_LEVEL=DEBUG # ERROR ou CRITICAL en production
+TEST_ENV=True # False en production
+
+# Pour les accès admin
+SECRET_ADMIN_KEY=YOUR_SECRET_ADMIN_KEY # à générer avec l'algorithme fourni. 
+ALGORITHM=YOUR_ALGORITHM
 ```
 
 ---
