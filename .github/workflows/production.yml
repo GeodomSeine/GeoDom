@@ -77,8 +77,6 @@ jobs:
             script: |
             export DATABASE_PYNUTS_URL="${{ secrets.DATABASE_PYNUTS_URL }}"
             export DATABASE_DONUTS_URL="${{ secrets.DATABASE_DONUTS_URL }}"
-            export TESTING="${{ secrets.TESTING }}"
-            export LOG_LEVEL="${{ secrets.LOG_LEVEL }}"
             export SECRET_ADMIN_KEY="${{ secrets.SECRET_ADMIN_KEY }}"
             export ALGORITHM="${{ secrets.ALGORITHM }}" 
             bash deploy.sh production
