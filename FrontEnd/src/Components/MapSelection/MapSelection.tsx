@@ -48,7 +48,7 @@ interface MapSelectionProps {
 
 const MapSelection: React.FC<MapSelectionProps> = ({
   mapRef,
-  bassinData, 
+  bassinData,
   bassinStyle,
   bounds,
   program,
@@ -96,7 +96,7 @@ const MapSelection: React.FC<MapSelectionProps> = ({
         const stationSLDPromise = getStationSnapSld(program);
         const stationPromise = getStationSnap(program);
 
-        const stationData = await stationPromise 
+        const stationData = await stationPromise
 
         if (stationData) {
           setStationSnap(stationData);
@@ -230,7 +230,7 @@ const MapSelection: React.FC<MapSelectionProps> = ({
     return 0.03;                   // Très simplifié
   };
 
-  const adaptDataToZoom = ( zoom: number) => {
+  const adaptDataToZoom = (zoom: number) => {
     if (hydroData) {
       if (zoom >= 10) {
         setSimplifiedHydroData(hydroData);
@@ -250,13 +250,16 @@ const MapSelection: React.FC<MapSelectionProps> = ({
         adaptDataToZoom(newZoom);
         setCurrentZoom(newZoom);
       },
+      click: () => {
+        resetSelection();
+      }
     });
     return null;
   };
 
   useEffect(() => {
     adaptDataToZoom(currentZoom);
-  },[hydroData]);
+  }, [hydroData]);
 
   useEffect(() => {
     if (selectedPkRef.current) {
@@ -309,11 +312,20 @@ const MapSelection: React.FC<MapSelectionProps> = ({
               keepBuffer={5} // Garde 5 niveaux de tuiles en cache
             />
           </BaseLayer>
+          {bassinData && bassinStyle && (
+            <Overlay {...(layerVisibility.bassin ? { checked: true } : { checked: false })} name="Bassin">
+              <GeoJSON
+                data={bassinData as GeoJsonObject}
+                style={() => bassinStyle}
+                interactive={false}
+              />
+            </Overlay>
+          )}
 
           {simplifiedHydroData && hydroStyles && (
             <Overlay checked={layerVisibility.hydrographie} name="Hydrographie">
               <GeoJSON
-                key={`hydro-${currentZoom}-${simplifiedHydroData.features.length}`}
+                key={`hydro-${currentZoom}-${simplifiedHydroData.features.length}-${mode}`}
                 data={simplifiedHydroData as GeoJsonObject}
                 style={getHydroStyle}
                 interactive={true}
@@ -326,23 +338,13 @@ const MapSelection: React.FC<MapSelectionProps> = ({
             </Overlay>
           )}
 
-          {bassinData && bassinStyle && (
-            <Overlay {...(layerVisibility.bassin ? { checked: true } : { checked: false })} name="Bassin">
-              <GeoJSON
-                data={bassinData as GeoJsonObject}
-                style={() => bassinStyle}
-                interactive={false}
-              />
-            </Overlay>
-          )}
-
           {selectedPk && (
             <Overlay {...(layerVisibility.pk ? { checked: true } : { checked: false })} name="PK">
               <GeoJSON
                 ref={selectedPkRef}
                 key={JSON.stringify(selectedPk)}
                 data={selectedPk as GeoJsonObject}
-                style={{ color: getColor("--success-color"), weight: 6}}
+                style={{ color: getColor("--success-color"), weight: 6 }}
                 interactive={false}
               />
             </Overlay>
@@ -359,7 +361,7 @@ const MapSelection: React.FC<MapSelectionProps> = ({
             </Overlay>
           )}
 
-{stationSnap && stationSnapStyles && (
+          {stationSnap && stationSnapStyles && (
             <Overlay {...(layerVisibility.stations ? { checked: true } : { checked: false })} name="Stations d'observation">
               <GeoJSON
                 data={stationSnap as GeoJsonObject}
