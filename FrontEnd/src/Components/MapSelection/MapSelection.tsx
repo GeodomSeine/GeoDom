@@ -80,6 +80,9 @@ const MapSelection: React.FC<MapSelectionProps> = ({
 
   const [currentZoom, setCurrentZoom] = useState(6);
   const [simplifiedHydroData, setSimplifiedHydroData] = useState<GeoJsonResponse | null>(hydroData);
+  const selectedPkRef = useRef<any>(selectedPk);
+  const pkByStrahlerRef = useRef<any>(pkByStrahler);
+
   useEffect(() => {
     idHydStartRef.current = idHydStart;
     idHydEndRef.current = idHydEnd;
@@ -223,7 +226,7 @@ const MapSelection: React.FC<MapSelectionProps> = ({
 
   // Fonction pour récupérer la tolérance en fonction du zoom
   const getSimplifyTolerance = (zoom: number) => {
-    if (zoom >= 9) return 0.005;   // Moins détaillé
+    if (zoom >= 8) return 0.005;   // Moins détaillé
     return 0.03;                   // Très simplifié
   };
 
@@ -255,6 +258,17 @@ const MapSelection: React.FC<MapSelectionProps> = ({
     adaptDataToZoom(currentZoom);
   },[hydroData]);
 
+  useEffect(() => {
+    if (selectedPkRef.current) {
+      selectedPkRef.current.bringToFront();
+    }
+  }, [selectedPk]);
+
+  useEffect(() => {
+    if (pkByStrahlerRef.current) {
+      pkByStrahlerRef.current.bringToFront();
+    }
+  }, [pkByStrahler]);
   return (
     <div className="map_component">
       <MapContainer
@@ -296,28 +310,6 @@ const MapSelection: React.FC<MapSelectionProps> = ({
             />
           </BaseLayer>
 
-          {stationSnap && stationSnapStyles && (
-            <Overlay {...(layerVisibility.stations ? { checked: true } : { checked: false })} name="Stations d'observation">
-              <GeoJSON
-                data={stationSnap as GeoJsonObject}
-                pointToLayer={(_, latlng) => {
-                  const style = {
-                    ...stationSnapStyles,
-                    radius: 5,
-                  };
-                  return new CircleMarker(latlng, style);
-                }}
-                onEachFeature={(feature, layer) => {
-                  layer.off();
-                  layer.on({
-                    click: () => handleFeatureClick(feature, layer, "Station"),
-                  });
-                }}
-              />
-            </Overlay>
-          )}
-
-
           {simplifiedHydroData && hydroStyles && (
             <Overlay checked={layerVisibility.hydrographie} name="Hydrographie">
               <GeoJSON
@@ -347,9 +339,10 @@ const MapSelection: React.FC<MapSelectionProps> = ({
           {selectedPk && (
             <Overlay {...(layerVisibility.pk ? { checked: true } : { checked: false })} name="PK">
               <GeoJSON
+                ref={selectedPkRef}
                 key={JSON.stringify(selectedPk)}
                 data={selectedPk as GeoJsonObject}
-                style={{ color: getColor("--success-color"), weight: 6 }}
+                style={{ color: getColor("--success-color"), weight: 6}}
                 interactive={false}
               />
             </Overlay>
@@ -358,12 +351,35 @@ const MapSelection: React.FC<MapSelectionProps> = ({
             <Overlay {...(layerVisibility.pk ? { checked: true } : { checked: false })} name="Pk par strahler">
               <GeoJSON
                 key={JSON.stringify(pkByStrahler)}
+                ref={pkByStrahlerRef}
                 data={pkByStrahler as GeoJsonObject}
                 style={{ color: getColor("--success-color"), weight: 2 }}
                 interactive={false}
               />
             </Overlay>
           )}
+
+{stationSnap && stationSnapStyles && (
+            <Overlay {...(layerVisibility.stations ? { checked: true } : { checked: false })} name="Stations d'observation">
+              <GeoJSON
+                data={stationSnap as GeoJsonObject}
+                pointToLayer={(_, latlng) => {
+                  const style = {
+                    ...stationSnapStyles,
+                    radius: 5,
+                  };
+                  return new CircleMarker(latlng, style);
+                }}
+                onEachFeature={(feature, layer) => {
+                  layer.off();
+                  layer.on({
+                    click: () => handleFeatureClick(feature, layer, "Station"),
+                  });
+                }}
+              />
+            </Overlay>
+          )}
+
         </LayersControl>
       </MapContainer>
     </div>
