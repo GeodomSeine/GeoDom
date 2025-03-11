@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, GeoJSON, LayersControl, useMapEvents } from 'r
 import { CircleMarker, LatLngBounds, PathOptions } from 'leaflet';
 import { GeoJsonObject } from 'geojson';
 import 'leaflet/dist/leaflet.css';
-import { streamHydroData, getBassin, getStationSnap, getStationSnapSld, getHydroSLD, getBassinSLD, GeoJsonResponse, AmontAvalResponse, Scenario, ProgramVariable } from '../../services/api';
+import { streamHydroData, getStationSnap, getStationSnapSld, getHydroSLD, GeoJsonResponse, AmontAvalResponse, Scenario, ProgramVariable } from '../../services/api';
 import { parseSLDToStyles } from '../../mapstyles/mapStyles';
 import "./MapSelection.scss";
 import "../../styles/main.scss";
@@ -11,7 +11,7 @@ import { createRoot } from 'react-dom/client';
 import PopupContent from './PopupContent';
 import MapButtons from '../SimpleComponents/MapButtons';
 import ControlComponent from './ControlComponent';
-import { calculateBounds, getColor } from '../../utils/mapUtils';
+import { getColor } from '../../utils/mapUtils';
 // @ts-ignore
 import simplify from "simplify-geojson";
 
@@ -22,6 +22,9 @@ interface MapSelectionProps {
   // map ref used by the pdf export
   mapRef: any;
   // program name
+  bassinData: GeoJsonResponse | null;
+  bassinStyle: PathOptions | null;
+  bounds: LatLngBounds | null;
   program: string;
   exutoire_id: number;
   idHydStart: number | null;
@@ -45,6 +48,9 @@ interface MapSelectionProps {
 
 const MapSelection: React.FC<MapSelectionProps> = ({
   mapRef,
+  bassinData, 
+  bassinStyle,
+  bounds,
   program,
   exutoire_id,
   idHydStart,
@@ -66,14 +72,11 @@ const MapSelection: React.FC<MapSelectionProps> = ({
   scenarioColors
 }) => {
   const [hydroData, setHydroData] = useState<GeoJsonResponse | null>(null);
-  const [bassinData, setBassinData] = useState<GeoJsonResponse | null>(null);
   const [hydroStyles, setHydroStyles] = useState<any[]>([]);
-  const [bassinStyle, setBassinStyle] = useState<PathOptions | null>(null);
   const [stationSnap, setStationSnap] = useState<GeoJsonResponse | null>(null);
   const [stationSnapStyles, setStationSnapStyles] = useState<PathOptions | null>(null);
   const idHydStartRef = useRef<number | null>(idHydStart);
   const idHydEndRef = useRef<number | null>(idHydEnd);
-  const [bounds, setBounds] = useState<LatLngBounds | null>(null);
 
   const [currentZoom, setCurrentZoom] = useState(6);
   const [simplifiedHydroData, setSimplifiedHydroData] = useState<GeoJsonResponse | null>(hydroData);
@@ -87,18 +90,10 @@ const MapSelection: React.FC<MapSelectionProps> = ({
       try {
         // Lancer les appels API en parallèle
         const hydroSLDPromise = getHydroSLD(program);
-        const bassinPromise = getBassin(program);
-        const bassinSLDPromise = getBassinSLD(program);
         const stationSLDPromise = getStationSnapSld(program);
         const stationPromise = getStationSnap(program);
 
-        // Charger d'abord les données structurées (plus rapides à parser)
-        const [bassinData, stationData] = await Promise.all([bassinPromise, stationPromise]);
-
-        if (bassinData) {
-          setBassinData(bassinData);
-          setBounds(calculateBounds(bassinData));
-        }
+        const stationData = await stationPromise 
 
         if (stationData) {
           setStationSnap(stationData);
@@ -122,9 +117,6 @@ const MapSelection: React.FC<MapSelectionProps> = ({
 
         // Lancer le parsing SLD de manière optimisée
         parseSLD(hydroSLDPromise, setHydroStyles);
-        parseSLD(bassinSLDPromise, (styles) => {
-          setBassinStyle({ color: styles[0]?.color || getColor("--basic-black"), weight: styles[0]?.weight || 3 });
-        });
         parseSLD(stationSLDPromise, (styles) => {
           setStationSnapStyles({ color: styles[0]?.color || getColor("--success-color"), weight: styles[0]?.weight || 3 });
         });

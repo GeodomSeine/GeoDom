@@ -513,6 +513,9 @@ const VisualisationPage: React.FC = () => {
         <ToggleContainer className="space_container_1" title="Carte de sélection" secondChild={sharedSlider}>
           <MapSelection
             mapRef={selectionMapRef}
+            bassinData={bassinData}
+            bassinStyle={bassinStyle}
+            bounds={bounds}
             scenarioColors={scenarioColors}
             program={program!.name}
             exutoire_id={program!.exutoire_id}
