@@ -5,6 +5,8 @@ from passlib.context import CryptContext
 from core.logger import logger
 from core.config import settings
 
+USER = settings.DEFAULT_ADMIN_USERNAME
+PASSWORD = settings.DEFAULT_ADMIN_PASSWORD
 
 DATABASE_URL = "sqlite:///./fastapi_admin.db"
 
@@ -44,11 +46,11 @@ def init_db():
     BaseAdmin.metadata.create_all(bind=engine)
 
     db = SessionLocal()
-    if not db.query(User).filter(User.username == "admin").first():
-        admin = User(username=settings.DEFAULT_ADMIN_USERNAME, password=hash_password(settings.DEFAULT_ADMIN_PASSWORD), is_admin=True)
+    if not db.query(User).filter(User.username == USER,).first():
+        admin = User(username=USER, password=hash_password(PASSWORD), is_admin=True)
         db.add(admin)
         db.commit()
-        logger.info("✅ Admin 'admin' créé avec le mot de passe 'admin123'")
+        logger.info(f"✅ Admin '{USER}' créé avec le mot de passe '{PASSWORD}'")
     db.close()
 
 def get_db():
