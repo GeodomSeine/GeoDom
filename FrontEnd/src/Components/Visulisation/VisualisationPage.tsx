@@ -440,7 +440,9 @@ const VisualisationPage: React.FC = () => {
   };
 
   const exportData = {
-    name: program.name,
+    program: program.name,
+    id_hyd_start: idHydStart,
+    id_hyd_end: idHydEnd,
     mode: mode,
     pynutsData: data,
     donutsData: donutsData,
