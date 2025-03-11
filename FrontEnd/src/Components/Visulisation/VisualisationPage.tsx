@@ -112,7 +112,9 @@ const VisualisationPage: React.FC = () => {
 
   useEffect(() => {
     if (program && program.variables && program.variables.length > 0) {
-      setSelectedVariables([program.variables[0]]);
+      setTimeout(() => {
+        setSelectedVariables([program.variables[0]]);
+      }, 1000);
     }
   }, [program]);
 

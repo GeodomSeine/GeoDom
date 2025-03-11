@@ -152,6 +152,7 @@ function MapBaseComponent({
     <div className="map_base">
       <MapContainer
         ref={mapRef}
+        preferCanvas={true} // Active le rendu Canvas
         attributionControl={false}
         bounds={bounds || [
           [50.9, -1.5],
@@ -170,6 +171,9 @@ function MapBaseComponent({
             <TileLayer
               url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
               attribution='&copy; <a href="https://carto.com/">CARTO</a>'
+              updateWhenIdle={false} // Charge les tuiles seulement quand nécessaire
+              updateWhenZooming={false} // Ne recharge pas en zoomant
+              keepBuffer={5} // Garde 5 niveaux de tuiles en cache
             />
           </BaseLayer>
 
