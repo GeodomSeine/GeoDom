@@ -1,78 +1,140 @@
 import React, { useEffect, useState } from 'react';
-import { PDFDownloadLink, Document, Page, Text, View, Image } from '@react-pdf/renderer';
+import { PDFDownloadLink, Document, Page, Text, View, Image, StyleSheet } from '@react-pdf/renderer';
 import "leaflet-simple-map-screenshoter";
 import ButtonComponent from '../SimpleComponents/ButtonComponent';
 
-
 const captureMap = async (mapRef: any) => {
     const plugin = mapRef.current.plugin;
-    const blob = await plugin.takeScreen("blob", { mimeType: "image/png" });
-    return URL.createObjectURL(blob);
+    const capturePromise = new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => {
+            reject(new Error('Capture timed out'));
+        }, 10000);
+        plugin.takeScreen("blob", { mimeType: "image/png" })
+            .then((blob: any) => {
+                clearTimeout(timeout);
+                resolve(URL.createObjectURL(blob));
+            })
+            .catch((error: any) => {
+                clearTimeout(timeout);
+                reject(error);
+            });
+    });
+    return capturePromise;
 };
 
 const captureChart = async (chartRef: any) => {
-    const chartCanvas = chartRef.current.canvas
-    return chartCanvas.toDataURL('image/png');
+    const chartCanvas = await chartRef.current.canvas;
+    const capturePromise = new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => {
+            reject(new Error('Capture timed out'));
+        }, 10000);
+        chartCanvas.toBlob((blob: any) => {
+            clearTimeout(timeout);
+            resolve(URL.createObjectURL(blob));
+        }, 'image/png');
+    });
+    return capturePromise;
 };
 
 const captureProfilLong = async (profilLong: any) => {
-    const chartCanvas = profilLong.current.canvas
-    return chartCanvas.toDataURL('image/png');
+    const chartCanvas = await profilLong.current.canvas;
+    const capturePromise = new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => {
+            reject(new Error('Capture timed out'));
+        }, 10000);
+        chartCanvas.toBlob((blob: any) => {
+            clearTimeout(timeout);
+            resolve(URL.createObjectURL(blob));
+        }, 'image/png');
+    });
+    return capturePromise;
 };
+
+const styles = StyleSheet.create({
+    page: { padding: 20, flexDirection: 'column' },
+    title: { fontSize: 18, marginBottom: 10, textAlign: 'center' },
+    subtitle: { fontSize: 14, marginBottom: 5, fontWeight: 'bold' },
+    text: { fontSize: 12, marginBottom: 2 },
+    section: { marginBottom: 10, borderBottom: '1 solid #ccc', paddingBottom: 5 },
+    image: { width: '100%', height: 'auto', marginTop: 10 },
+    imageContainer: { marginTop: 20, alignItems: 'center' },
+});
 
 const ExportPdfDocument = ({ selectionMapElements, selectionMapImageUrl, chartImageUrls, mapImageUrls, profilLongImageUrls }: any) => {
 
     return (
         <Document>
-            <Page size="A4" style={{ padding: 10 }}>
-                <Text style={{ fontSize: 18, marginBottom: 10 }}>Capsule : {selectionMapElements.program_name}</Text>
-                <Text style={{ fontSize: 12, marginBottom: 10 }}>Date: {new Date().toLocaleString()}</Text>
-                <Text style={{ fontSize: 14, marginBottom: 5 }}>Variables sélectionnées:</Text>
-                {selectionMapElements.selectedVariables.map((variable: any, index: number) => (
-                    <Text key={index} style={{ fontSize: 12, marginBottom: 2 }}>
-                        - {variable.var_code} : {variable.var_name}
-                    </Text>
-                ))}
-                <Text style={{ fontSize: 14, marginTop: 10, marginBottom: 5 }}>Scénarios sélectionnés:</Text>
-                {selectionMapElements.selectedScenarios.map((scenario: any, index: number) => (
-                    <Text key={index} style={{ fontSize: 12, marginBottom: 2 }}>
-                        - {scenario.year} : {scenario.description}
-                    </Text>
-                ))}
+            {/* Page 1 - Informations générales */}
+            <Page size="A4" style={styles.page}>
+                <View style={styles.section}>
+                    <Text style={styles.title}>Capsule : {selectionMapElements.program_name}</Text>
+                    <Text style={styles.text}>Date: {new Date().toLocaleString()}</Text>
+                </View>
+
+                <View style={styles.section}>
+                    <Text style={styles.subtitle}>Variables sélectionnées :</Text>
+                    {selectionMapElements.selectedVariables.map((variable: any, index: any) => (
+                        <Text key={index} style={styles.text}>
+                            - {variable.var_code} : {variable.var_name}
+                        </Text>
+                    ))}
+                </View>
+
+                <View style={styles.section}>
+                    <Text style={styles.subtitle}>Scénarios sélectionnés :</Text>
+                    {selectionMapElements.selectedScenarios.map((scenario: any, index: any) => (
+                        <Text key={index} style={styles.text}>
+                            - {scenario.year} : {scenario.description}
+                        </Text>
+                    ))}
+                </View>
+
                 {selectionMapImageUrl && (
-                    <View style={{ marginTop: 20 }}>
-                        <Text style={{ fontSize: 14, marginBottom: 5 }}>Carte de sélection:</Text>
-                        <Image src={selectionMapImageUrl} style={{ width: '80%', height: 'auto' }} />
+                    <View style={styles.imageContainer}>
+                        <Text style={styles.subtitle}>Carte de sélection :</Text>
+                        <Image src={selectionMapImageUrl} style={styles.image} />
                     </View>
                 )}
             </Page>
-            <Page size="A4" style={{ padding: 10 }}>
-                <Text style={{ fontSize: 18, marginBottom: 10 }}>Evolution temporelle</Text>
-                {chartImageUrls?.map((url: string, index: number) => (
-                    <View key={index} style={{ marginTop: 20 }}>
-                        <Text style={{ fontSize: 14, marginBottom: 5 }}>Graphique {index + 1}:</Text>
-                        <Image src={url} style={{ width: '70%', height: 'auto' }} />
-                    </View>
-                ))}
-            </Page>
-            <Page size="A4" style={{ padding: 10 }}>
-                <Text style={{ fontSize: 18, marginBottom: 10 }}>Carte des seuils</Text>
-                {mapImageUrls?.map((url: string, index: number) => (
-                    <View key={index} style={{ marginTop: 20 }}>
-                        <Text style={{ fontSize: 14, marginBottom: 5 }}>Carte {index + 1}:</Text>
-                        <Image src={url} style={{ width: '80%', height: 'auto' }} />
-                    </View>
-                ))}
-            </Page>
-            <Page size="A4" style={{ padding: 10 }}>
-                <Text style={{ fontSize: 18, marginBottom: 10 }}>Evolution spatiale</Text>
-                {profilLongImageUrls?.map((url: string, index: number) => (
-                    <View key={index} style={{ marginTop: 20 }}>
-                        <Text style={{ fontSize: 14, marginBottom: 5 }}>Profil Long {index + 1}:</Text>
-                        <Image src={url} style={{ width: '70%', height: 'auto' }} />
-                    </View>
-                ))}
-            </Page>
+
+            {/* Page 2 - Evolution temporelle */}
+            {chartImageUrls?.length > 0 && (
+                <Page size="A4" style={styles.page}>
+                    <Text style={styles.title}>Évolution temporelle</Text>
+                    {chartImageUrls.map((url: any, index: any) => (
+                        <View key={index} style={styles.imageContainer}>
+                            <Text style={styles.subtitle}>Graphique {index + 1} :</Text>
+                            <Image src={url} style={styles.image} />
+                        </View>
+                    ))}
+                </Page>
+            )}
+
+            {/* Page 3 - Carte des seuils */}
+            {mapImageUrls?.length > 0 && (
+                <Page size="A4" style={styles.page}>
+                    <Text style={styles.title}>Carte des seuils</Text>
+                    {mapImageUrls.map((url: any, index: any) => (
+                        <View key={index} style={styles.imageContainer}>
+                            <Text style={styles.subtitle}>Carte {index + 1} :</Text>
+                            <Image src={url} style={styles.image} />
+                        </View>
+                    ))}
+                </Page>
+            )}
+
+            {/* Page 4 - Evolution spatiale */}
+            {profilLongImageUrls?.length > 0 && (
+                <Page size="A4" style={styles.page}>
+                    <Text style={styles.title}>Évolution spatiale</Text>
+                    {profilLongImageUrls.map((url: any, index: any) => (
+                        <View key={index} style={styles.imageContainer}>
+                            <Text style={styles.subtitle}>Profil Long {index + 1} :</Text>
+                            <Image src={url} style={styles.image} />
+                        </View>
+                    ))}
+                </Page>
+            )}
         </Document>
     );
 };
@@ -98,7 +160,7 @@ const ExportPdfComponent: React.FC<ExportPdfComponentProps> = ({ exportPdfInfo }
             }
             if (selectionMapElements.mapRef.current) {
                 const mapUrl = await captureMap(selectionMapElements.mapRef);
-                setSelectionMapImageUrl(mapUrl);
+                setSelectionMapImageUrl(mapUrl as string);
             }
         };
 
