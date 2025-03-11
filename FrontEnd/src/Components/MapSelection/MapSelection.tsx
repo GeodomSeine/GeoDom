@@ -11,7 +11,7 @@ import { createRoot } from 'react-dom/client';
 import PopupContent from './PopupContent';
 import MapButtons from '../SimpleComponents/MapButtons';
 import ControlComponent from './ControlComponent';
-import { calculateBounds } from '../../utils/mapUtils';
+import { calculateBounds, getColor } from '../../utils/mapUtils';
 // @ts-ignore
 import simplify from "simplify-geojson";
 
@@ -123,10 +123,10 @@ const MapSelection: React.FC<MapSelectionProps> = ({
         // Lancer le parsing SLD de manière optimisée
         parseSLD(hydroSLDPromise, setHydroStyles);
         parseSLD(bassinSLDPromise, (styles) => {
-          setBassinStyle({ color: styles[0]?.color || "var(--basic-black)", weight: styles[0]?.weight || 3 });
+          setBassinStyle({ color: styles[0]?.color || getColor("--basic-black"), weight: styles[0]?.weight || 3 });
         });
         parseSLD(stationSLDPromise, (styles) => {
-          setStationSnapStyles({ color: styles[0]?.color || "var(--success-color)", weight: styles[0]?.weight || 3 });
+          setStationSnapStyles({ color: styles[0]?.color || getColor("--success-color"), weight: styles[0]?.weight || 3 });
         });
 
         // Démarrer le streaming des données hydrographiques sans attendre les autres
@@ -183,14 +183,14 @@ const MapSelection: React.FC<MapSelectionProps> = ({
     const id = feature.properties?.id_hyd;
 
     if (amontAvalResponse?.id_hyd.includes(id))
-      return { color: "var(--danger-color)", weight: 3 };
+      return { color: getColor("--danger-color"), weight: 3 };
     if (idHydStart === id || idHydEnd === id)
-      return { color: "var(--success-color)", weight: 4 };
+      return { color: getColor("--success-color"), weight: 4 };
     for (const rule of hydroStyles) {
       if (strahler >= rule.min && strahler <= rule.max)
         return { color: rule.color, weight: rule.weight };
     }
-    return { color: "var(--basic-black)", weight: 1 };
+    return { color: getColor("--basic-black"), weight: 1 };
   };
 
   // handle click on a pk, to create a selection pop-up on the map
@@ -351,7 +351,7 @@ const MapSelection: React.FC<MapSelectionProps> = ({
               <GeoJSON
                 key={JSON.stringify(selectedPk)}
                 data={selectedPk as GeoJsonObject}
-                style={{ color: "var(--success-color)", weight: 6 }}
+                style={{ color: getColor("--success-color"), weight: 6 }}
                 interactive={false}
               />
             </Overlay>
@@ -361,7 +361,7 @@ const MapSelection: React.FC<MapSelectionProps> = ({
               <GeoJSON
                 key={JSON.stringify(pkByStrahler)}
                 data={pkByStrahler as GeoJsonObject}
-                style={{ color: "var(--success-color)", weight: 2 }}
+                style={{ color: getColor("--success-color"), weight: 2 }}
                 interactive={false}
               />
             </Overlay>
