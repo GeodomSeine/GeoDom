@@ -51,7 +51,7 @@ const ExportPdfDocument = ({ selectionMapElements, selectionMapImageUrl, chartIm
                 {chartImageUrls?.map((url: string, index: number) => (
                     <View key={index} style={{ marginTop: 20 }}>
                         <Text style={{ fontSize: 14, marginBottom: 5 }}>Graphique {index + 1}:</Text>
-                        <Image src={url} style={{ width: '80%', height: 'auto' }} />
+                        <Image src={url} style={{ width: '70%', height: 'auto' }} />
                     </View>
                 ))}
             </Page>
@@ -69,7 +69,7 @@ const ExportPdfDocument = ({ selectionMapElements, selectionMapImageUrl, chartIm
                 {profilLongImageUrls?.map((url: string, index: number) => (
                     <View key={index} style={{ marginTop: 20 }}>
                         <Text style={{ fontSize: 14, marginBottom: 5 }}>Profil Long {index + 1}:</Text>
-                        <Image src={url} style={{ width: '80%', height: 'auto' }} />
+                        <Image src={url} style={{ width: '70%', height: 'auto' }} />
                     </View>
                 ))}
             </Page>

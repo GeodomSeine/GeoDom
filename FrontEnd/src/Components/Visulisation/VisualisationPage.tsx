@@ -30,6 +30,7 @@ import PercentileSelector from "../SimpleComponents/PercentileSelector";
 import { scenarioColorPalette } from "../../utils/scenarioColorPalette";
 import ExportCsvComponent from "../ExportComponent/ExportCsvComponent";
 import ExportGeoPackageComponent from "../ExportComponent/ExportGeoPackageComponent";
+import "leaflet-simple-map-screenshoter";
 
 const scenarioColors: Record<number, string> = {}
 
@@ -141,39 +142,53 @@ const VisualisationPage: React.FC = () => {
 
   useEffect(() => {
     const fetchInitialData = async () => {
-      if (!program) return;
+        if (!program) return;
 
-      try {
-        const [bassinData, bassinSLDData, pkSLDData] = await Promise.all([
-          getBassin(program.name),
-          getBassinSLD(program.name),
-          getPkSld(program.name),
-        ]);
+        try {
+            // Lancer les appels API en parallèle
+            const bassinPromise = getBassin(program.name);
+            const bassinSLDPromise = getBassinSLD(program.name);
+            const pkSLDPromise = getPkSld(program.name);
 
-        if (bassinData) {
-          setBassinData(bassinData);
-          setBounds(calculateBounds(bassinData));
+            // Charger d'abord les données structurées (plus rapides à parser)
+            const bassinData = await bassinPromise;
+            if (bassinData) {
+                setBassinData(bassinData);
+                setBounds(calculateBounds(bassinData));
+            }
+
+            // Fonction pour parser un SLD en évitant le blocage
+            const parseSLD = async (sldPromise: Promise<Blob | null>, callback: (styles: any) => void) => {
+                try {
+                    const blob = await sldPromise;
+                    if (!blob) return;
+
+                    const text = await blob.text(); // Convertir Blob en texte
+                    requestIdleCallback(() => {
+                        const styles = parseSLDToStyles(text);
+                        callback(styles);
+                    });
+                } catch (error) {
+                    console.error("Erreur lors du parsing SLD :", error);
+                }
+            };
+
+            // Lancer le parsing SLD de manière optimisée
+            parseSLD(pkSLDPromise, setPkStyles);
+            parseSLD(bassinSLDPromise, (styles) => {
+                setBassinStyle({ color: styles[0]?.color || "var(--basic-black)", weight: styles[0]?.weight || 3 });
+            });
+
+            // Démarrer le streaming des PK sans attendre les SLD
+            streamPkData(program.name, setPkData);
+        } catch (error) {
+            console.error("Erreur lors du chargement des données :", error);
         }
-
-        if (pkSLDData) {
-          const pkSLDText = await pkSLDData.text();
-          setPkStyles(parseSLDToStyles(pkSLDText));
-        }
-
-        if (bassinSLDData) {
-          const bassinSLDText = await bassinSLDData.text();
-          const styles = parseSLDToStyles(bassinSLDText);
-          setBassinStyle({ color: styles[0]?.color || "var(--basic-black)", weight: styles[0]?.weight || 3 });
-        }
-
-        await streamPkData(program.name, setPkData);
-      } catch (error) {
-        console.error("Erreur lors du chargement des données :", error);
-      }
     };
 
     fetchInitialData();
-  }, [program]);
+}, [program]);
+
 
   const request: DataRequest | null = useMemo(() => {
     if (!program || !amontAvalResponse || mode !== "amont-aval") return null;
@@ -435,6 +450,8 @@ const VisualisationPage: React.FC = () => {
       hidden: false,
       preventDownload: false,
       mimeType: "image/png",
+      position: 'bottomright', // position of take screen icon
+      screenName: 'screen', // string or function
       hideElementsWithSelectors: [".leaflet-control-container"],
     }).addTo(mapRef.current);
   };
