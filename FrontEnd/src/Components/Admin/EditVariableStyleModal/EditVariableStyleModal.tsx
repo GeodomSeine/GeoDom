@@ -89,7 +89,7 @@ const EditVariableStyleModal: React.FC<EditVariableModalProps> = ({ isOpen, onCl
           </>
         )}
         {classification === "sld" && (
-          <InputComponent label="Fichier SLD" type="file" selectedFile={sld?.name} onChange={handleFileChange} />
+          <InputComponent label="Fichier SLD" type="file" accept=".sld" selectedFile={sld?.name} onChange={handleFileChange} />
         )}
         <ButtonComponent txt="Sauvegarder" onClick={triggerSubmit} />
       </form>

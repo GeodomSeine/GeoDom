@@ -47,6 +47,13 @@ const ImportJsonComponent: React.FC<ImportJsonComponentProps> = ({ visualization
                         return;
                     }
 
+                    /* Fix the number of variables to 4
+                    if(jsonData.variables.length > 4){
+                        setErrorMessage("Erreur: Le nombre de variables doit être inférieur ou égale à 4");
+                        return;
+                    }
+                    */
+                   
                     if (jsonData.decades.length !== 2) {
                         setErrorMessage(`Erreur: Le nombre de décennies est incorrect pour la visualisation '${jsonData.name}': ${jsonData.decades.length}`);
                         return;
@@ -93,6 +100,7 @@ const ImportJsonComponent: React.FC<ImportJsonComponentProps> = ({ visualization
             <div className="import_body">
                 <InputComponent
                     type="file"
+                    accept=".json"
                     onChange={handleFileChange}
                     selectedFile={selectedFile?.name}
                 />

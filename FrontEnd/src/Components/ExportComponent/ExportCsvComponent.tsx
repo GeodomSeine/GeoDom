@@ -1,7 +1,7 @@
 import ButtonComponent from '../SimpleComponents/ButtonComponent';
 import React from 'react';
 import Papa from 'papaparse';
-import { DataResponse, DonutsDataResponse, Scenario } from '../../services/api';
+import { DataResponse, DonutsDataResponse, ProgramVariable, Scenario } from '../../services/api';
 import { transformData } from '../../utils/dataTransform';
 import JSZip from 'jszip';
 
@@ -11,7 +11,7 @@ interface ExportCsvComponentProps {
         mode: string;
         pynutsData: DataResponse | null;
         donutsData: DonutsDataResponse | null;
-        variables: string[]; 
+        variables: ProgramVariable[]; 
         scenarios: Scenario[]
     }
 }
@@ -24,8 +24,7 @@ const ExportCsvComponent: React.FC<ExportCsvComponentProps> = ({ exportCsvData }
         
         //CSV
         for(let i = 0; i < exportCsvData.variables.length; i++){
-            const variable = exportCsvData.variables[i];
-            console.log(variable);
+            const variable = exportCsvData.variables[i].var_code;
             const transformedData = transformData(exportCsvData.pynutsData, exportCsvData.donutsData, exportCsvData.scenarios, variable, exportCsvData.mode);
             const csv = Papa.unparse(transformedData);
             zip.file(`${exportCsvData.name}_${variable}.csv`, csv);
@@ -42,7 +41,7 @@ const ExportCsvComponent: React.FC<ExportCsvComponentProps> = ({ exportCsvData }
                 second: '2-digit',
                 timeZone: 'Europe/Paris'
             }).format(new Date()),
-            variables: exportCsvData.variables,
+            variables: exportCsvData.variables.map(variable => `${variable.var_code} (${variable.unit_short})`),
             year: exportCsvData.scenarios.map((s) => s.year),
         };
         zip.file("metadata.json", JSON.stringify(metadata, null, 2));  

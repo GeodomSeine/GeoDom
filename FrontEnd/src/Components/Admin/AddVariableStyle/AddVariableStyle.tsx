@@ -83,7 +83,7 @@ const AddVariableStyle: React.FC = () => {
       )}
       
       {classification === "sld" && (
-        <InputComponent label="Fichier SLD" type="file" selectedFile={sld?.name} onChange={handleFileChange} required />
+        <InputComponent label="Fichier SLD" type="file" accept=".sld" selectedFile={sld?.name} onChange={handleFileChange} required />
       )}
       
       <ButtonComponent txt="Ajouter" onClick={triggerSubmit} />

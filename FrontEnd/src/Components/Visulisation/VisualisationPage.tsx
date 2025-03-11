@@ -444,7 +444,7 @@ const VisualisationPage: React.FC = () => {
     mode: mode,
     pynutsData: data,
     donutsData: donutsData,
-    variables: selectedVariables.map((variable) => variable.var_code),
+    variables: selectedVariables,
     scenarios: selectedScenarios,
   }
 
