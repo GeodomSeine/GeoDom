@@ -227,27 +227,33 @@ const MapSelection: React.FC<MapSelectionProps> = ({
     return 0.03;                   // Très simplifié
   };
 
+  const adaptDataToZoom = ( zoom: number) => {
+    if (hydroData) {
+      if (zoom >= 10) {
+        setSimplifiedHydroData(hydroData);
+      } else {
+        const tolerance = getSimplifyTolerance(zoom);
+        const simplified = simplify(hydroData, tolerance);
+        setSimplifiedHydroData(simplified);
+      }
+    }
+  }
+
   // Gestion du zoom et simplification dynamique
   const ZoomHandler = () => {
     useMapEvents({
       zoomend: (event) => {
         const newZoom = event.target.getZoom();
+        adaptDataToZoom(newZoom);
         setCurrentZoom(newZoom);
-
-        console.log("Zoom level:", newZoom);
-        if (hydroData) {
-          const tolerance = getSimplifyTolerance(newZoom);
-          if (newZoom >= 10) {
-            setSimplifiedHydroData(hydroData);
-          } else {
-            const simplified = simplify(hydroData, tolerance);
-            setSimplifiedHydroData(simplified);
-          }
-        }
       },
     });
     return null;
   };
+
+  useEffect(() => {
+    adaptDataToZoom(currentZoom);
+  },[hydroData]);
 
   return (
     <div className="map_component">
