@@ -4,20 +4,16 @@ import "leaflet-simple-map-screenshoter";
 import ButtonComponent from '../SimpleComponents/ButtonComponent';
 
 const captureMap = async (mapRef: any) => {
-    const plugin = mapRef.current.plugin;
+    const overlayPane = mapRef.current.getPane("overlayPane"); // Pane où Leaflet met le canvas
+    const canvas = overlayPane?.querySelector("canvas");
     const capturePromise = new Promise((resolve, reject) => {
         const timeout = setTimeout(() => {
             reject(new Error('Capture timed out'));
         }, 10000);
-        plugin.takeScreen("blob", { mimeType: "image/png" })
-            .then((blob: any) => {
-                clearTimeout(timeout);
-                resolve(URL.createObjectURL(blob));
-            })
-            .catch((error: any) => {
-                clearTimeout(timeout);
-                reject(error);
-            });
+        canvas.toBlob((blob: any) => {
+            clearTimeout(timeout);
+            resolve(URL.createObjectURL(blob));
+        }, 'image/png');
     });
     return capturePromise;
 };

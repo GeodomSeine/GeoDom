@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { MapContainer, TileLayer, GeoJSON, LayersControl, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, GeoJSON, LayersControl, useMapEvents, useMap } from 'react-leaflet';
 import { CircleMarker, LatLngBounds, PathOptions } from 'leaflet';
 import { GeoJsonObject } from 'geojson';
 import 'leaflet/dist/leaflet.css';
@@ -249,6 +249,12 @@ const MapSelection: React.FC<MapSelectionProps> = ({
         const newZoom = event.target.getZoom();
         adaptDataToZoom(newZoom);
         setCurrentZoom(newZoom);
+        if (selectedPkRef.current) {
+          selectedPkRef.current.bringToFront();
+        }
+        if (pkByStrahlerRef.current) {
+          pkByStrahlerRef.current.bringToFront();
+        }
       },
       click: () => {
         resetSelection();
@@ -272,6 +278,21 @@ const MapSelection: React.FC<MapSelectionProps> = ({
       pkByStrahlerRef.current.bringToFront();
     }
   }, [pkByStrahler]);
+
+  const CreateCustomPanes = () => {
+    const map = useMap();
+
+    useEffect(() => {
+      if (map) {
+        // Création du pane pour PK
+        map.createPane("pkPane");
+        map.getPane("pkPane")!.style.zIndex = "600"; // Définit l'ordre d'affichage
+      }
+    }, [map]);
+
+    return null;
+  };
+
   return (
     <div className="map_component">
       <MapContainer
@@ -283,6 +304,9 @@ const MapSelection: React.FC<MapSelectionProps> = ({
         minZoom={6}
         zoomControl={false}
       >
+        {/* Création des panes */}
+        <CreateCustomPanes />
+
         <ZoomHandler /> {/* Gère les changements de zoom */}
         <div className="leaflet-control-container">
           <MapButtons bounds={bounds}>
@@ -346,6 +370,7 @@ const MapSelection: React.FC<MapSelectionProps> = ({
                 data={selectedPk as GeoJsonObject}
                 style={{ color: getColor("--success-color"), weight: 6 }}
                 interactive={false}
+                pane="pkPane"
               />
             </Overlay>
           )}
@@ -357,6 +382,7 @@ const MapSelection: React.FC<MapSelectionProps> = ({
                 data={pkByStrahler as GeoJsonObject}
                 style={{ color: getColor("--success-color"), weight: 2 }}
                 interactive={false}
+                pane="pkPane"
               />
             </Overlay>
           )}

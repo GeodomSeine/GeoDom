@@ -25,7 +25,6 @@ const ExportCsvComponent: React.FC<ExportCsvComponentProps> = ({ exportCsvData }
         //CSV
         for(let i = 0; i < exportCsvData.variables.length; i++){
             const variable = exportCsvData.variables[i];
-            console.log(variable);
             const transformedData = transformData(exportCsvData.pynutsData, exportCsvData.donutsData, exportCsvData.scenarios, variable, exportCsvData.mode);
             const csv = Papa.unparse(transformedData);
             zip.file(`${exportCsvData.name}_${variable}.csv`, csv);

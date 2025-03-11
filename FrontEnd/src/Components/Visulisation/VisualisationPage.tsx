@@ -144,52 +144,52 @@ const VisualisationPage: React.FC = () => {
 
   useEffect(() => {
     const fetchInitialData = async () => {
-        if (!program) return;
+      if (!program) return;
 
-        try {
-            // Lancer les appels API en parallèle
-            const bassinPromise = getBassin(program.name);
-            const bassinSLDPromise = getBassinSLD(program.name);
-            const pkSLDPromise = getPkSld(program.name);
+      try {
+        // Lancer les appels API en parallèle
+        const bassinPromise = getBassin(program.name);
+        const bassinSLDPromise = getBassinSLD(program.name);
+        const pkSLDPromise = getPkSld(program.name);
 
-            // Charger d'abord les données structurées (plus rapides à parser)
-            const bassinData = await bassinPromise;
-            if (bassinData) {
-                setBassinData(bassinData);
-                setBounds(calculateBounds(bassinData));
-            }
-
-            // Fonction pour parser un SLD en évitant le blocage
-            const parseSLD = async (sldPromise: Promise<Blob | null>, callback: (styles: any) => void) => {
-                try {
-                    const blob = await sldPromise;
-                    if (!blob) return;
-
-                    const text = await blob.text(); // Convertir Blob en texte
-                    requestIdleCallback(() => {
-                        const styles = parseSLDToStyles(text);
-                        callback(styles);
-                    });
-                } catch (error) {
-                    console.error("Erreur lors du parsing SLD :", error);
-                }
-            };
-
-            // Lancer le parsing SLD de manière optimisée
-            parseSLD(pkSLDPromise, setPkStyles);
-            parseSLD(bassinSLDPromise, (styles) => {
-                setBassinStyle({ color: styles[0]?.color || "var(--basic-black)", weight: styles[0]?.weight || 3 });
-            });
-
-            // Démarrer le streaming des PK sans attendre les SLD
-            streamPkData(program.name, setPkData);
-        } catch (error) {
-            console.error("Erreur lors du chargement des données :", error);
+        // Charger d'abord les données structurées (plus rapides à parser)
+        const bassinData = await bassinPromise;
+        if (bassinData) {
+          setBassinData(bassinData);
+          setBounds(calculateBounds(bassinData));
         }
+
+        // Fonction pour parser un SLD en évitant le blocage
+        const parseSLD = async (sldPromise: Promise<Blob | null>, callback: (styles: any) => void) => {
+          try {
+            const blob = await sldPromise;
+            if (!blob) return;
+
+            const text = await blob.text(); // Convertir Blob en texte
+            requestIdleCallback(() => {
+              const styles = parseSLDToStyles(text);
+              callback(styles);
+            });
+          } catch (error) {
+            console.error("Erreur lors du parsing SLD :", error);
+          }
+        };
+
+        // Lancer le parsing SLD de manière optimisée
+        parseSLD(pkSLDPromise, setPkStyles);
+        parseSLD(bassinSLDPromise, (styles) => {
+          setBassinStyle({ color: styles[0]?.color || "var(--basic-black)", weight: styles[0]?.weight || 3 });
+        });
+
+        // Démarrer le streaming des PK sans attendre les SLD
+        streamPkData(program.name, setPkData);
+      } catch (error) {
+        console.error("Erreur lors du chargement des données :", error);
+      }
     };
 
     fetchInitialData();
-}, [program]);
+  }, [program]);
 
 
   const request: DataRequest | null = useMemo(() => {
@@ -437,8 +437,6 @@ const VisualisationPage: React.FC = () => {
   const mapRefs = useRef<Array<React.RefObject<any>>>(Array(4).fill(null).map(() => React.createRef()));
   const profilLongRefs = useRef<Array<React.RefObject<HTMLDivElement>>>(Array(4).fill(null).map(() => React.createRef()));
 
-
-
   const exportPdfInfo = {
     selectionMapElements: { mapRef: selectionMapRef, program_name: program_name, selectedVariables: selectedVariables, selectedScenarios: selectedScenarios },
     mapElements: { mapRefs: mapRefs },
@@ -446,38 +444,35 @@ const VisualisationPage: React.FC = () => {
     profilLongElements: { profilLongRefs: profilLongRefs }
   };
 
-  const getPlugin = (mapRef: any) => {
+  const getPlugin = (mapRef: any, screenName: string) => {
     return (L as any).simpleMapScreenshoter({
       cropImageByInnerWH: true,
       hidden: false,
       preventDownload: false,
       mimeType: "image/png",
       position: 'bottomright', // position of take screen icon
-      screenName: 'screen', // string or function
+      screenName: screenName, // string or function
       hideElementsWithSelectors: [".leaflet-control-container"],
     }).addTo(mapRef.current);
   };
 
   useEffect(() => {
-    const mapRefs = exportPdfInfo.mapElements.mapRefs;
 
     mapRefs.current.forEach((mapRef: any) => {
       if (mapRef.current && !mapRef.current.plugin) {
-        console.log("Adding plugin to mapRef");
-        mapRef.current.plugin = getPlugin(mapRef);
+        mapRef.current.plugin = getPlugin(mapRef, "map");
       }
     });
 
-  }, [exportPdfInfo.mapElements.mapRefs.current[0].current, exportPdfInfo.mapElements.mapRefs.current[1].current, exportPdfInfo.mapElements.mapRefs.current[2].current, exportPdfInfo.mapElements.mapRefs.current[3].current]);
+  }, [mapRefs.current[0].current, mapRefs.current[1].current, mapRefs.current[2].current, mapRefs.current[3].current]);
 
   useEffect(() => {
-    const mapRef = exportPdfInfo.selectionMapElements.mapRef;
-
-    if (mapRef.current && !mapRef.current.plugin) {
-      console.log("Adding plugin to mapRef");
-      mapRef.current.plugin = getPlugin(mapRef);
-    }
-  }, [exportPdfInfo.selectionMapElements.mapRef.current]);
+    setTimeout(() => {
+      if (selectionMapRef.current && !selectionMapRef.current.plugin) {
+        selectionMapRef.current.plugin = getPlugin(selectionMapRef, "selectionMap");
+      }
+    }, 1000);
+  }, [selectionMapRef.current]);
 
   if (!program) {
     return null;
