@@ -3,17 +3,23 @@ import { getExportHydroData } from '../../services/api';
 import ButtonComponent from '../SimpleComponents/ButtonComponent';
 
 interface HydroExportComponentProps {
-  program: string;
+  request: {
+    program: string,
+    scenarios: number[],
+    variables: string[],
+    decades: number[],
+    percentile: "p5" | "p50" | "p90"
+  }
 }
 
-const ExportGeoPackageComponent: React.FC<HydroExportComponentProps> = ({ program }) => {
+const ExportGeoPackageComponent: React.FC<HydroExportComponentProps> = ({ request }) => {
   const handleDownload = async () => {
-    const blob = await getExportHydroData(program);
+    const blob = await getExportHydroData(request);
     if (blob) {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${program}.zip`;
+      a.download = `${request.program}.zip`;
       document.body.appendChild(a);
       a.click();
       a.remove();
