@@ -20,4 +20,3 @@ passlib
 PyJWT
 bcrypt
 geopandas
-playwright
