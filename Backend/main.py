@@ -8,7 +8,7 @@ from fastapi.staticfiles import StaticFiles
 from core.user_database import init_db
 
 from core.config import settings
-from routes import programs, pk, hydro, bassin, scenarios, data, sld, stationsnap, amont_aval, pk_geom, fulldata, data_donuts, profile_en_long,pdf, varcompartment, admin
+from routes import programs, pk, hydro, bassin, scenarios, data, sld, stationsnap, amont_aval, pk_geom, fulldata, data_donuts, profile_en_long, varcompartment, admin
 from core.logger import logger
 from core.auth import auth_router
 from scheduler.scheduler import lifespan
