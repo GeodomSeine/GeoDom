@@ -233,22 +233,19 @@ const ExportPdfComponent: React.FC<ExportPdfComponentProps> = ({ exportPdfInfo }
 
     return (
         <div className="export_container">
-            {true ? (
-                <PDFDownloadLink
-                    document={<ExportPdfDocument
-                        selectionMapElements={selectionMapElements}
-                        selectionMapImageUrl={selectionMapImageUrl}
-                        chartImageUrls={chartImageUrls}
-                        mapImageUrls={mapImageUrls}
-                        profilLongImageUrls={profilLongImageUrls}
-                    />}
-                    fileName={`export_${exportPdfInfo.selectionMapElements.program_name}.pdf`}
-                >
-                    <ButtonComponent onClick={() => { }} txt={'PDF'} />
-                </PDFDownloadLink>
-            ) : (
-                <ButtonComponent onClick={() => { }} txt={'Préparation du PDF...'} disabled={true} />
-            )}
+            <PDFDownloadLink
+                document={<ExportPdfDocument
+                    selectionMapElements={selectionMapElements}
+                    selectionMapImageUrl={selectionMapImageUrl}
+                    chartImageUrls={chartImageUrls}
+                    mapImageUrls={mapImageUrls}
+                    profilLongImageUrls={profilLongImageUrls}
+                />}
+                fileName={`export_${exportPdfInfo.selectionMapElements.program_name}.pdf`}
+            >
+                <ButtonComponent onClick={() => { }} txt={'PDF'} disabled={false} />
+            </PDFDownloadLink>
+
         </div>
     );
 };
