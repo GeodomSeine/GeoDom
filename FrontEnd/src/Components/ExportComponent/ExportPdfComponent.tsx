@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { PDFDownloadLink, Document, Page, Text, View, Image, StyleSheet } from '@react-pdf/renderer';
 import "leaflet-simple-map-screenshoter";
 import ButtonComponent from '../SimpleComponents/ButtonComponent';
+import html2canvas from 'html2canvas';
 
 const captureMap = async (mapRef: any) => {
     const overlayPane = mapRef.current.getPane("overlayPane"); // Pane où Leaflet met le canvas
@@ -11,6 +12,19 @@ const captureMap = async (mapRef: any) => {
             reject(new Error('Capture timed out'));
         }, 10000);
         canvas.toBlob((blob: any) => {
+            clearTimeout(timeout);
+            resolve(URL.createObjectURL(blob));
+        }, 'image/png');
+    });
+    return capturePromise;
+};
+const captureMapLegend = async (mapLegendRef: any) => {
+    const mapLegendCanvas = await html2canvas(mapLegendRef.current);
+    const capturePromise = new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => {
+            reject(new Error('Capture timed out'));
+        }, 10000);
+        mapLegendCanvas.toBlob((blob: any) => {
             clearTimeout(timeout);
             resolve(URL.createObjectURL(blob));
         }, 'image/png');
@@ -47,26 +61,34 @@ const captureProfilLong = async (profilLong: any) => {
 };
 
 const styles = StyleSheet.create({
-    page: { padding: 20, flexDirection: 'column' },
-    title: { fontSize: 18, marginBottom: 10, textAlign: 'center' },
-    subtitle: { fontSize: 14, marginBottom: 5, fontWeight: 'bold' },
+    page: { padding: 20, flexDirection: "column" },
+    title: { fontSize: 18, marginBottom: 10, textAlign: "center" },
+    subtitle: { fontSize: 14, marginBottom: 5, fontWeight: "bold" },
     text: { fontSize: 12, marginBottom: 2 },
-    section: { marginBottom: 10, borderBottom: '1 solid #ccc', paddingBottom: 5 },
-    image: { width: '100%', height: 'auto', marginTop: 10 },
-    imageContainer: { marginTop: 20, alignItems: 'center' },
+    section: { marginBottom: 10, borderBottom: "1 solid #ccc", paddingBottom: 5 },
+    image: { width: "100%", height: "auto", marginTop: 10 },
+    imageContainer: { marginTop: 40, alignItems: "center" },
+    legendImage: { width: "60%", height: "auto", marginTop: 5 },
+    selectionMap: { width: "100%", height: "auto", maxHeight: "100%" },
+    selectionMapContainer: { flexGrow: 1, display: "flex", justifyContent: "center", alignItems: "center", minHeight: 200 },
 });
 
-const ExportPdfDocument = ({ selectionMapElements, selectionMapImageUrl, chartImageUrls, mapImageUrls, profilLongImageUrls }: any) => {
-
+const ExportPdfDocument = ({
+    selectionMapElements,
+    selectionMapImageUrl,
+    chartImageUrls,
+    mapImageUrls,
+    legendMapImageUrls,
+    profilLongImageUrls,
+}: any) => {
     return (
-        <Document>
+        <Document title={selectionMapElements.program_name} author='Geodom'>
             {/* Page 1 - Informations générales */}
             <Page size="A4" style={styles.page}>
                 <View style={styles.section}>
                     <Text style={styles.title}>Capsule : {selectionMapElements.program_name}</Text>
                     <Text style={styles.text}>Date: {new Date().toLocaleString()}</Text>
                 </View>
-
                 <View style={styles.section}>
                     <Text style={styles.subtitle}>Variables sélectionnées :</Text>
                     {selectionMapElements.selectedVariables.map((variable: any, index: any) => (
@@ -86,18 +108,18 @@ const ExportPdfDocument = ({ selectionMapElements, selectionMapImageUrl, chartIm
                 </View>
 
                 {selectionMapImageUrl && (
-                    <View style={styles.imageContainer}>
+                    <View style={styles.selectionMapContainer}>
                         <Text style={styles.subtitle}>Carte de sélection :</Text>
-                        <Image src={selectionMapImageUrl} style={styles.image} />
+                        <Image src={selectionMapImageUrl} style={styles.selectionMap} />
                     </View>
                 )}
             </Page>
 
-            {/* Page 2 - Evolution temporelle */}
+            {/* Page 2.1 - Evolution temporelle */}
             {chartImageUrls?.length > 0 && (
                 <Page size="A4" style={styles.page}>
                     <Text style={styles.title}>Évolution temporelle</Text>
-                    {chartImageUrls.map((url: any, index: any) => (
+                    {chartImageUrls.slice(0, 2).map((url: any, index: any) => (
                         <View key={index} style={styles.imageContainer}>
                             <Text style={styles.subtitle}>Graphique {index + 1} :</Text>
                             <Image src={url} style={styles.image} />
@@ -105,27 +127,73 @@ const ExportPdfDocument = ({ selectionMapElements, selectionMapImageUrl, chartIm
                     ))}
                 </Page>
             )}
-
-            {/* Page 3 - Carte des seuils */}
-            {mapImageUrls?.length > 0 && (
+            {/* Page 2.2 - Evolution temporelle */}
+            {chartImageUrls?.length > 2 && (
                 <Page size="A4" style={styles.page}>
-                    <Text style={styles.title}>Carte des seuils</Text>
-                    {mapImageUrls.map((url: any, index: any) => (
+                    <Text style={styles.title}>Évolution temporelle</Text>
+                    {chartImageUrls.slice(2, 4).map((url: any, index: any) => (
                         <View key={index} style={styles.imageContainer}>
-                            <Text style={styles.subtitle}>Carte {index + 1} :</Text>
+                            <Text style={styles.subtitle}>Graphique {index + 3} :</Text>
                             <Image src={url} style={styles.image} />
                         </View>
                     ))}
                 </Page>
             )}
 
-            {/* Page 4 - Evolution spatiale */}
+            {/* Page 3.1 - Carte des seuils avec légendes */}
+            {mapImageUrls?.length > 0 && (
+                <Page size="A4" style={styles.page}>
+                    <Text style={styles.title}>Carte des seuils</Text>
+                    {mapImageUrls.slice(0, 2).map((url: any, index: any) => (
+                        <View key={index} style={styles.imageContainer}>
+                            <Text style={styles.subtitle}>Carte {index + 1} :</Text>
+                            <Image src={url} style={styles.image} />
+
+                            {/* Affichage de la légende associée si disponible */}
+                            {legendMapImageUrls?.[index] && (
+                                <Image src={legendMapImageUrls[index]} style={styles.legendImage} />
+                            )}
+                        </View>
+                    ))}
+                </Page>
+            )}
+            {/* Page 3.2 - Carte des seuils avec légendes */}
+            {mapImageUrls?.length > 2 && (
+                <Page size="A4" style={styles.page}>
+                    <Text style={styles.title}>Carte des seuils</Text>
+                    {mapImageUrls.slice(2, 4).map((url: any, index: any) => (
+                        <View key={index} style={styles.imageContainer}>
+                            <Text style={styles.subtitle}>Carte {index + 3} :</Text>
+                            <Image src={url} style={styles.image} />
+
+                            {/* Affichage de la légende associée si disponible */}
+                            {legendMapImageUrls?.[index + 2] && (
+                                <Image src={legendMapImageUrls[index + 2]} style={styles.legendImage} />
+                            )}
+                        </View>
+                    ))}
+                </Page>
+            )}
+
+            {/* Page 4.1 - Evolution spatiale */}
             {profilLongImageUrls?.length > 0 && (
                 <Page size="A4" style={styles.page}>
                     <Text style={styles.title}>Évolution spatiale</Text>
-                    {profilLongImageUrls.map((url: any, index: any) => (
+                    {profilLongImageUrls.slice(0, 2).map((url: any, index: any) => (
                         <View key={index} style={styles.imageContainer}>
                             <Text style={styles.subtitle}>Profil Long {index + 1} :</Text>
+                            <Image src={url} style={styles.image} />
+                        </View>
+                    ))}
+                </Page>
+            )}
+            {/* Page 4.2 - Evolution spatiale */}
+            {profilLongImageUrls?.length > 2 && (
+                <Page size="A4" style={styles.page}>
+                    <Text style={styles.title}>Évolution spatiale</Text>
+                    {profilLongImageUrls.slice(2, 4).map((url: any, index: any) => (
+                        <View key={index} style={styles.imageContainer}>
+                            <Text style={styles.subtitle}>Profil Long {index + 3} :</Text>
                             <Image src={url} style={styles.image} />
                         </View>
                     ))}
@@ -134,6 +202,7 @@ const ExportPdfDocument = ({ selectionMapElements, selectionMapImageUrl, chartIm
         </Document>
     );
 };
+
 
 interface ExportPdfComponentProps {
     exportPdfInfo: any;
@@ -146,6 +215,7 @@ const ExportPdfComponent: React.FC<ExportPdfComponentProps> = ({ exportPdfInfo }
     const [selectionMapImageUrl, setSelectionMapImageUrl] = useState<string | null>(null);
     const [chartImageUrls, setChartImageUrls] = useState<string[]>([]);
     const [mapImageUrls, setMapImageUrls] = useState<string[]>([]);
+    const [mapLegendImageUrls, setMapLegendImageUrls] = useState<string[]>([]);
     const [profilLongImageUrls, setProfilLongImageUrls] = useState<string[]>([]);
 
     useEffect(() => {
@@ -210,6 +280,29 @@ const ExportPdfComponent: React.FC<ExportPdfComponentProps> = ({ exportPdfInfo }
     }, [mapElements]);
 
     useEffect(() => {
+        const captureLegendMapImages = async () => {
+            if (mapLegendImageUrls.length > 0) {
+                mapLegendImageUrls.forEach((url) => {
+                    URL.revokeObjectURL(url);
+                });
+                setMapLegendImageUrls([]);
+            }
+            const legendMapUrls = await Promise.all(
+                mapElements.mapLegendRefs.current.map(async (legendMapRef: any) => {
+                    if (legendMapRef.current) {
+                        return await captureMapLegend(legendMapRef);
+                    }
+                    return null;
+                })
+            );
+            setMapLegendImageUrls(legendMapUrls.filter((url) => url !== null) as string[]);
+        };
+
+        captureLegendMapImages();
+    }, [mapElements]);
+
+
+    useEffect(() => {
         const captureProfilLongImages = async () => {
             if (profilLongImageUrls.length > 0) {
                 profilLongImageUrls.forEach((url) => {
@@ -239,6 +332,7 @@ const ExportPdfComponent: React.FC<ExportPdfComponentProps> = ({ exportPdfInfo }
                     selectionMapImageUrl={selectionMapImageUrl}
                     chartImageUrls={chartImageUrls}
                     mapImageUrls={mapImageUrls}
+                    legendMapImageUrls={mapLegendImageUrls}
                     profilLongImageUrls={profilLongImageUrls}
                 />}
                 fileName={`export_${exportPdfInfo.selectionMapElements.program_name}.pdf`}

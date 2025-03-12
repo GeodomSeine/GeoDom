@@ -3,15 +3,16 @@ import "./Legend.scss";
 
 
 type Props = {
-    variable : ProgramVariable;
-    legendData : LegendData
+  legendRef: any;
+  variable: ProgramVariable;
+  legendData: LegendData
 }
 
-const LegendQuantile = ({ variable, legendData } : Props) => {
+const LegendQuantile = ({ legendRef, variable, legendData }: Props) => {
   if (!legendData || legendData.sld || !legendData.colors) return null;
 
   return (
-    <div className="legend_container">
+    <div className="legend_container" ref={legendRef}>
       <h4 className="legend_header">{`${variable.var_code.toUpperCase()} (${variable.unit_short})` + " Quantile"}</h4>
       <div className="legend_body">
         {legendData.colors.map((entry, index) => (

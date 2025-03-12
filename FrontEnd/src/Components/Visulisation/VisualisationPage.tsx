@@ -432,14 +432,16 @@ const VisualisationPage: React.FC = () => {
     }
   });
 
+  // Gestion PDF
   const selectionMapRef = useRef<any>(null);
   const chartRefs = useRef<Array<React.RefObject<HTMLDivElement>>>(Array(4).fill(null).map(() => React.createRef()));
   const mapRefs = useRef<Array<React.RefObject<any>>>(Array(4).fill(null).map(() => React.createRef()));
+  const mapLegendRefs = useRef<Array<React.RefObject<HTMLDivElement>>>(Array(4).fill(null).map(() => React.createRef()));
   const profilLongRefs = useRef<Array<React.RefObject<HTMLDivElement>>>(Array(4).fill(null).map(() => React.createRef()));
 
   const exportPdfInfo = {
     selectionMapElements: { mapRef: selectionMapRef, program_name: program_name, selectedVariables: selectedVariables, selectedScenarios: selectedScenarios },
-    mapElements: { mapRefs: mapRefs },
+    mapElements: { mapRefs: mapRefs, mapLegendRefs: mapLegendRefs },
     chartElements: { chartRefs: chartRefs },
     profilLongElements: { profilLongRefs: profilLongRefs }
   };
@@ -571,6 +573,7 @@ const VisualisationPage: React.FC = () => {
               <ColoredMapComponent
                 key={variable}
                 mapRef={mapRefs.current[index]}
+                mapLegendRef={mapLegendRefs.current[index]}
                 data={coloredMapData}
                 variable={program!.variables.find((v) => v.var_code.toLowerCase() === variable.toLowerCase()) || { var_code: variable, var_name: variable, unit_short: "" }}
                 className={`variable_element element_${index}`}
