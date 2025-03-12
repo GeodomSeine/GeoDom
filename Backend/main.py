@@ -8,7 +8,7 @@ from fastapi.staticfiles import StaticFiles
 from core.user_database import init_db
 
 from core.config import settings
-from routes import programs, pk, hydro, bassin, scenarios, data, sld, stationsnap, amont_aval, pk_geom, fulldata, data_donuts, profile_en_long, varcompartment, admin
+from routes import programs, pk, hydro, bassin, scenarios, data, sld, stationsnap, amont_aval, pk_geom, fulldata, data_donuts, profile_en_long, varcompartment, admin, geopackage_export
 from core.logger import logger
 from core.auth import auth_router
 from scheduler.scheduler import lifespan
@@ -47,6 +47,7 @@ app.include_router(data_donuts.router)
 app.include_router(profile_en_long.router)
 app.include_router(admin.router, prefix="") 
 app.include_router(auth_router, prefix="/auth")
+app.include_router(geopackage_export.router)
 
 # Front
 class SPAStaticFiles(StaticFiles):

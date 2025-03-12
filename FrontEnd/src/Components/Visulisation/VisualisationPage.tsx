@@ -456,7 +456,13 @@ const VisualisationPage: React.FC = () => {
         <ExportJsonComponent exportConf={exportConf}/>
         <ExportPdfComponent exportPdfInfo={exportPdfInfo}/>
         {data && <ExportCsvComponent exportCsvData={exportData}/>}
-        <ExportGeoPackageComponent program={program!.name} />
+        <ExportGeoPackageComponent request={{
+          program : program.name,
+          scenarios : selectedScenarios.map((scenario) => scenario.id),
+          decades : selectedDecades,  
+          variables : selectedVariables.map((variable) => variable.var_code),
+          percentile : selectedPercentile
+        }}/>
       </FloatingAction>
       <div className='home_body'>
         <ToggleContainer className="space_container_1" title="Carte de sélection" secondChild={sharedSlider}>

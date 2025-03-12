@@ -2,10 +2,8 @@ import json
 import pandas as pd
 from fastapi import APIRouter, HTTPException
 from sqlalchemy.future import select
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import func
 from core.database import async_session_pynuts, load_output_table_sync
-from models.models import Pk
 from core.logger import logger
 import os
 
@@ -179,7 +177,7 @@ async def get_data(body: dict):
 
         # Construire la liste des scénarios
         scenario_list = [int(s) for s in scenarios]
-        decade_list = [int(d) for d in decades]
+        decade_list = list(range(int(decades[0]), int(decades[1]) + 1))
 
         async with async_session_pynuts() as session:
             result_data = {}
@@ -284,7 +282,7 @@ async def get_data_formap(body: dict):
                 )
 
         scenario_list = [int(s) for s in scenarios]
-        decade_list = [int(d) for d in decades]
+        decade_list = list(range(int(decades[0]), int(decades[1]) + 1))
 
         async with async_session_pynuts() as session:
             result_data = {}
