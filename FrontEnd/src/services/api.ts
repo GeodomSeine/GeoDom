@@ -238,7 +238,7 @@ export const getAmontAval = async (
 };
 
 export const getGeoPackage = async (program: string, id_hyd_start: number, id_hyd_end: number): Promise<Blob> => {
-  const response = await api.get(`/amont_aval/geopackage/${program}/${id_hyd_start}/${id_hyd_end}`, {
+  const response = await api.get(`/amont_aval/geojson_feature/${program}/${id_hyd_start}/${id_hyd_end}`, {
     responseType: 'blob',
   });
   return response.data;

@@ -166,7 +166,7 @@ async def get_amont_aval_geojson(program: str, id_hyd_start: int, id_hyd_end: in
         if (os.path.getmtime(geopackage_path) < (time.time() - 600)):
             os.remove(geopackage_path)     
         else:
-            return FileResponse(geopackage_path, media_type="application/geopackage+sqlite3", filename=f"{program}_{id_hyd_start}_{id_hyd_end}_amont_aval.gpkg")
+            return FileResponse(geopackage_path, media_type="application/geopackage+sqlite3", filename=f"{program}_amont_aval.gpkg")
         
     id_hyd_data = await fetch_amont_aval(program, id_hyd_start, id_hyd_end)
     geojson = await fetch_geojson_feature(program, id_hyd_data)
@@ -176,7 +176,8 @@ async def get_amont_aval_geojson(program: str, id_hyd_start: int, id_hyd_end: in
     
     # Créer un fichier GeoPackage
     gdf.to_file(geopackage_path, driver="GPKG")
-    return FileResponse(geopackage_path, media_type="application/geopackage+sqlite3", filename=f"{program}_{id_hyd_start}_{id_hyd_end}_amont_aval.gpkg")
+
+    return FileResponse(geopackage_path, media_type="application/geopackage+sqlite3", filename=f"{program}_amont_aval.gpkg")
 
 async def fetch_geojson_feature(program: str, id_hyd_list: list[int]):
     """
