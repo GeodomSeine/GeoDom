@@ -183,7 +183,7 @@ export const getDonutsData = async (request: DataRequest) : Promise<DonutsDataRe
   }
 }
 
-export const getExportHydroData = async (request: {
+export const getExportGeopackage = async (request: {
   program: string,
   scenarios: number[],
   variables: string[],

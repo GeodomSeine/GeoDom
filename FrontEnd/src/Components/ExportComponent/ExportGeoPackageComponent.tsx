@@ -1,6 +1,9 @@
 import React from 'react';
-import { getExportHydroData } from '../../services/api';
+import { getExportGeopackage } from '../../services/api';
 import ButtonComponent from '../SimpleComponents/ButtonComponent';
+import {BeatLoader} from 'react-spinners';
+
+import { getColor } from "../../utils/mapUtils";
 
 interface HydroExportComponentProps {
   request: {
@@ -13,8 +16,14 @@ interface HydroExportComponentProps {
 }
 
 const ExportGeoPackageComponent: React.FC<HydroExportComponentProps> = ({ request }) => {
+
+  const [isLoading, setIsLoading] = React.useState(false);
+
   const handleDownload = async () => {
-    const blob = await getExportHydroData(request);
+    setIsLoading(true);
+    const blob = await getExportGeopackage(request);
+    setIsLoading(false);
+
     if (blob) {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -30,11 +39,21 @@ const ExportGeoPackageComponent: React.FC<HydroExportComponentProps> = ({ reques
   };
 
   return (
-    <ButtonComponent
-        onClick={handleDownload}
-        txt='GeoPackage'
-        className='button_container'
-    />
+    <>
+      {isLoading && 
+        <BeatLoader
+          color={getColor("--primary-blue")}
+        />
+      }
+
+      {!isLoading &&
+        <ButtonComponent
+            onClick={handleDownload}
+            txt='GeoPackage'
+            className='button_container'
+        />
+      }
+    </>
   );
 };
 
