@@ -15,10 +15,17 @@
                     flex-direction: column;
                     width: fit-content;
                     color: $basic-white;
-                    div{
-                        width: max-content;
+                    .pop_up_infos{
+                        display: flex;
+                        flex-direction: row;
+                        align-items: center;
+                        width: fit-content;
+                        height: 15px;
+                        p{
+                            @include textTruncate;
+                        }
                     }
-                    .control_container{
+                    .popup_control_container{
                         @include gap;
                         font-size: 0.7rem;
                     }

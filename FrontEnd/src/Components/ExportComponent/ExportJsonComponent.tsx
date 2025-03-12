@@ -15,16 +15,23 @@ interface ExportJsonComponentProps {
 }
 
 const ExportJsonComponent: React.FC<ExportJsonComponentProps> = ({ exportConf }) => {
-    const handleExport = () => {
+    const handleExport = async () => {
         if(exportConf && exportConf.name !== undefined){
+            
             const jsonString = JSON.stringify(exportConf, null, 2);
             const blob = new Blob([jsonString], { type: "application/json" });
             const url = URL.createObjectURL(blob);
             const downloadLink = document.createElement("a");
             downloadLink.href = url;
-            downloadLink.download = exportConf.name + ".json";
+            downloadLink.download = `${exportConf.name}.json`;
+
+            document.body.appendChild(downloadLink);
             downloadLink.click();
-            URL.revokeObjectURL(url);
+
+            setTimeout(() => {
+                URL.revokeObjectURL(url);
+                document.body.removeChild(downloadLink);
+            }, 100);
         }
     };
     return (
@@ -33,7 +40,7 @@ const ExportJsonComponent: React.FC<ExportJsonComponentProps> = ({ exportConf })
             txt='Session'
             className='button_container'
         />
-    );
+    );    
     
 };
 

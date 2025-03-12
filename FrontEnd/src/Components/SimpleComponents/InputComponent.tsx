@@ -18,6 +18,8 @@ interface InputComponentProps {
   required?: boolean;
   // default value of the input
   value?: string | number | readonly string[];
+  //Add file type
+  accept?: string;
 }
 
 const InputComponent: FC<InputComponentProps> = ({
@@ -30,6 +32,7 @@ const InputComponent: FC<InputComponentProps> = ({
   selectedFile = null,
   required,
   value,
+  accept = "*",
 }) => {
   // used to mimic the behavior of an input type file, but here with a better visual, using a ButtonComponent
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -45,7 +48,7 @@ const InputComponent: FC<InputComponentProps> = ({
           {label && <span>{label}</span>}
           <input
             type="file"
-            accept=".json"
+            accept={accept}
             ref={fileInputRef}
             style={{ display: "none" }}
             onChange={onChange as React.ChangeEventHandler<HTMLInputElement>}

@@ -5,13 +5,15 @@ interface ButtonComponentProps {
 	disabled?: boolean;
 	// link or not, txt of the button
 	link?: string;
-	txt?: string | React.ReactNode;
+	txt?: string;
 	className?:string;
 	// action to do when the button is clicked
 	onClick?: () => void;
 	// style when the button is on a darker area
 	onDark?: boolean |null;
-}
+	// in case you want a children like logo or other inside the button
+	children?: React.ReactNode;
+}		
 
 const ButtonComponent: FC<ButtonComponentProps> = ({
 	disabled = false,
@@ -20,7 +22,7 @@ const ButtonComponent: FC<ButtonComponentProps> = ({
 	className= "button_container",
 	onDark = false,
 	onClick,
-
+	children,
 }) => {
 	//need to put into a seperate scss file
 	
@@ -41,13 +43,13 @@ const ButtonComponent: FC<ButtonComponentProps> = ({
 				style={containerStyle}
 				onClick={disabled ? undefined : onClick}
 			>
-				{txt}
+                {children ? children : <p>{txt}</p>}
 			</a>
 		);
 	} else {
 		return (
 			<div className={appliedClassName}  style={containerStyle} onClick={disabled ? undefined : onClick}>
-				{txt}
+				{children ? children : <p>{txt}</p>}
 			</div>
 		);
 	}

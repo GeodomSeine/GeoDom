@@ -13,5 +13,7 @@ class Settings:
     DB_ENGINE_LOG = os.getenv("DB_ENGINE_LOG", "False").lower() == "true"
     SECRET_ADMIN_KEY = os.getenv("SECRET_ADMIN_KEY", "")
     ALGORITHM = os.getenv("ALGORITHM", "HS256")
-    
+    DEFAULT_ADMIN_USERNAME = os.getenv("DEFAULT_ADMIN_USER", "")
+    DEFAULT_ADMIN_PASSWORD = os.getenv("DEFAULT_ADMIN_PASSWORD", "")
+
 settings = Settings()

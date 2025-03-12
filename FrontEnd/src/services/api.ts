@@ -41,6 +41,12 @@ export interface AmontAvalResponse {
   pk: Pk[];
 }
 
+export interface GeoJsonAmontAvalResponse {
+  id_hyd: number[];
+  geojson_feature: GeoJsonFeature[];
+}
+
+
 /*Program (home) types and interfaces */
 export interface Program {
   name: string;
@@ -229,6 +235,13 @@ export const getAmontAval = async (
     console.error("Error fetching AmontAval data:", error);
     return null;
   }
+};
+
+export const getGeoPackage = async (program: string, id_hyd_start: number, id_hyd_end: number): Promise<Blob> => {
+  const response = await api.get(`/amont_aval/geojson_feature/${program}/${id_hyd_start}/${id_hyd_end}`, {
+    responseType: 'blob',
+  });
+  return response.data;
 };
 
 export const getScenarios = async (): Promise<ScenarioResponse | null> => {

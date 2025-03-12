@@ -3,6 +3,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from passlib.context import CryptContext
 from core.logger import logger
+from core.config import settings
+
 
 DATABASE_URL = "sqlite:///./fastapi_admin.db"
 
@@ -43,7 +45,7 @@ def init_db():
 
     db = SessionLocal()
     if not db.query(User).filter(User.username == "admin").first():
-        admin = User(username="admin", password=hash_password("admin123"), is_admin=True) # admin123 est le mot de passe par défaut (A changer)
+        admin = User(username=settings.DEFAULT_ADMIN_USERNAME, password=hash_password(settings.DEFAULT_ADMIN_PASSWORD), is_admin=True)
         db.add(admin)
         db.commit()
         logger.info("✅ Admin 'admin' créé avec le mot de passe 'admin123'")

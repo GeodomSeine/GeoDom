@@ -32,6 +32,9 @@
         @include gap;
         flex-direction: row;
         align-items: center;
+        .legend_header{
+            display: none;
+        }
     }    
 }
 

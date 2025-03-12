@@ -81,7 +81,14 @@ const EditVariableStyleModal: React.FC<EditVariableModalProps> = ({ isOpen, onCl
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Éditer la Variable">
       <form ref={formRef} onSubmit={handleSubmit} className="modal_action_body_admin">
-        <InputComponent label="Classification" type="text" value={classification} onChange={(e) => setClassification(e.target.value)} required />
+        <div>
+          <p>Classification</p>
+          <select value={classification} onChange={(e) => setClassification(e.target.value)} required>
+            <option value="quantile">Quantile</option>
+            <option value="sld">SLD</option>
+          </select>
+        </div>
+        
         {classification === "quantile" && (
           <>
             <InputComponent label="Nombre de classes" type="number" value={nbClasses} onChange={(e) => setNbClasses(e.target.value)} required />
@@ -89,7 +96,7 @@ const EditVariableStyleModal: React.FC<EditVariableModalProps> = ({ isOpen, onCl
           </>
         )}
         {classification === "sld" && (
-          <InputComponent label="Fichier SLD" type="file" selectedFile={sld?.name} onChange={handleFileChange} />
+          <InputComponent label="Fichier SLD" type="file" accept=".sld" selectedFile={sld?.name} onChange={handleFileChange} />
         )}
         <ButtonComponent txt="Sauvegarder" onClick={triggerSubmit} />
       </form>
