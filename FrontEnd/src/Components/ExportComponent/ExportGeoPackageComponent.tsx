@@ -1,19 +1,34 @@
 import React from 'react';
-import { getExportHydroData } from '../../services/api';
+import { getExportGeopackage } from '../../services/api';
 import ButtonComponent from '../SimpleComponents/ButtonComponent';
+import {BeatLoader} from 'react-spinners';
+
+import { getColor } from "../../utils/mapUtils";
 
 interface HydroExportComponentProps {
-  program: string;
+  request: {
+    program: string,
+    scenarios: number[],
+    variables: string[],
+    decades: number[],
+    percentile: "p5" | "p50" | "p90"
+  }
 }
 
-const ExportGeoPackageComponent: React.FC<HydroExportComponentProps> = ({ program }) => {
+const ExportGeoPackageComponent: React.FC<HydroExportComponentProps> = ({ request }) => {
+
+  const [isLoading, setIsLoading] = React.useState(false);
+
   const handleDownload = async () => {
-    const blob = await getExportHydroData(program);
+    setIsLoading(true);
+    const blob = await getExportGeopackage(request);
+    setIsLoading(false);
+
     if (blob) {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${program}.zip`;
+      a.download = `${request.program}.zip`;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -24,11 +39,21 @@ const ExportGeoPackageComponent: React.FC<HydroExportComponentProps> = ({ progra
   };
 
   return (
-    <ButtonComponent
-        onClick={handleDownload}
-        txt='GeoPackage'
-        className='button_container'
-    />
+    <>
+      {isLoading && 
+        <BeatLoader
+          color={getColor("--primary-blue")}
+        />
+      }
+
+      {!isLoading &&
+        <ButtonComponent
+            onClick={handleDownload}
+            txt='GeoPackage'
+            className='button_container'
+        />
+      }
+    </>
   );
 };
 

@@ -166,7 +166,11 @@ const VisualisationPage: React.FC = () => {
             if (!blob) return;
 
             const text = await blob.text(); // Convertir Blob en texte
-            requestIdleCallback(() => {
+            const idleCallback = window.requestIdleCallback || function (cb: Function) {
+              return setTimeout(() => cb(), 1);
+            };
+        
+            idleCallback(() => {
               const styles = parseSLDToStyles(text);
               callback(styles);
             });
@@ -508,7 +512,13 @@ const VisualisationPage: React.FC = () => {
         <ExportJsonComponent exportConf={exportConf} />
         <ExportPdfComponent exportPdfInfo={exportPdfInfo} />
         {data && <ExportCsvComponent exportCsvData={exportData} />}
-        <ExportGeoPackageComponent program={program!.name} />
+        <ExportGeoPackageComponent request={{
+          program : program.name,
+          scenarios : selectedScenarios.map((scenario) => scenario.id),
+          decades : selectedDecades,  
+          variables : selectedVariables.map((variable) => variable.var_code),
+          percentile : selectedPercentile
+        }}/>
       </FloatingAction>
       <div className='home_body'>
         <ToggleContainer className="space_container_1" title="Carte de sélection" secondChild={sharedSlider}>

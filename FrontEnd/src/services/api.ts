@@ -183,9 +183,15 @@ export const getDonutsData = async (request: DataRequest) : Promise<DonutsDataRe
   }
 }
 
-export const getExportHydroData = async (program: string): Promise<Blob | null> => {
+export const getExportGeopackage = async (request: {
+  program: string,
+  scenarios: number[],
+  variables: string[],
+  decades: number[],
+  percentile: "p5" | "p50" | "p90"
+}): Promise<Blob | null> => {
   try {
-    const response = await api.get(`/hydro/export/${program}`, {
+    const response = await api.post(`/exportgpkg`, request, {
       responseType: 'blob',
     });
     return response.data;

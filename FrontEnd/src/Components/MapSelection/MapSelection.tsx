@@ -109,7 +109,11 @@ const MapSelection: React.FC<MapSelectionProps> = ({
             if (!blob) return;
 
             const text = await blob.text(); // Convertir Blob en texte
-            requestIdleCallback(() => {
+            const idleCallback = window.requestIdleCallback || function (cb: Function) {
+              return setTimeout(() => cb(), 1);
+            };
+        
+            idleCallback(() => {
               const styles = parseSLDToStyles(text);
               callback(styles);
             });
@@ -267,16 +271,17 @@ const MapSelection: React.FC<MapSelectionProps> = ({
 
   const CreateCustomPanes = () => {
     const map = useMap();
-
+  
     useEffect(() => {
       if (map) {
-        // Création du pane pour PK
-        map.createPane("pkPane");
-        map.getPane("pkPane")!.style.zIndex = "600"; // Définit l'ordre d'affichage
-        map.getPane("pkPane")!.style.pointerEvents = "none"; // Permet d'accéder aux éléments en dessous
+        if (!map.getPane("pkPane")) {
+          map.createPane("pkPane");
+          map.getPane("pkPane")!.style.zIndex = "600"; // Set the z-index for display order
+          map.getPane("pkPane")!.style.pointerEvents = "none"; // Allow interactions with elements beneath
+        }
       }
     }, [map]);
-
+  
     return null;
   };
 
