@@ -166,7 +166,11 @@ const VisualisationPage: React.FC = () => {
             if (!blob) return;
 
             const text = await blob.text(); // Convertir Blob en texte
-            requestIdleCallback(() => {
+            const idleCallback = window.requestIdleCallback || function (cb: Function) {
+              return setTimeout(() => cb(), 1);
+            };
+        
+            idleCallback(() => {
               const styles = parseSLDToStyles(text);
               callback(styles);
             });
