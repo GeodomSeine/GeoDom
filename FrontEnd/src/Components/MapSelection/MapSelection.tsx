@@ -255,9 +255,6 @@ const MapSelection: React.FC<MapSelectionProps> = ({
         if (pkByStrahlerRef.current) {
           pkByStrahlerRef.current.bringToFront();
         }
-      },
-      click: () => {
-        resetSelection();
       }
     });
     return null;
@@ -267,17 +264,6 @@ const MapSelection: React.FC<MapSelectionProps> = ({
     adaptDataToZoom(currentZoom);
   }, [hydroData]);
 
-  useEffect(() => {
-    if (selectedPkRef.current) {
-      selectedPkRef.current.bringToFront();
-    }
-  }, [selectedPk]);
-
-  useEffect(() => {
-    if (pkByStrahlerRef.current) {
-      pkByStrahlerRef.current.bringToFront();
-    }
-  }, [pkByStrahler]);
 
   const CreateCustomPanes = () => {
     const map = useMap();
@@ -287,6 +273,7 @@ const MapSelection: React.FC<MapSelectionProps> = ({
         // Création du pane pour PK
         map.createPane("pkPane");
         map.getPane("pkPane")!.style.zIndex = "600"; // Définit l'ordre d'affichage
+        map.getPane("pkPane")!.style.pointerEvents = "none"; // Permet d'accéder aux éléments en dessous
       }
     }, [map]);
 
