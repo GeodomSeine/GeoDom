@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, {useState } from "react";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -38,8 +38,8 @@ interface ProfileGraphProps {
   scenarioColors: Record<number, string>;
   scenarios: Scenario[];
   decades: [number, number];
+  profilLongs: React.RefObject<any>;
 }
-
 const ProfileGraph: React.FC<ProfileGraphProps> = ({
   variable,
   data,
@@ -49,8 +49,8 @@ const ProfileGraph: React.FC<ProfileGraphProps> = ({
   scenarioColors,
   scenarios,
   decades,
+  profilLongs
 }) => {
-  const chartRef = useRef<any>(null);
   const [showObservations, setShowObservations] = useState(true);
 
   // Prepare x-axis labels
@@ -181,7 +181,7 @@ const ProfileGraph: React.FC<ProfileGraphProps> = ({
 
   return (
     <div className={className}>
-      <Line ref={chartRef} data={chartData} options={options} />
+      <Line ref={profilLongs} data={chartData} options={options} />
     </div>
   );
 };

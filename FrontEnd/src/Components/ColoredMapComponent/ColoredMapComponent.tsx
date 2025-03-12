@@ -6,6 +6,7 @@ import MapBaseComponent from './MapBaseComponent';
 import { LatLngBounds, PathOptions } from 'leaflet';
 
 type Props = {
+    mapRef: any;
     data: ColoredMapResponseData | null;
     variable: ProgramVariable;
     className?: string;
@@ -18,12 +19,13 @@ type Props = {
     percentile: "p5" | "p50" | "p90";
 };
 
-const ColoredMapComponent: React.FC<Props> = ({ data, variable, className, pkData, pkStyles, bassinData, bassinStyle, bounds, getPkStyles, percentile }) => {
+const ColoredMapComponent: React.FC<Props> = ({mapRef, data, variable, className, pkData, pkStyles, bassinData, bassinStyle, bounds, getPkStyles, percentile }) => {
   return (
     <div className={className+" body"}>
       
       {data && 
-        <MapBaseComponent 
+        <MapBaseComponent
+          mapRef={mapRef} 
           variable={variable} 
           data={data} 
           pkData={pkData} 

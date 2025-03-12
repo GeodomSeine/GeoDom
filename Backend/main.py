@@ -45,7 +45,7 @@ app.include_router(pk_geom.router)
 app.include_router(fulldata.router)
 app.include_router(data_donuts.router)
 app.include_router(profile_en_long.router)
-app.include_router(admin.router, prefix="") 
+app.include_router(admin.router, prefix="")
 app.include_router(auth_router, prefix="/auth")
 
 # Front
@@ -59,7 +59,9 @@ class SPAStaticFiles(StaticFiles):
             else:
                 raise ex
 
-app.mount("/", SPAStaticFiles(directory="./static", html=True), name="spa-static-files")
+
+app.mount("/", SPAStaticFiles(directory="./static",
+                              html=True), name="spa-static-files")
 
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -37,6 +37,7 @@ interface VariableChartProps {
   donutsData: DecadeScenarioValue;
   scenarioColors: Record<number, string>;
   scenarios: Scenario[];
+  chartRef: React.RefObject<any>;
 }
 
 const VariableChart: React.FC<VariableChartProps> = ({
@@ -47,8 +48,8 @@ const VariableChart: React.FC<VariableChartProps> = ({
   donutsData,
   scenarioColors,
   scenarios,
+  chartRef
 }) => {
-  const chartRef = useRef<any>(null);
   const [showObservations, setShowObservations] = useState(true);
 
   // Build donuts (observation) datasets with detailed labels (including the scenario year)

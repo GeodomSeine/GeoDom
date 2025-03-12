@@ -1,19 +1,138 @@
-import React from 'react';
-import html2canvas from 'html2canvas';
-import L from 'leaflet';
+import React, { useEffect, useState } from 'react';
+import { PDFDownloadLink, Document, Page, Text, View, Image, StyleSheet } from '@react-pdf/renderer';
 import "leaflet-simple-map-screenshoter";
-import jsPDF from 'jspdf';
 import ButtonComponent from '../SimpleComponents/ButtonComponent';
 
-const getMapDimensionsFromBounds = (map: L.Map) => {
-    const bounds = map.getBounds();
-    const southWest = map.latLngToContainerPoint(bounds.getSouthWest());
-    const northEast = map.latLngToContainerPoint(bounds.getNorthEast());
+const captureMap = async (mapRef: any) => {
+    const overlayPane = mapRef.current.getPane("overlayPane"); // Pane où Leaflet met le canvas
+    const canvas = overlayPane?.querySelector("canvas");
+    const capturePromise = new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => {
+            reject(new Error('Capture timed out'));
+        }, 10000);
+        canvas.toBlob((blob: any) => {
+            clearTimeout(timeout);
+            resolve(URL.createObjectURL(blob));
+        }, 'image/png');
+    });
+    return capturePromise;
+};
 
-    const mapWidth = Math.abs(northEast.x - southWest.x);
-    const mapHeight = Math.abs(southWest.y - northEast.y); // Y inversé
+const captureChart = async (chartRef: any) => {
+    const chartCanvas = await chartRef.current.canvas;
+    const capturePromise = new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => {
+            reject(new Error('Capture timed out'));
+        }, 10000);
+        chartCanvas.toBlob((blob: any) => {
+            clearTimeout(timeout);
+            resolve(URL.createObjectURL(blob));
+        }, 'image/png');
+    });
+    return capturePromise;
+};
 
-    return { mapWidth, mapHeight };
+const captureProfilLong = async (profilLong: any) => {
+    const chartCanvas = await profilLong.current.canvas;
+    const capturePromise = new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => {
+            reject(new Error('Capture timed out'));
+        }, 10000);
+        chartCanvas.toBlob((blob: any) => {
+            clearTimeout(timeout);
+            resolve(URL.createObjectURL(blob));
+        }, 'image/png');
+    });
+    return capturePromise;
+};
+
+const styles = StyleSheet.create({
+    page: { padding: 20, flexDirection: 'column' },
+    title: { fontSize: 18, marginBottom: 10, textAlign: 'center' },
+    subtitle: { fontSize: 14, marginBottom: 5, fontWeight: 'bold' },
+    text: { fontSize: 12, marginBottom: 2 },
+    section: { marginBottom: 10, borderBottom: '1 solid #ccc', paddingBottom: 5 },
+    image: { width: '100%', height: 'auto', marginTop: 10 },
+    imageContainer: { marginTop: 20, alignItems: 'center' },
+});
+
+const ExportPdfDocument = ({ selectionMapElements, selectionMapImageUrl, chartImageUrls, mapImageUrls, profilLongImageUrls }: any) => {
+
+    return (
+        <Document>
+            {/* Page 1 - Informations générales */}
+            <Page size="A4" style={styles.page}>
+                <View style={styles.section}>
+                    <Text style={styles.title}>Capsule : {selectionMapElements.program_name}</Text>
+                    <Text style={styles.text}>Date: {new Date().toLocaleString()}</Text>
+                </View>
+
+                <View style={styles.section}>
+                    <Text style={styles.subtitle}>Variables sélectionnées :</Text>
+                    {selectionMapElements.selectedVariables.map((variable: any, index: any) => (
+                        <Text key={index} style={styles.text}>
+                            - {variable.var_code} : {variable.var_name}
+                        </Text>
+                    ))}
+                </View>
+
+                <View style={styles.section}>
+                    <Text style={styles.subtitle}>Scénarios sélectionnés :</Text>
+                    {selectionMapElements.selectedScenarios.map((scenario: any, index: any) => (
+                        <Text key={index} style={styles.text}>
+                            - {scenario.year} : {scenario.description}
+                        </Text>
+                    ))}
+                </View>
+
+                {selectionMapImageUrl && (
+                    <View style={styles.imageContainer}>
+                        <Text style={styles.subtitle}>Carte de sélection :</Text>
+                        <Image src={selectionMapImageUrl} style={styles.image} />
+                    </View>
+                )}
+            </Page>
+
+            {/* Page 2 - Evolution temporelle */}
+            {chartImageUrls?.length > 0 && (
+                <Page size="A4" style={styles.page}>
+                    <Text style={styles.title}>Évolution temporelle</Text>
+                    {chartImageUrls.map((url: any, index: any) => (
+                        <View key={index} style={styles.imageContainer}>
+                            <Text style={styles.subtitle}>Graphique {index + 1} :</Text>
+                            <Image src={url} style={styles.image} />
+                        </View>
+                    ))}
+                </Page>
+            )}
+
+            {/* Page 3 - Carte des seuils */}
+            {mapImageUrls?.length > 0 && (
+                <Page size="A4" style={styles.page}>
+                    <Text style={styles.title}>Carte des seuils</Text>
+                    {mapImageUrls.map((url: any, index: any) => (
+                        <View key={index} style={styles.imageContainer}>
+                            <Text style={styles.subtitle}>Carte {index + 1} :</Text>
+                            <Image src={url} style={styles.image} />
+                        </View>
+                    ))}
+                </Page>
+            )}
+
+            {/* Page 4 - Evolution spatiale */}
+            {profilLongImageUrls?.length > 0 && (
+                <Page size="A4" style={styles.page}>
+                    <Text style={styles.title}>Évolution spatiale</Text>
+                    {profilLongImageUrls.map((url: any, index: any) => (
+                        <View key={index} style={styles.imageContainer}>
+                            <Text style={styles.subtitle}>Profil Long {index + 1} :</Text>
+                            <Image src={url} style={styles.image} />
+                        </View>
+                    ))}
+                </Page>
+            )}
+        </Document>
+    );
 };
 
 interface ExportPdfComponentProps {
@@ -22,96 +141,112 @@ interface ExportPdfComponentProps {
 
 const ExportPdfComponent: React.FC<ExportPdfComponentProps> = ({ exportPdfInfo }) => {
 
-    const handleExportPDF = async () => {
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const elements = [];
 
-        const { selectionMapElements } = exportPdfInfo;
-        const { selectedVariables } = selectionMapElements; // liste des variables sélectionnées
-        const { selectedScenarios } = selectionMapElements; // liste des scénarios sélectionnés
+    const { selectionMapElements, chartElements, mapElements, profilLongElements } = exportPdfInfo;
+    const [selectionMapImageUrl, setSelectionMapImageUrl] = useState<string | null>(null);
+    const [chartImageUrls, setChartImageUrls] = useState<string[]>([]);
+    const [mapImageUrls, setMapImageUrls] = useState<string[]>([]);
+    const [profilLongImageUrls, setProfilLongImageUrls] = useState<string[]>([]);
 
-        // Ajouter le titre
-        pdf.setFontSize(18);
-        pdf.text(`Capsule : ${selectionMapElements.program_name}`, 10, 20);
-
-        // Ajouter la date et l'heure actuelles
-        const currentDate = new Date();
-        const formattedDate = currentDate.toLocaleString();
-        pdf.setFontSize(12);
-        pdf.text(`Date: ${formattedDate}`, 10, 30);
-
-        // Ajouter les variables sélectionnées
-        pdf.setFontSize(14);
-        pdf.text("Variables sélectionnées:", 10, 40);
-        pdf.setFontSize(12);
-        selectedVariables.forEach((variable: any, index: number) => {
-            pdf.text(`-  ${variable.var_code} : ${variable.var_name}`, 10, 50 + index * 7);
-        });
-
-        // Ajouter les scénarios sélectionnés
-        const scenarioStartY = 50 + selectionMapElements.selectedVariables.length * 7 + 10;
-        pdf.setFontSize(14);
-        pdf.text("Scénarios sélectionnés:", 10, scenarioStartY);
-        pdf.setFontSize(12);
-        selectedScenarios.forEach((scenario: any, index: number) => {
-            pdf.text(`- ${scenario.year} : ${scenario.description}`, 10, scenarioStartY + 10 + index * 7);
-        });
-
-        // Capturer la carte de sélection Leaflet
-        if (selectionMapElements.mapRef.current) {
-            const plugin = (L as any).simpleMapScreenshoter({
-                cropImageByInnerWH: true,
-                hidden: false, // Icon screenshot visible
-                preventDownload: true,
-                mimeType: "image/png",
-                hideElementsWithSelectors: [".leaflet-control-container"],
-            }).addTo(selectionMapElements.mapRef.current);
-
-            try {
-                const blob = await plugin.takeScreen("blob", { mimeType: "image/png" });
-                const imgUrl = URL.createObjectURL(blob); // Crée une URL temporaire
-                // Utiliser les bounds pour calculer le ratio
-                const { mapWidth, mapHeight } = getMapDimensionsFromBounds(selectionMapElements.mapRef.current);
-                const aspectRatio = mapWidth / mapHeight;
-
-                // Définir les dimensions de l'image en conservant les proportions (certain cas encore buggé..)
-                const imgMaxWidth = 180;
-                const imgWidth = imgMaxWidth;
-                const imgHeight = imgMaxWidth / aspectRatio;
-                // Calculer la position pour l'image
-                const imgY = scenarioStartY + 10 + selectionMapElements.selectedScenarios.length * 7 + 20;
-                pdf.addImage(imgUrl, "PNG", 10, imgY, imgWidth, imgHeight);
-
-                URL.revokeObjectURL(imgUrl);
-
-            } catch (e) {
-                console.error("Erreur de capture:", e);
+    useEffect(() => {
+        const captureSelectionMapImage = async () => {
+            if (selectionMapImageUrl) {
+                URL.revokeObjectURL(selectionMapImageUrl);
+                setSelectionMapImageUrl(null);
             }
-        }
+            if (selectionMapElements.mapRef.current) {
+                const mapUrl = await captureMap(selectionMapElements.mapRef);
+                setSelectionMapImageUrl(mapUrl as string);
+            }
+        };
 
-        // Capturer le graphique Chart.js
-        const chartRef = exportPdfInfo.chartElements.testRef;
-        if (chartRef.current) {
-            const chartCanvas = await html2canvas(chartRef.current);
-            elements.push({ img: chartCanvas.toDataURL('image/png'), title: 'Graphique' });
-            chartCanvas.remove(); // Free memory by removing the canvas element
-        }
+        captureSelectionMapImage();
+    }, [selectionMapElements]);
 
-        // Ajouter les éléments au PDF
-        elements.forEach((element, index) => {
-            if (index > 0) pdf.addPage();
-            pdf.text(element.title, 10, 10);
-            pdf.addImage(element.img, 'PNG', 10, 20, 180, 160);
-        });
+    useEffect(() => {
+        const captureChartImages = async () => {
 
-        // Télécharger le PDF
-        pdf.save("export.pdf");
+            if (chartImageUrls.length > 0) {
+                chartImageUrls.forEach((url) => {
+                    URL.revokeObjectURL(url);
+                });;
+                setChartImageUrls([]);
+            }
 
+            const chartUrls = await Promise.all(
+                chartElements.chartRefs.current.map(async (chartRef: any) => {
+                    if (chartRef.current) {
+                        return await captureChart(chartRef);
+                    }
+                    return null;
+                })
+            );
+            setChartImageUrls(chartUrls.filter((url) => url !== null) as string[]);
+        };
 
-    };
+        captureChartImages();
+    }, [chartElements]);
+
+    useEffect(() => {
+        const captureMapImages = async () => {
+            if (mapImageUrls.length > 0) {
+                mapImageUrls.forEach((url) => {
+                    URL.revokeObjectURL(url);
+                });
+                setMapImageUrls([]);
+            }
+            const mapUrls = await Promise.all(
+                mapElements.mapRefs.current.map(async (mapRef: any) => {
+                    if (mapRef.current) {
+                        return await captureMap(mapRef);
+                    }
+                    return null;
+                })
+            );
+            setMapImageUrls(mapUrls.filter((url) => url !== null) as string[]);
+        };
+
+        captureMapImages();
+    }, [mapElements]);
+
+    useEffect(() => {
+        const captureProfilLongImages = async () => {
+            if (profilLongImageUrls.length > 0) {
+                profilLongImageUrls.forEach((url) => {
+                    URL.revokeObjectURL(url);
+                });
+                setProfilLongImageUrls([]);
+            }
+            const profilLongUrls = await Promise.all(
+                profilLongElements.profilLongRefs.current.map(async (profilLong: any) => {
+                    if (profilLong.current) {
+                        return await captureProfilLong(profilLong);
+                    }
+                    return null;
+                })
+            );
+            setProfilLongImageUrls(profilLongUrls.filter((url) => url !== null) as string[]);
+        };
+
+        captureProfilLongImages();
+    }, [profilLongElements]);
 
     return (
-        <ButtonComponent onClick={handleExportPDF} txt='PDF' />
+        <div className="export_container">
+            <PDFDownloadLink
+                document={<ExportPdfDocument
+                    selectionMapElements={selectionMapElements}
+                    selectionMapImageUrl={selectionMapImageUrl}
+                    chartImageUrls={chartImageUrls}
+                    mapImageUrls={mapImageUrls}
+                    profilLongImageUrls={profilLongImageUrls}
+                />}
+                fileName={`export_${exportPdfInfo.selectionMapElements.program_name}.pdf`}
+            >
+                <ButtonComponent onClick={() => { }} txt={'PDF'} disabled={false} />
+            </PDFDownloadLink>
+
+        </div>
     );
 };
 

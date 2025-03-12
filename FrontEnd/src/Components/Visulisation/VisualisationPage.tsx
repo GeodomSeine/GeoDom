@@ -18,7 +18,7 @@ import VariableChart from "../SimpleComponents/VariableChart";
 import MapSelection from "../MapSelection/MapSelection";
 import ColoredMapComponent from "../ColoredMapComponent/ColoredMapComponent";
 import DecadeRangeComponent from "../SimpleComponents/DecadeRangeComponent";
-import { LatLngBounds, PathOptions } from "leaflet";
+import L, { LatLngBounds, PathOptions } from "leaflet";
 import { calculateBounds } from "../../utils/mapUtils";
 import { parseSLDToStyles } from "../../mapstyles/mapStyles";
 import SliderComponent from "../SimpleComponents/SliderComponent";
@@ -30,6 +30,7 @@ import PercentileSelector from "../SimpleComponents/PercentileSelector";
 import { scenarioColorPalette } from "../../utils/scenarioColorPalette";
 import ExportCsvComponent from "../ExportComponent/ExportCsvComponent";
 import ExportGeoPackageComponent from "../ExportComponent/ExportGeoPackageComponent";
+import "leaflet-simple-map-screenshoter";
 
 const scenarioColors: Record<number, string> = {}
 
@@ -111,7 +112,9 @@ const VisualisationPage: React.FC = () => {
 
   useEffect(() => {
     if (program && program.variables && program.variables.length > 0) {
-      setSelectedVariables([program.variables[0]]);
+      setTimeout(() => {
+        setSelectedVariables([program.variables[0]]);
+      }, 1000);
     }
   }, [program]);
 
@@ -144,29 +147,42 @@ const VisualisationPage: React.FC = () => {
       if (!program) return;
 
       try {
-        const [bassinData, bassinSLDData, pkSLDData] = await Promise.all([
-          getBassin(program.name),
-          getBassinSLD(program.name),
-          getPkSld(program.name),
-        ]);
+        // Lancer les appels API en parallèle
+        const bassinPromise = getBassin(program.name);
+        const bassinSLDPromise = getBassinSLD(program.name);
+        const pkSLDPromise = getPkSld(program.name);
 
+        // Charger d'abord les données structurées (plus rapides à parser)
+        const bassinData = await bassinPromise;
         if (bassinData) {
           setBassinData(bassinData);
           setBounds(calculateBounds(bassinData));
         }
 
-        if (pkSLDData) {
-          const pkSLDText = await pkSLDData.text();
-          setPkStyles(parseSLDToStyles(pkSLDText));
-        }
+        // Fonction pour parser un SLD en évitant le blocage
+        const parseSLD = async (sldPromise: Promise<Blob | null>, callback: (styles: any) => void) => {
+          try {
+            const blob = await sldPromise;
+            if (!blob) return;
 
-        if (bassinSLDData) {
-          const bassinSLDText = await bassinSLDData.text();
-          const styles = parseSLDToStyles(bassinSLDText);
+            const text = await blob.text(); // Convertir Blob en texte
+            requestIdleCallback(() => {
+              const styles = parseSLDToStyles(text);
+              callback(styles);
+            });
+          } catch (error) {
+            console.error("Erreur lors du parsing SLD :", error);
+          }
+        };
+
+        // Lancer le parsing SLD de manière optimisée
+        parseSLD(pkSLDPromise, setPkStyles);
+        parseSLD(bassinSLDPromise, (styles) => {
           setBassinStyle({ color: styles[0]?.color || "var(--basic-black)", weight: styles[0]?.weight || 3 });
-        }
+        });
 
-        await streamPkData(program.name, setPkData);
+        // Démarrer le streaming des PK sans attendre les SLD
+        streamPkData(program.name, setPkData);
       } catch (error) {
         console.error("Erreur lors du chargement des données :", error);
       }
@@ -174,6 +190,7 @@ const VisualisationPage: React.FC = () => {
 
     fetchInitialData();
   }, [program]);
+
 
   const request: DataRequest | null = useMemo(() => {
     if (!program || !amontAvalResponse || mode !== "amont-aval") return null;
@@ -195,7 +212,7 @@ const VisualisationPage: React.FC = () => {
   }, [program, selectedScenarios, selectedVariables, mode]);
 
   const requestColoredMap: ColorMapRequest | null = useMemo(() => {
-    if (!program || !program.name || selectedScenarios.length==0|| selectedVariables.length==0 || selectedDecades.length==0) return null;
+    if (!program || !program.name || selectedScenarios.length == 0 || selectedVariables.length == 0 || selectedDecades.length == 0) return null;
     return {
       program: program.name,
       scenarios: selectedScenarios.map((scenario) => scenario.id),
@@ -309,7 +326,7 @@ const VisualisationPage: React.FC = () => {
 
     if (mode === "amont-aval") {
       fetchPk();
-    }else {
+    } else {
       fetchPkByStrahler();
     }
   }, [selectedKey]);
@@ -388,12 +405,12 @@ const VisualisationPage: React.FC = () => {
 
   // sharedDecadeSlider
   const sharedDecade = (
-      <DecadeRangeComponent
-        value={selectedDecades}
-        onChange={handleDecadeChange}
-        min={1}
-        max={36}
-      />
+    <DecadeRangeComponent
+      value={selectedDecades}
+      onChange={handleDecadeChange}
+      min={1}
+      max={36}
+    />
   )
 
   const decades = chartData?.length ? chartData.map((entry) => entry.decade) : [];
@@ -415,14 +432,47 @@ const VisualisationPage: React.FC = () => {
     }
   });
 
-  const selectionMapRef = useRef<null>(null);
-  const testRef = useRef<null>(null);
+  const selectionMapRef = useRef<any>(null);
+  const chartRefs = useRef<Array<React.RefObject<HTMLDivElement>>>(Array(4).fill(null).map(() => React.createRef()));
+  const mapRefs = useRef<Array<React.RefObject<any>>>(Array(4).fill(null).map(() => React.createRef()));
+  const profilLongRefs = useRef<Array<React.RefObject<HTMLDivElement>>>(Array(4).fill(null).map(() => React.createRef()));
+
   const exportPdfInfo = {
     selectionMapElements: { mapRef: selectionMapRef, program_name: program_name, selectedVariables: selectedVariables, selectedScenarios: selectedScenarios },
-    mapElements: [],
-    chartElements: { testRef: testRef },
+    mapElements: { mapRefs: mapRefs },
+    chartElements: { chartRefs: chartRefs },
+    profilLongElements: { profilLongRefs: profilLongRefs }
   };
 
+  const getPlugin = (mapRef: any, screenName: string) => {
+    return (L as any).simpleMapScreenshoter({
+      cropImageByInnerWH: true,
+      hidden: false,
+      preventDownload: false,
+      mimeType: "image/png",
+      position: 'bottomright', // position of take screen icon
+      screenName: screenName, // string or function
+      hideElementsWithSelectors: [".leaflet-control-container"],
+    }).addTo(mapRef.current);
+  };
+
+  useEffect(() => {
+
+    mapRefs.current.forEach((mapRef: any) => {
+      if (mapRef.current && !mapRef.current.plugin) {
+        mapRef.current.plugin = getPlugin(mapRef, "map");
+      }
+    });
+
+  }, [mapRefs.current[0].current, mapRefs.current[1].current, mapRefs.current[2].current, mapRefs.current[3].current]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (selectionMapRef.current && !selectionMapRef.current.plugin) {
+        selectionMapRef.current.plugin = getPlugin(selectionMapRef, "selectionMap");
+      }
+    }, 1000);
+  }, [selectionMapRef.current]);
 
   if (!program) {
     return null;
@@ -453,15 +503,18 @@ const VisualisationPage: React.FC = () => {
   return (
     <div className='home_component_visualisation'>
       <FloatingAction>
-        <ExportJsonComponent exportConf={exportConf}/>
-        <ExportPdfComponent exportPdfInfo={exportPdfInfo}/>
-        {data && <ExportCsvComponent exportCsvData={exportData}/>}
+        <ExportJsonComponent exportConf={exportConf} />
+        <ExportPdfComponent exportPdfInfo={exportPdfInfo} />
+        {data && <ExportCsvComponent exportCsvData={exportData} />}
         <ExportGeoPackageComponent program={program!.name} />
       </FloatingAction>
       <div className='home_body'>
         <ToggleContainer className="space_container_1" title="Carte de sélection" secondChild={sharedSlider}>
           <MapSelection
             mapRef={selectionMapRef}
+            bassinData={bassinData}
+            bassinStyle={bassinStyle}
+            bounds={bounds}
             scenarioColors={scenarioColors}
             program={program!.name}
             exutoire_id={program!.exutoire_id}
@@ -470,7 +523,7 @@ const VisualisationPage: React.FC = () => {
             setIdHydStart={setIdHydStart}
             setIdHydEnd={setIdHydEnd}
             amontAvalResponse={amontAvalResponse}
-            selectedPk={mode === "amont-aval" ? selectedPk: undefined}
+            selectedPk={mode === "amont-aval" ? selectedPk : undefined}
             mode={mode}
             resetSelection={resetSelection}
             variables={program!.variables}
@@ -480,7 +533,7 @@ const VisualisationPage: React.FC = () => {
             setSelectedScenarios={setSelectedScenarios}
             scenarios={scenarios}
             setMode={setMode}
-            pkByStrahler={mode === "complet" ? pkByStrahler: undefined}
+            pkByStrahler={mode === "complet" ? pkByStrahler : undefined}
           />
         </ToggleContainer>
         {chartData?.length && (
@@ -497,9 +550,9 @@ const VisualisationPage: React.FC = () => {
                 variable={program!.variables.find((v) => v.var_code.toLowerCase() === variable.toLowerCase()) || { var_code: variable, var_name: variable, unit_short: "" }}
                 decades={decades}
                 data={chartData}
+                chartRef={chartRefs.current[index]}
               />
             ))}
-
           </ToggleContainer>
 
         )}
@@ -517,6 +570,7 @@ const VisualisationPage: React.FC = () => {
             {Object.entries(coloredMapData.legend).map(([variable, __], index) => (
               <ColoredMapComponent
                 key={variable}
+                mapRef={mapRefs.current[index]}
                 data={coloredMapData}
                 variable={program!.variables.find((v) => v.var_code.toLowerCase() === variable.toLowerCase()) || { var_code: variable, var_name: variable, unit_short: "" }}
                 className={`variable_element element_${index}`}
@@ -544,6 +598,7 @@ const VisualisationPage: React.FC = () => {
                 scenarioColors={scenarioColors}
                 scenarios={selectedScenarios}
                 decades={selectedDecades && selectedDecades.length == 2 ? [selectedDecades[0], selectedDecades[1]] : [1, 10]}
+                profilLongs={profilLongRefs.current[index]}
               />
             ))}
           </ToggleContainer>

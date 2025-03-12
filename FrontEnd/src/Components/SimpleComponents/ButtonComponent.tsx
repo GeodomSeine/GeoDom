@@ -2,6 +2,7 @@ import React, { FC } from "react";
 import "./ButtonComponent.scss";
 
 interface ButtonComponentProps {
+	disabled?: boolean;
 	// link or not, txt of the button
 	link?: string;
 	txt?: string;
@@ -15,6 +16,7 @@ interface ButtonComponentProps {
 }		
 
 const ButtonComponent: FC<ButtonComponentProps> = ({
+	disabled = false,
 	link = null,
 	txt = "clicky",
 	className= "button_container",
@@ -22,9 +24,10 @@ const ButtonComponent: FC<ButtonComponentProps> = ({
 	onClick,
 	children,
 }) => {
+	//need to put into a seperate scss file
 	
 	const containerStyle: React.CSSProperties = {
-        cursor: "pointer",
+		cursor: "pointer",
 	};
 
 
@@ -38,14 +41,14 @@ const ButtonComponent: FC<ButtonComponentProps> = ({
 				target="_blank"
 				rel="noopener noreferrer"
 				style={containerStyle}
-				onClick={onClick}
+				onClick={disabled ? undefined : onClick}
 			>
                 {children ? children : <p>{txt}</p>}
 			</a>
 		);
 	} else {
 		return (
-			<div className={appliedClassName}  style={containerStyle} onClick={onClick}>
+			<div className={appliedClassName}  style={containerStyle} onClick={disabled ? undefined : onClick}>
 				{children ? children : <p>{txt}</p>}
 			</div>
 		);
