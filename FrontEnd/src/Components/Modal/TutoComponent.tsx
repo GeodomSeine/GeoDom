@@ -131,20 +131,20 @@ const TutoComponent: React.FC<TutoComponentProps> = ({ isOpen, onClose }) => {
         {/* Back or continue button */}
         <div className="modal_action_footer">
           <ButtonComponent
-            txt={
+            children={
               <>
-                <p>{currentStep === 0 ? "Quitter" : "Retour"}</p>
-                <LogoComponent Icon={currentStep === 0 ? Cross : Back} customColor="--primary-blue" size="30px" />
+                {currentStep === 0 ? "Quitter" : "Retour"}
+                <LogoComponent cursor='default' Icon={currentStep === 0 ? Cross : Back} customColor="--primary-blue" size="30px" />
               </>
             }
             onClick={currentStep === 0 ? onClose : prevStep}  
           />
           {!steps[currentStep]?.noContinueButton && (
             <ButtonComponent
-              txt={
+            children={
                 <>
-                  <p>Continuer</p>
-                  <LogoComponent Icon={RightArrow} customColor="--primary-blue" size="30px" />
+                  Continuer
+                  <LogoComponent cursor='default' Icon={RightArrow} customColor="--primary-blue" size="30px" />
                 </>
               }
               onClick={nextStep}

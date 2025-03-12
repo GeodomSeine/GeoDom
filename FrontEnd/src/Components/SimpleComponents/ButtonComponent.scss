@@ -9,9 +9,19 @@
     color: $basic-white;
     background-color: $primary-blue;
 	padding:5px;
+    width: fit-content;
     border-radius:5px;
     border: 1px solid $primary-blue;
     @include transition;
+    p{
+        @include textTruncate;
+        // removing leaflet style
+        margin: 0 !important;
+    }
+    div{
+        @include gap;
+        align-items: center;
+    }
 }
 .button_container:hover{
     background-color: transparent;

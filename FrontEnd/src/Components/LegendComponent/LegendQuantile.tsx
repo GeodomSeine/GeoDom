@@ -12,7 +12,7 @@ const LegendQuantile = ({ variable, legendData } : Props) => {
 
   return (
     <div className="legend_container">
-      <h4 className="legend_header">{`${variable.var_code.toUpperCase()} (${variable.unit_short})`}</h4>
+      <h4 className="legend_header">{`${variable.var_code.toUpperCase()} (${variable.unit_short})` + " Quantile"}</h4>
       <div className="legend_body">
         {legendData.colors.map((entry, index) => (
           <div key={index} className="legend_item">

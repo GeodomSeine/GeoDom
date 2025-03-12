@@ -4,13 +4,15 @@ import "./ButtonComponent.scss";
 interface ButtonComponentProps {
 	// link or not, txt of the button
 	link?: string;
-	txt?: string | React.ReactNode;
+	txt?: string;
 	className?:string;
 	// action to do when the button is clicked
 	onClick?: () => void;
 	// style when the button is on a darker area
 	onDark?: boolean |null;
-}
+	// in case you want a children like logo or other inside the button
+	children?: React.ReactNode;
+}		
 
 const ButtonComponent: FC<ButtonComponentProps> = ({
 	link = null,
@@ -18,7 +20,7 @@ const ButtonComponent: FC<ButtonComponentProps> = ({
 	className= "button_container",
 	onDark = false,
 	onClick,
-
+	children,
 }) => {
 	
 	const containerStyle: React.CSSProperties = {
@@ -38,13 +40,13 @@ const ButtonComponent: FC<ButtonComponentProps> = ({
 				style={containerStyle}
 				onClick={onClick}
 			>
-                {txt}
+                {children ? children : <p>{txt}</p>}
 			</a>
 		);
 	} else {
 		return (
 			<div className={appliedClassName}  style={containerStyle} onClick={onClick}>
-				{txt}
+				{children ? children : <p>{txt}</p>}
 			</div>
 		);
 	}

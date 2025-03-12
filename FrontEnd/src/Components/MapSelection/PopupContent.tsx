@@ -18,14 +18,14 @@ const PopupContent: React.FC<PopupContentProps> = memo(
       <>
         {/* Render properties dynamically */}
         {Object.entries(properties).map(([key, value]) => (
-          <div  key={key}>
-            <b>{key}</b>: {value}
+          <div className="pop_up_infos" key={key}>
+            <b>{key}</b><p>: {value}</p>
           </div>
         ))}
 
         {/* Buttons for "amont-aval" mode */}
         {layer === "Hydro" && mode === "amont-aval" && (
-          <div className="control_container">
+          <div className="popup_control_container">
             <ButtonComponent onDark={true} txt="Sélectionner Amont" onClick={onSelectAmont} />
             <ButtonComponent onDark={true} txt="Sélectionner Aval" onClick={onSelectAval} />
           </div>
