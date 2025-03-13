@@ -80,8 +80,6 @@ const MapSelection: React.FC<MapSelectionProps> = ({
 
   const [currentZoom, setCurrentZoom] = useState(6);
   const [simplifiedHydroData, setSimplifiedHydroData] = useState<GeoJsonResponse | null>(hydroData);
-  const selectedPkRef = useRef<any>(selectedPk);
-  const pkByStrahlerRef = useRef<any>(pkByStrahler);
 
   useEffect(() => {
     idHydStartRef.current = idHydStart;
@@ -253,12 +251,6 @@ const MapSelection: React.FC<MapSelectionProps> = ({
         const newZoom = event.target.getZoom();
         adaptDataToZoom(newZoom);
         setCurrentZoom(newZoom);
-        if (selectedPkRef.current) {
-          selectedPkRef.current.bringToFront();
-        }
-        if (pkByStrahlerRef.current) {
-          pkByStrahlerRef.current.bringToFront();
-        }
       }
     });
     return null;
@@ -357,7 +349,6 @@ const MapSelection: React.FC<MapSelectionProps> = ({
           {selectedPk && (
             <Overlay {...(layerVisibility.pk ? { checked: true } : { checked: false })} name="PK">
               <GeoJSON
-                ref={selectedPkRef}
                 key={JSON.stringify(selectedPk)}
                 data={selectedPk as GeoJsonObject}
                 style={{ color: getColor("--success-color"), weight: 6 }}
@@ -370,7 +361,6 @@ const MapSelection: React.FC<MapSelectionProps> = ({
             <Overlay {...(layerVisibility.pk ? { checked: true } : { checked: false })} name="Pk par strahler">
               <GeoJSON
                 key={JSON.stringify(pkByStrahler)}
-                ref={pkByStrahlerRef}
                 data={pkByStrahler as GeoJsonObject}
                 style={{ color: getColor("--success-color"), weight: 2 }}
                 interactive={false}
