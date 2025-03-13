@@ -217,6 +217,7 @@ const ExportPdfComponent: React.FC<ExportPdfComponentProps> = ({ exportPdfInfo }
     const [mapImageUrls, setMapImageUrls] = useState<string[]>([]);
     const [mapLegendImageUrls, setMapLegendImageUrls] = useState<string[]>([]);
     const [profilLongImageUrls, setProfilLongImageUrls] = useState<string[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     useEffect(() => {
         const captureSelectionMapImage = async () => {
@@ -281,6 +282,7 @@ const ExportPdfComponent: React.FC<ExportPdfComponentProps> = ({ exportPdfInfo }
 
     useEffect(() => {
         const captureLegendMapImages = async () => {
+            setIsLoading(true);
             if (mapLegendImageUrls.length > 0) {
                 mapLegendImageUrls.forEach((url) => {
                     URL.revokeObjectURL(url);
@@ -296,6 +298,7 @@ const ExportPdfComponent: React.FC<ExportPdfComponentProps> = ({ exportPdfInfo }
                 })
             );
             setMapLegendImageUrls(legendMapUrls.filter((url) => url !== null) as string[]);
+            setIsLoading(false);
         };
 
         captureLegendMapImages();
@@ -326,6 +329,9 @@ const ExportPdfComponent: React.FC<ExportPdfComponentProps> = ({ exportPdfInfo }
 
     return (
         <div className="export_container">
+        {isLoading ? (
+            <ButtonComponent txt=".." disabled />
+        ) : (
             <PDFDownloadLink
                 document={<ExportPdfDocument
                     selectionMapElements={selectionMapElements}
@@ -337,10 +343,12 @@ const ExportPdfComponent: React.FC<ExportPdfComponentProps> = ({ exportPdfInfo }
                 />}
                 fileName={`export_${exportPdfInfo.selectionMapElements.program_name}.pdf`}
             >
-                <ButtonComponent onClick={() => { }} txt={'PDF'} disabled={false} />
+                {({ loading }) => (
+                    <ButtonComponent txt={loading ? '...' : 'PDF'} disabled={loading} />
+                )}
             </PDFDownloadLink>
-
-        </div>
+        )}
+    </div>
     );
 };
 
