@@ -11,8 +11,23 @@
         @include card;
         .leaflet-control-container{
             .leaflet-top{
-                .leaflet-control-layers{
-                    display: none;
+                display: none;
+            }
+            .leaflet-bottom.leaflet-right{
+                .leaflet-control-simpleMapScreenshoter.leaflet-control{
+                    border: none;
+                    margin: 0;
+                    bottom: 8px;
+                    right: 8px;
+                    .leaflet-control-simpleMapScreenshoter-btn{
+                        display: flex;
+                        justify-self: center;
+                        @include card;
+                        @include transition;
+                        &:hover{
+                            filter: contrast(0.8);
+                        }
+                    }
                 }
             }
         }
