@@ -78,5 +78,7 @@ jobs:
             export DATABASE_PYNUTS_URL="${{ secrets.DATABASE_PYNUTS_URL }}"
             export DATABASE_DONUTS_URL="${{ secrets.DATABASE_DONUTS_URL }}"
             export SECRET_ADMIN_KEY="${{ secrets.SECRET_ADMIN_KEY }}"
-            export ALGORITHM="${{ secrets.ALGORITHM }}" 
+            export ALGORITHM="${{ secrets.ALGORITHM }}"
+            export DEFAULT_ADMIN_USERNAME="${{ secrets.DEFAULT_ADMIN_USERNAME }}"
+            export DEFAULT_ADMIN_PASSWORD="${{ secrets.DEFAULT_ADMIN_PASSWORD }}"
             bash deploy.sh production

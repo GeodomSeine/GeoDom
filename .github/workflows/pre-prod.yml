@@ -110,6 +110,8 @@ jobs:
           echo "TESTING=${{ secrets.TESTING }}" >> $GITHUB_ENV
           echo "SECRET_ADMIN_KEY=${{ secrets.SECRET_ADMIN_KEY }}" >> $GITHUB_ENV
           echo "ALGORITHM=${{ secrets.ALGORITHM }}" >> $GITHUB_ENV
+          echo "DEFAULT_ADMIN_USERNAME=${{ secrets.DEFAULT_ADMIN_USERNAME }}" >> $GITHUB_ENV
+          echo "DEFAULT_ADMIN_PASSWORD=${{ secrets.DEFAULT_ADMIN_PASSWORD }}" >> $GITHUB_ENV
        - name: Analyze Backend with SonarQube
          uses: sonarsource/sonarqube-scan-action@v4
          env:
