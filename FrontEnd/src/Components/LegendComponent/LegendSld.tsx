@@ -3,6 +3,7 @@ import { getVariableSld, ProgramVariable } from "../../services/api";
 import "./Legend.scss";
 
 type Props = {
+  legendRef: any;
   variable: ProgramVariable;
 };
 
@@ -49,7 +50,7 @@ const parseSld = async (sldBlob: Blob): Promise<SldLegendEntry[]> => {
   return legendEntries;
 };
 
-const LegendSld = ({ variable }: Props) => {
+const LegendSld = ({ variable, legendRef }: Props) => {
   const [legendEntries, setLegendEntries] = useState<SldLegendEntry[] | null>(null);
 
   useEffect(() => {
@@ -66,8 +67,8 @@ const LegendSld = ({ variable }: Props) => {
   if (!legendEntries) return null;
 
   return (
-    <div className="legend_container">
-      <h4 className="legend_header">{`${variable.var_code.toUpperCase()} (${variable.unit_short})` + " S"}</h4>
+    <div className="legend_container" ref={legendRef}>
+      <h4 className="legend_header">{`${variable.var_code.toUpperCase()} (${variable.unit_short})` + " Sld"}</h4>
       <div className="legend_body">
         {legendEntries.map((entry, index) => (
           <div key={index} className="legend_item">
