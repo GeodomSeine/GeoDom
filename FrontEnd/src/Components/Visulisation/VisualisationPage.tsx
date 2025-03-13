@@ -82,6 +82,7 @@ const VisualisationPage: React.FC = () => {
 
       if (foundProgram) {
         setProgram(foundProgram);
+        setSelectedVariables([foundProgram.variables[0]]);
       } else {
         navigate("/");
       }
@@ -109,14 +110,6 @@ const VisualisationPage: React.FC = () => {
 
     fetchScenarios();
   }, []);
-
-  useEffect(() => {
-    if (program && program.variables && program.variables.length > 0) {
-      setTimeout(() => {
-        setSelectedVariables([program.variables[0]]);
-      }, 1000);
-    }
-  }, [program]);
 
   useEffect(() => {
     if (conf && program && scenarios.length > 0) {
